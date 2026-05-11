@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { isValidSaudiMobile } from "@/lib/phone";
 import { createDraftOrder } from "@/lib/api/orders";
-import { formatSar } from "@/lib/currency";
 import { trackCommerceEvent, generateEventId, getAttributionFromStorage } from "@/lib/tracking";
 import { useState, useEffect } from "react";
 import UpsellInterstitial from "./UpsellInterstitial";
@@ -117,11 +116,7 @@ export default function CheckoutModal() {
           <div className="bg-white/10 rounded-xl p-3 flex items-center justify-between backdrop-blur-sm border border-white/20">
             <div className="flex flex-col">
               <span className="text-xs text-blue-200">الإجمالي المطلوب</span>
-              <span className="text-2xl font-black">
-                <span dir="ltr" className="sar-glyph tabular-nums">
-                  {formatSar(cartTotal())}
-                </span>
-              </span>
+              <span className="text-2xl font-black">{cartTotal()} ر.س</span>
             </div>
             <div className="flex items-center gap-1.5 bg-green-500/20 text-green-100 px-3 py-1.5 rounded-lg border border-green-500/30">
               <ShieldCheck className="w-4 h-4" />

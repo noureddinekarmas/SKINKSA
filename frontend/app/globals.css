@@ -28,10 +28,6 @@ body {
   font-family: "IBM Plex Sans Arabic", "Tajawal", "Inter", sans-serif;
 }
 
-.sar-glyph {
-  font-family: var(--font-sar-symbol), "IBM Plex Sans Arabic", sans-serif;
-}
-
 * {
   box-sizing: border-box;
 }
