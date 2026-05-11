@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "api.officialskinksa.store" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };
