@@ -12,7 +12,6 @@ from app.core.security import internal_api_key_required
 from app.db.session import get_db
 from app.models.order import Order
 from app.models.order_item import OrderItem
-from app.models.tracking_event import TrackingEvent
 from app.models.webhook_delivery import WebhookDelivery
 from app.services.tracking import meta_capi, snap_capi, tiktok_capi
 from app.services.webhooks.sheets import send_sheets_webhook
@@ -43,11 +42,6 @@ async def resend_webhook(order_id: str, db: AsyncSession = Depends(get_db)):
     items_result = await db.execute(select(OrderItem).where(OrderItem.order_id == order.id))
     items = list(items_result.scalars().all())
 
-    events_result = await db.execute(
-        select(TrackingEvent).where(TrackingEvent.order_id == order.id)
-    )
-    tracking_events = list(events_result.scalars().all())
-
     delivery = WebhookDelivery(
         id=uuid.uuid4(),
         order_id=order.id,
@@ -59,10 +53,16 @@ async def resend_webhook(order_id: str, db: AsyncSession = Depends(get_db)):
     await db.flush()
 
     try:
-        result_data = await send_sheets_webhook(order, items, tracking_events)
-        delivery.status = "delivered" if not result_data.get("skipped") else "skipped"
-        delivery.response_body = result_data.get("body", "")
-        delivery.payload_json = json.dumps(result_data.get("payload", {}))
+        result_data = await send_sheets_webhook(db, order, items)
+        if result_data.get("skipped"):
+            delivery.status = "skipped"
+        else:
+            http_status = result_data.get("status_code") or 0
+            delivery.status = (
+                "delivered" if 200 <= http_status < 300 else "failed"
+            )
+            delivery.response_body = str(result_data.get("body", ""))
+            delivery.payload_json = json.dumps(result_data.get("payload", {}))
     except Exception as exc:
         delivery.status = "failed"
         delivery.last_error = str(exc)

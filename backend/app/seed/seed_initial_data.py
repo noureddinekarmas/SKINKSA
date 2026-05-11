@@ -31,7 +31,7 @@ async def run_seed(db: AsyncSession | None = None) -> None:
             product = Product(
                 id=uuid.uuid4(),
                 slug=PRODUCT_SLUG,
-                sku="SKS-BCP-30ML",
+                sku="NAMA-BCP-30ML-01",
                 title_ar=(
                     "سيروم ببتيد النحاس الأزرق لشد البشرة وتجديدها، مضاد للشيخوخة، 30 مل"
                     " - تركيبة منشطة للبشرة مع خلاصة مُشرقة"
@@ -106,6 +106,7 @@ async def run_seed(db: AsyncSession | None = None) -> None:
                 id=uuid.uuid4(),
                 product_id=product.id,
                 title_ar="منتج مكمل مميز",
+                sku="NAMA-UPG-44721",
                 price_sar=Decimal("99"),
                 active=False,
                 sort_order=1,
