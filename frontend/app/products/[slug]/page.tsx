@@ -7,11 +7,10 @@ import { useCartStore } from "@/lib/cart/store";
 import { faqItems } from "@/lib/content/faq";
 
 const GALLERY_IMAGES = [
-  { src: "/images/product/hero-flowers.jpg", alt: "سيروم ببتيد النحاس الأزرق مع الزهور" },
-  { src: "/images/product/bottle-plain.jpg", alt: "زجاجة سيروم ببتيد النحاس الأزرق" },
-  { src: "/images/product/woman-using.jpg", alt: "طريقة استخدام السيروم" },
-  { src: "/images/product/bottle-aloe.jpg", alt: "سيروم ببتيد النحاس مع الألوفيرا" },
-  { src: "/images/product/hand-sky.jpg", alt: "سيروم ببتيد النحاس الأزرق الأصلي" },
+  { src: "/images/product/hero-flowers.png", alt: "سيروم ببتيد النحاس الأزرق مع الزهور" },
+  { src: "/images/product/bottle-plain.png", alt: "زجاجة سيروم ببتيد النحاس الأزرق" },
+  { src: "/images/product/woman-using.png", alt: "طريقة استخدام السيروم" },
+  { src: "/images/product/bottle-aloe.png", alt: "سيروم ببتيد النحاس مع الألوفيرا" },
 ];
 
 const OFFERS = [
@@ -98,7 +97,7 @@ export default function ProductPage() {
             </div>
 
             {/* Thumbnails */}
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {GALLERY_IMAGES.map((img, i) => (
                 <button
                   key={img.src}
@@ -244,7 +243,7 @@ export default function ProductPage() {
           <div className="order-2 flex justify-center">
             <div className="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden shadow-lg border border-white">
               <Image
-                src="/images/product/woman-using.jpg"
+                src="/images/product/woman-using.png"
                 alt="طريقة استخدام سيروم ببتيد النحاس"
                 fill
                 className="object-cover"
@@ -261,7 +260,7 @@ export default function ProductPage() {
           <div className="order-2 md:order-1 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden shadow-lg border border-[#cbd5e1]">
               <Image
-                src="/images/product/bottle-aloe.jpg"
+                src="/images/product/bottle-aloe.png"
                 alt="سيروم ببتيد النحاس - مكونات طبيعية"
                 fill
                 className="object-cover"
@@ -294,7 +293,7 @@ export default function ProductPage() {
           <div className="order-2 md:order-1 flex justify-center">
              <div className="relative w-full max-w-md aspect-video rounded-3xl overflow-hidden shadow-lg border-2 border-red-200">
                <Image
-                 src="/images/product/hand-sky.jpg"
+                 src="/images/product/bottle-plain.png"
                  alt="سيروم ببتيد النحاس الأصلي"
                  fill
                  className="object-cover"

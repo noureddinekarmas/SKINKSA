@@ -15,7 +15,7 @@ export default function ProductSpotlight() {
           <div className="flex justify-center">
             <div className="relative w-72 h-72 rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/images/product/bottle-plain.jpg"
+                src="/images/product/bottle-plain.png"
                 alt="سيروم SKINKSA"
                 fill
                 className="object-cover"

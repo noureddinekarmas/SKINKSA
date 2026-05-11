@@ -80,7 +80,7 @@ export default function HeroSection() {
           <div className="relative w-72 h-72 md:w-96 md:h-96">
             <div className="relative w-full h-full rounded-full overflow-hidden border border-white/10 shadow-2xl">
               <Image
-                src="/images/product/hero-flowers.jpg"
+                src="/images/product/hero-flowers.png"
                 alt="سيروم ببتيد النحاس الأزرق"
                 fill
                 className="object-cover"
