@@ -64,6 +64,68 @@ const HERO_AVATAR_GRADIENTS = [
   "from-[#7c2d12] to-[#b45309]",
 ] as const;
 
+/** كل باقة لها لون «منتَقى» عند التحديد — يتمدّد لزر الشراء (تقوية تحويل بصرية) */
+const OFFER_THEME: Record<
+  OfferCode,
+  {
+    selected: string;
+    idle: string;
+    hover: string;
+    badgeOn: string;
+    savingsOn: string;
+    accentBar: string;
+    cta: string;
+    ctaHover: string;
+    ctaShadow: string;
+    stickyHint: string;
+    stickyBtn: string;
+  }
+> = {
+  OFFER_1: {
+    selected:
+      "border-emerald-500 bg-gradient-to-l from-emerald-50 via-white to-white shadow-[0_12px_36px_-10px_rgba(13,148,100,0.45)] ring-2 ring-emerald-500/20",
+    idle: "border-[var(--color-brand-border)] bg-white",
+    hover: "hover:border-emerald-400/55 hover:bg-emerald-50/40",
+    badgeOn: "border-emerald-400 bg-emerald-100 text-emerald-900",
+    savingsOn: "text-emerald-800",
+    accentBar: "bg-emerald-500",
+    cta: "from-emerald-600 to-emerald-900",
+    ctaHover: "hover:from-emerald-500 hover:to-emerald-900",
+    ctaShadow: "shadow-[0_20px_44px_-14px_rgba(5,150,105,0.55)]",
+    stickyHint: "text-emerald-700",
+    stickyBtn: "bg-gradient-to-l from-emerald-600 to-emerald-800 shadow-[0_10px_30px_-8px_rgba(5,150,105,0.5)]",
+  },
+  OFFER_2: {
+    selected:
+      "border-[var(--color-brand-primary)] bg-gradient-to-l from-[var(--color-brand-light)] via-white to-white shadow-[0_12px_36px_-10px_rgba(26,86,219,0.4)] ring-2 ring-[var(--color-brand-primary)]/25",
+    idle: "border-[var(--color-brand-border)] bg-white",
+    hover: "hover:border-[var(--color-brand-primary)]/45 hover:bg-[var(--color-brand-mist)]/50",
+    badgeOn: "border-[var(--color-brand-primary)]/35 bg-[var(--color-brand-light)] text-[var(--color-brand-ink)]",
+    savingsOn: "text-[var(--color-brand-success)]",
+    accentBar: "bg-[var(--color-brand-primary)]",
+    cta: "from-[var(--color-brand-primary)] to-[#0f2d66]",
+    ctaHover: "hover:from-[#2563eb] hover:to-[#0f2d66]",
+    ctaShadow: "shadow-[0_20px_44px_-14px_rgba(26,86,219,0.85)]",
+    stickyHint: "text-[var(--color-brand-success)]",
+    stickyBtn:
+      "bg-gradient-to-l from-[var(--color-brand-primary)] to-[#143a8c] shadow-[0_10px_30px_-8px_rgba(26,86,219,0.45)]",
+  },
+  OFFER_3: {
+    selected:
+      "border-[#c9a44a] bg-gradient-to-l from-amber-50 via-white to-white shadow-[0_12px_36px_-10px_rgba(201,164,74,0.42)] ring-2 ring-amber-400/35",
+    idle: "border-[var(--color-brand-border)] bg-white",
+    hover: "hover:border-amber-400/55 hover:bg-amber-50/50",
+    badgeOn: "border-amber-400 bg-amber-100 text-amber-950",
+    savingsOn: "text-amber-900",
+    accentBar: "bg-[#c9a44a]",
+    cta: "from-amber-600 to-amber-900",
+    ctaHover: "hover:from-amber-500 hover:to-amber-900",
+    ctaShadow: "shadow-[0_20px_44px_-14px_rgba(180,83,9,0.45)]",
+    stickyHint: "text-amber-800",
+    stickyBtn: "bg-gradient-to-l from-amber-600 to-amber-900 shadow-[0_10px_30px_-8px_rgba(180,83,9,0.45)]",
+  },
+};
+
 function StoryFrameCard({ frame }: { frame: StoryFrame }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border-2 border-white bg-white shadow-[0_20px_50px_-20px_rgba(15,28,46,0.35)] ring-1 ring-[var(--color-brand-border)]">
@@ -88,6 +150,7 @@ export default function ProductLanding() {
   const [selectedIdx, setSelectedIdx] = useState(defaultOfferIndex);
   const addOfferToCart = useCartStore((s) => s.addOfferToCart);
   const selected = offers[selectedIdx];
+  const primaryTheme = OFFER_THEME[selected.code];
 
   function handleAddToCart() {
     const eventId = generateEventId("atc");
@@ -254,27 +317,41 @@ export default function ProductLanding() {
                   {offers.map((offer, idx) => {
                     const savings = offer.compare ? offer.compare - offer.price : 0;
                     const per = (offer.price / offer.pieces).toFixed(0);
+                    const t = OFFER_THEME[offer.code];
+                    const isOn = idx === selectedIdx;
                     return (
                       <button
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`relative flex items-center justify-between rounded-2xl border-2 px-4 py-3 text-right transition ${
-                          idx === selectedIdx
-                            ? "border-[var(--color-brand-primary)] bg-[var(--color-brand-light)]/60 shadow-md"
-                            : "border-[var(--color-brand-border)] bg-white hover:border-[var(--color-brand-primary)]/35"
+                        className={`relative flex items-center justify-between overflow-hidden rounded-2xl border-2 px-4 py-3 text-right transition duration-200 ${
+                          isOn ? t.selected : `${t.idle} ${t.hover}`
                         }`}
                       >
+                        <span
+                          className={`pointer-events-none absolute top-3 bottom-3 right-3 w-1.5 rounded-full transition ${
+                            isOn ? `${t.accentBar} opacity-100` : "bg-[var(--color-brand-border)] opacity-25"
+                          }`}
+                          aria-hidden
+                        />
                         {offer.badge && (
-                          <span className="absolute -top-2 right-4 max-w-[calc(100%-2rem)] rounded-md border border-[var(--color-brand-border)] bg-white px-2 py-0.5 text-[10px] font-semibold text-[var(--color-brand-ink)] shadow-sm">
+                          <span
+                            className={`absolute -top-2 right-4 max-w-[calc(100%-2rem)] rounded-md border px-2 py-0.5 text-[10px] font-semibold shadow-sm ${
+                              isOn
+                                ? t.badgeOn
+                                : "border-[var(--color-brand-border)] bg-white text-[var(--color-brand-ink)]"
+                            }`}
+                          >
                             {offer.badge}
                           </span>
                         )}
-                        <span className="flex flex-col gap-0.5 pe-2">
+                        <span className="flex flex-col gap-0.5 pe-6">
                           <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
-                          <span className="text-[11px] text-[var(--color-brand-slate)]">متوسط ‎{per} ر.س للعبوة ضمن الخيار</span>
+                          <span className="text-[11px] text-[var(--color-brand-slate)]">
+                            متوسط ‎{per} ر.س للعبوة ضمن الخيار
+                          </span>
                           {savings > 0 && (
-                            <span className="text-[11px] text-[var(--color-brand-success)]">
+                            <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
                               أقل من السعر المرجعي بمقدار ‎{savings} ر.س لهذا العدد
                             </span>
                           )}
@@ -297,7 +374,7 @@ export default function ProductLanding() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-[var(--color-brand-primary)] to-[#0f2d66] py-4 text-lg font-black text-white shadow-[0_20px_44px_-14px_rgba(26,86,219,0.85)] transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+                className={`flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l py-4 text-lg font-black text-white transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 ${primaryTheme.cta} ${primaryTheme.ctaShadow} ${primaryTheme.ctaHover}`}
               >
                 أضيفي للسلة — الدفع عند الاستلام
                 <ChevronLeft size={22} aria-hidden />
@@ -613,7 +690,7 @@ export default function ProductLanding() {
       {/* Mobile sticky */}
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-[var(--color-brand-border)] bg-white/95 px-4 py-3 shadow-[0_-16px_48px_rgba(15,28,46,0.18)] backdrop-blur-lg md:hidden">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black text-[var(--color-brand-success)]">الدفع عند الاستلام</p>
+          <p className={`text-[10px] font-black ${primaryTheme.stickyHint}`}>الدفع عند الاستلام</p>
           <p className="truncate text-lg font-black text-[var(--color-brand-ink)]">
             {selected.price} <span className="text-xs font-bold text-[var(--color-brand-slate)]">ر.س</span>
           </p>
@@ -622,7 +699,7 @@ export default function ProductLanding() {
         <button
           type="button"
           onClick={handleAddToCart}
-          className="shrink-0 rounded-xl bg-[var(--color-brand-primary)] px-5 py-3.5 text-sm font-black text-white shadow-lg"
+          className={`shrink-0 rounded-xl px-5 py-3.5 text-sm font-black text-white ${primaryTheme.stickyBtn}`}
         >
           إضافة للسلة
         </button>
