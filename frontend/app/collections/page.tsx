@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { STATIC_PRODUCT, STATIC_OFFERS } from "@/lib/content/products";
+import { formatSar } from "@/lib/currency";
 import { Star, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,11 +57,15 @@ export default function CollectionsPage() {
                 </h3>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-[#312E81]">
-                    {defaultOffer.price_sar} ر.س
+                    <span dir="ltr" className="sar-glyph tabular-nums">
+                      {formatSar(defaultOffer.price_sar)}
+                    </span>
                   </span>
                   {defaultOffer.compare_at_sar && (
                     <span className="text-sm text-[#475569] line-through">
-                      {defaultOffer.compare_at_sar} ر.س
+                      <span dir="ltr" className="sar-glyph tabular-nums">
+                        {formatSar(defaultOffer.compare_at_sar)}
+                      </span>
                     </span>
                   )}
                 </div>

@@ -38,6 +38,7 @@ import {
   type StoryFrame,
 } from "@/lib/content/product-page";
 import { STATIC_PRODUCT } from "@/lib/content/products";
+import { formatSar } from "@/lib/currency";
 import { useCartStore } from "@/lib/cart/store";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
 
@@ -348,21 +349,36 @@ export default function ProductLanding() {
                         <span className="flex flex-col gap-0.5 pe-6">
                           <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
                           <span className="text-[11px] text-[var(--color-brand-slate)]">
-                            متوسط ‎{per} ر.س للعبوة ضمن الخيار
+                            متوسط{" "}
+                            <span dir="ltr" className="sar-glyph tabular-nums">
+                              {formatSar(per)}
+                            </span>{" "}
+                            للعبوة ضمن الخيار
                           </span>
                           {savings > 0 && (
                             <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
-                              أقل من السعر المرجعي بمقدار ‎{savings} ر.س لهذا العدد
+                              أقل من السعر المرجعي بمقدار{" "}
+                              <span dir="ltr" className="sar-glyph tabular-nums">
+                                {formatSar(savings)}
+                              </span>{" "}
+                              لهذا العدد
                             </span>
                           )}
                         </span>
                         <span className="flex shrink-0 flex-col items-end">
-                          <span className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-[var(--color-brand-ink)] sm:text-2xl">{offer.price}</span>
-                            <span className="text-xs text-[var(--color-brand-slate)]">ر.س</span>
+                          <span
+                            dir="ltr"
+                            className="sar-glyph text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl"
+                          >
+                            {formatSar(offer.price)}
                           </span>
                           {offer.compare != null && (
-                            <span className="text-xs text-[var(--color-brand-slate)] line-through">{offer.compare} ر.س</span>
+                            <span
+                              dir="ltr"
+                              className="sar-glyph text-xs tabular-nums text-[var(--color-brand-slate)] line-through"
+                            >
+                              {formatSar(offer.compare)}
+                            </span>
                           )}
                         </span>
                       </button>
@@ -692,7 +708,9 @@ export default function ProductLanding() {
         <div className="min-w-0 flex-1">
           <p className={`text-[10px] font-black ${primaryTheme.stickyHint}`}>الدفع عند الاستلام</p>
           <p className="truncate text-lg font-black text-[var(--color-brand-ink)]">
-            {selected.price} <span className="text-xs font-bold text-[var(--color-brand-slate)]">ر.س</span>
+            <span dir="ltr" className="sar-glyph tabular-nums">
+              {formatSar(selected.price)}
+            </span>
           </p>
           <p className="truncate text-[10px] text-[var(--color-brand-slate)]">{selected.label}</p>
         </div>

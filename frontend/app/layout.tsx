@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { Inter, IBM_Plex_Sans_Arabic, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -20,6 +20,14 @@ const inter = Inter({
   display: "swap",
 });
 
+/** Renders official Saudi riyal sign (U+20C1) reliably */
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-sar-symbol",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "SKINKSA | سيروم العناية بالبشرة الفاخر",
   description:
@@ -35,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${ibmPlexArabic.variable} ${inter.variable}`}>
+    <html lang="ar" dir="rtl" className={`${ibmPlexArabic.variable} ${inter.variable} ${notoSans.variable}`}>
       <body
         className="font-sans antialiased"
         style={{ fontFamily: "var(--font-arabic), var(--font-inter), sans-serif" }}

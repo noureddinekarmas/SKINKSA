@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { applyUpsell, finalizeOrder } from "@/lib/api/orders";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
+import { formatSar } from "@/lib/currency";
 
 interface Props {
   orderId: string;
@@ -66,8 +67,12 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
         <h2 className="text-xl font-bold text-[#0f1c2e]">عرض خاص بعد الطلب</h2>
         <p className="text-[#4b5e78] text-sm">
           أضيفي منتج مكمل بسعر{" "}
-          <span className="font-bold text-[#1a56db]">99 ر.س</span> فقط قبل تثبيت الطلب النهائي.
-        </p>
+          <span className="font-bold text-[#1a56db]">
+            <span dir="ltr" className="sar-glyph tabular-nums">
+              {formatSar(99)}
+            </span>
+          </span>{" "}
+          فقط قبل تثبيت الطلب النهائي.
 
         {!expired ? (
           <div className="text-[#4b5e78] text-sm">

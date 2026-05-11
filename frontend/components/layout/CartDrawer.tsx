@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/lib/cart/store";
+import { formatSar } from "@/lib/currency";
 import { ShieldCheck } from "lucide-react";
 import CheckoutModal from "@/components/checkout/CheckoutModal";
 
@@ -43,7 +44,11 @@ export default function CartDrawer() {
                     <p className="text-[#4b5e78] text-xs mt-1">
                       {item.offerCode} · {item.quantity} عبوة
                     </p>
-                    <p className="text-[#1a56db] font-bold mt-1">{item.totalPrice} ر.س</p>
+                    <p className="text-[#1a56db] font-bold mt-1">
+                      <span dir="ltr" className="sar-glyph tabular-nums">
+                        {formatSar(item.totalPrice)}
+                      </span>
+                    </p>
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
@@ -65,7 +70,11 @@ export default function CartDrawer() {
               <Separator />
               <div className="flex justify-between items-center">
                 <span className="text-[#4b5e78]">الإجمالي</span>
-                <span className="text-xl font-bold text-[#0f1c2e]">{total} ر.س</span>
+                <span className="text-xl font-bold text-[#0f1c2e]">
+                  <span dir="ltr" className="sar-glyph tabular-nums">
+                    {formatSar(total)}
+                  </span>
+                </span>
               </div>
               <Button
                 onClick={() => {
