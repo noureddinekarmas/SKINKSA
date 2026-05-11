@@ -142,7 +142,7 @@ async def finalize_order(db: AsyncSession, order_id: str, payload: FinalizeReque
     await db.flush()
 
     try:
-        webhook_result = await send_sheets_webhook(order, items, tracking_records)
+        webhook_result = await send_sheets_webhook(db, order, items)
         if webhook_result.get("skipped"):
             webhook_delivery.status = "skipped"
         else:

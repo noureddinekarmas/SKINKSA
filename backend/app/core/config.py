@@ -34,7 +34,6 @@ class Settings(BaseSettings):
     ORDER_NUMBER_START: int = 10001
 
     ORDERS_WEBHOOK_URL: str = ""
-    ORDERS_WEBHOOK_TOKEN: str = ""
     ORDERS_WEBHOOK_TIMEOUT_SECONDS: int = 10
 
     META_CAPI_ENABLED: bool = False
