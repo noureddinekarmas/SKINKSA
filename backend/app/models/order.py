@@ -64,10 +64,10 @@ class Order(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    items: Mapped[list[OrderItem]] = relationship("OrderItem", back_populates="order")
+    items: Mapped[list[OrderItem]] = relationship("OrderItem", back_populates="order", lazy="selectin")
     tracking_events: Mapped[list[TrackingEvent]] = relationship(
-        "TrackingEvent", back_populates="order"
+        "TrackingEvent", back_populates="order", lazy="selectin"
     )
     webhook_deliveries: Mapped[list[WebhookDelivery]] = relationship(
-        "WebhookDelivery", back_populates="order"
+        "WebhookDelivery", back_populates="order", lazy="selectin"
     )
