@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -24,11 +25,21 @@ export default function CartDrawer() {
             ) : (
               items.map((item) => (
                 <div key={item.id} className="flex items-center gap-3 p-3 bg-[#F8FAFC] rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <Link
+                    href={`/products/${item.slug}`}
+                    onClick={closeDrawer}
+                    className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center"
+                  >
                     <span className="text-2xl">✨</span>
-                  </div>
+                  </Link>
                   <div className="flex-1">
-                    <p className="font-semibold text-[#0F172A] text-sm line-clamp-2">{item.titleAr}</p>
+                    <Link
+                      href={`/products/${item.slug}`}
+                      onClick={closeDrawer}
+                      className="font-semibold text-[#0F172A] text-sm line-clamp-2 hover:text-[#312E81] transition-colors"
+                    >
+                      {item.titleAr}
+                    </Link>
                     <p className="text-[#475569] text-xs mt-1">
                       {item.offerCode} · {item.quantity} عبوة
                     </p>
