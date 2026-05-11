@@ -92,12 +92,17 @@ export const STORY_FRAMES: StoryFrame[] = [
   },
 ];
 
-export const PRODUCT_KICKER = "زين… كوني جدّية على بشرتج";
+export const PRODUCT_KICKER = "منتج واحد · ٣٠ مل · SFDA";
 
-export const PRODUCT_HEADLINE = "سيروم SKINKSA: لمن ودّها وجه يردّ لها ثقة… بروتين خفيف و\"مدروس\"";
+export const PRODUCT_HEADLINE = "سيروم SKINKSA — بروتين خفيف، مدروس، ومرخّص";
 
-export const PRODUCT_SUBHEAD =
-  "ببتيد النحاس الأزرق + هيالورونيك + لمعة نضارة — تركيبة تناسب جوّنا الحار، تمتص بسرعة، وتخلي الروتين لطيف مو مهمة مستحيلة. مو وعود خرافية… تجربة تسوق واضحة، ومنتج مرخّص يفكّ ألم السؤال: «ليش جربت وما ثبت؟»";
+/** سطر ثانٍ تحت العنوان — مختصر */
+export const PRODUCT_TAGLINE =
+  "ببتيد نحاس أزرق مع هيالورونيك: يمتص بسرعة ويناسب الجو الحار.";
+
+/** جملة أطول في بطاقة اقتباس تحت العنوان */
+export const PRODUCT_HERO_QUOTE =
+  "مو وعود خرافية — تجربة تسوق واضحة، ومنتج يخفّف ذلك السؤال اللي يتكرر: «ليش جربت كثير… وما ثبت؟»";
 
 export const SOCIAL_STRIP = {
   stat: "+١٠٠٠",

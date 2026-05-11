@@ -26,11 +26,12 @@ import {
   PRODUCT_BENEFITS,
   PRODUCT_GALLERY,
   PRODUCT_HEADLINE,
+  PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
   PRODUCT_KICKER,
   PRODUCT_REVIEWS,
-  PRODUCT_SUBHEAD,
+  PRODUCT_TAGLINE,
   SCIENCE_PROOF_LIST,
   SOCIAL_STRIP,
   STORY_FRAMES,
@@ -141,15 +142,32 @@ export default function ProductLanding() {
 
             <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--color-brand-primary)] sm:text-sm">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-primary)] sm:text-xs">
                   {PRODUCT_KICKER}
                 </p>
-                <h1 className="mt-2 text-balance text-3xl font-black leading-[1.15] text-[var(--color-brand-ink)] sm:text-4xl lg:text-[2.65rem]">
+                <h1 className="mt-2 text-balance text-2xl font-bold leading-snug text-[var(--color-brand-ink)] sm:text-3xl lg:text-[2.125rem]">
                   {PRODUCT_HEADLINE}
                 </h1>
-                <p className="mt-4 max-w-prose text-pretty text-base font-medium leading-relaxed text-[var(--color-brand-slate)] sm:text-lg">
-                  {PRODUCT_SUBHEAD}
+                <p className="mt-3 max-w-prose text-pretty text-sm font-medium leading-relaxed text-[var(--color-brand-slate)] sm:text-base">
+                  {PRODUCT_TAGLINE}
                 </p>
+
+                <blockquote className="relative mt-4 overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-gradient-to-bl from-white via-[var(--color-brand-mist)]/60 to-[var(--color-brand-mist)] px-5 py-4 shadow-sm ring-1 ring-black/[0.03] sm:px-6 sm:py-5">
+                  <Quote
+                    className="pointer-events-none absolute right-2 top-2 h-14 w-14 text-[var(--color-brand-primary)]/[0.12] sm:right-3 sm:top-3 sm:h-[4.5rem] sm:w-[4.5rem]"
+                    aria-hidden
+                  />
+                  <p className="relative text-pretty text-sm font-medium leading-[1.7] text-[var(--color-brand-ink)] sm:text-base">
+                    {PRODUCT_HERO_QUOTE}
+                  </p>
+                  <footer className="relative mt-3 flex items-center gap-2 border-t border-[var(--color-brand-border)]/80 pt-3">
+                    <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
+                    <span className="shrink-0 text-[11px] font-semibold tracking-wide text-[var(--color-brand-slate)]">
+                      SKINKSA
+                    </span>
+                    <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
+                  </footer>
+                </blockquote>
               </div>
 
               {/* Social proof bar */}
