@@ -71,7 +71,7 @@ export function Header() {
           {/* Brand lockup (right in RTL) */}
           <Link href="/" className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#312E81] text-sm font-bold text-white select-none">
-              N
+              S
             </span>
             <div className="flex flex-col leading-none">
               <span className="text-base font-bold tracking-widest text-[#312E81]">
