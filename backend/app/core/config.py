@@ -1,22 +1,9 @@
-import json
-from typing import Any
-
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def _parse_str_list(v: Any) -> list[str]:
-    """Accept a JSON array string, a comma-separated string, or a list."""
-    if isinstance(v, list):
-        return v
-    if isinstance(v, str):
-        stripped = v.strip()
-        if not stripped:
-            return []
-        if stripped.startswith("["):
-            return json.loads(stripped)
-        return [item.strip() for item in stripped.split(",") if item.strip()]
-    return v
+def _split(raw: str) -> list[str]:
+    """Split a comma-separated env var into a trimmed list, ignoring blanks."""
+    return [item.strip() for item in raw.split(",") if item.strip()]
 
 
 class Settings(BaseSettings):
@@ -26,12 +13,13 @@ class Settings(BaseSettings):
     APP_ENV: str = "production"
     APP_DEBUG: bool = False
     APP_SECRET_KEY: str = "change_me"
-    APP_CORS_ORIGINS: list[str] = ["https://officialskinksa.store"]
+    # Stored as a plain comma-separated string so pydantic-settings never
+    # tries to JSON-decode it. Use settings.cors_origins (property) in code.
+    APP_CORS_ORIGINS: str = "https://officialskinksa.store"
 
-    @field_validator("APP_CORS_ORIGINS", "GEOIP_WHITELISTED_PHONES", mode="before")
-    @classmethod
-    def parse_list(cls, v: Any) -> Any:
-        return _parse_str_list(v)
+    @property
+    def cors_origins(self) -> list[str]:
+        return _split(self.APP_CORS_ORIGINS)
 
     HOST: str = "0.0.0.0"
     PORT: int = 8000
@@ -78,7 +66,12 @@ class Settings(BaseSettings):
     MAXMIND_BLOCK_NON_SA: bool = False # block non-SA IPs (set True in prod)
     MAXMIND_BLOCK_VPN: bool = False    # block VPN/proxy/Tor IPs
     MAXMIND_RISK_SCORE_THRESHOLD: float = 75.0  # block if insights risk_score > this (0=off)
-    GEOIP_WHITELISTED_PHONES: list[str] = ["+212671147298"]
+    # Comma-separated phone numbers that bypass GeoIP checks.
+    GEOIP_WHITELISTED_PHONES: str = "+212671147298"
+
+    @property
+    def geoip_whitelisted_phones(self) -> list[str]:
+        return _split(self.GEOIP_WHITELISTED_PHONES)
 
 
 settings = Settings()

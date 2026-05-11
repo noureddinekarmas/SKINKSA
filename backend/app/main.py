@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
 
-origins = list(settings.APP_CORS_ORIGINS)
+origins = settings.cors_origins
 if settings.APP_ENV != "production":
     origins.append("http://localhost:3000")
 

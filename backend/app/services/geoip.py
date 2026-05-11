@@ -258,7 +258,7 @@ async def check_ip(ip_address: str | None) -> GeoIPResult:
 def is_phone_whitelisted(phone: str) -> bool:
     """Check if a phone number is in the whitelist (bypasses GeoIP checks)."""
     normalized = phone.strip().replace(" ", "").replace("-", "")
-    for wl_phone in settings.GEOIP_WHITELISTED_PHONES:
+    for wl_phone in settings.geoip_whitelisted_phones:
         wl = wl_phone.strip().replace(" ", "").replace("-", "")
         if normalized == wl or normalized.endswith(wl.lstrip("+")) or wl.endswith(normalized.lstrip("+")):
             return True
