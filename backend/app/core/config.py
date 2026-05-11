@@ -1,4 +1,22 @@
+import json
+from typing import Any
+
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _parse_str_list(v: Any) -> list[str]:
+    """Accept a JSON array string, a comma-separated string, or a list."""
+    if isinstance(v, list):
+        return v
+    if isinstance(v, str):
+        stripped = v.strip()
+        if not stripped:
+            return []
+        if stripped.startswith("["):
+            return json.loads(stripped)
+        return [item.strip() for item in stripped.split(",") if item.strip()]
+    return v
 
 
 class Settings(BaseSettings):
@@ -9,6 +27,11 @@ class Settings(BaseSettings):
     APP_DEBUG: bool = False
     APP_SECRET_KEY: str = "change_me"
     APP_CORS_ORIGINS: list[str] = ["https://officialskinksa.store"]
+
+    @field_validator("APP_CORS_ORIGINS", "GEOIP_WHITELISTED_PHONES", mode="before")
+    @classmethod
+    def parse_list(cls, v: Any) -> Any:
+        return _parse_str_list(v)
 
     HOST: str = "0.0.0.0"
     PORT: int = 8000
