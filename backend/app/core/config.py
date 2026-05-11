@@ -72,5 +72,13 @@ class Settings(BaseSettings):
     def geoip_whitelisted_phones(self) -> list[str]:
         return _split(self.GEOIP_WHITELISTED_PHONES)
 
+    # Optional second opinion for VPN (see app/services/ip_intel_secondary.py)
+    IPQUALITY_API_KEY: str = ""
+    IPQUALITY_VPN_FRAUD_SCORE_THRESHOLD: float = 85.0
+
+    # Admin dashboard (HTTP Basic). Leave empty to disable /v1/admin/*.
+    ADMIN_BASIC_AUTH_USER: str = ""
+    ADMIN_BASIC_AUTH_PASSWORD: str = ""
+
 
 settings = Settings()

@@ -57,6 +57,8 @@ class Order(Base):
     geo_longitude: Mapped[float | None] = mapped_column(nullable=True)
     geo_is_vpn: Mapped[bool] = mapped_column(Boolean, default=False)
     geo_is_proxy: Mapped[bool] = mapped_column(Boolean, default=False)
+    geo_is_tor: Mapped[bool] = mapped_column(Boolean, default=False)
+    geo_secondary_vpn: Mapped[bool] = mapped_column(Boolean, default=False)
     geo_risk_score: Mapped[float | None] = mapped_column(nullable=True)
     geo_source: Mapped[str | None] = mapped_column(String(30), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

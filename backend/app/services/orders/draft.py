@@ -14,6 +14,7 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.schemas.order import DraftOrderRequest
 from app.services.geoip import GeoData, check_ip
+from app.services.ip_intel_secondary import lookup_secondary_vpn
 from app.services.phone import is_valid_saudi_mobile, normalize_saudi_mobile
 
 
@@ -60,6 +61,7 @@ async def create_draft_order(
 
     if skip_geoip:
         geo = GeoData(source="whitelist_bypass")
+        secondary_vpn = False
     else:
         geo_result = await check_ip(ip_address)
 
@@ -73,6 +75,7 @@ async def create_draft_order(
             )
 
         geo = geo_result.geo
+        secondary_vpn = await lookup_secondary_vpn(ip_address)
 
     # ── Offer lookup ──────────────────────────────────────────────────────────
     primary_item = payload.cart_items[0]
@@ -121,6 +124,8 @@ async def create_draft_order(
         geo_longitude=geo.longitude,
         geo_is_vpn=geo.is_vpn,
         geo_is_proxy=geo.is_proxy,
+        geo_is_tor=geo.is_tor,
+        geo_secondary_vpn=secondary_vpn,
         geo_risk_score=geo.risk_score,
         geo_source=geo.source,
     )

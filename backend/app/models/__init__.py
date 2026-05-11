@@ -1,3 +1,4 @@
+from app.models.analytics_event import AnalyticsEvent
 from app.models.offer import Offer
 from app.models.order import Order
 from app.models.order_item import OrderItem
@@ -7,6 +8,7 @@ from app.models.upsell_offer import UpsellOffer
 from app.models.webhook_delivery import WebhookDelivery
 
 __all__ = [
+    "AnalyticsEvent",
     "Product",
     "Offer",
     "UpsellOffer",

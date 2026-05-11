@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { trackStoreEvent } from "@/lib/api/analytics";
+import { getOrCreateSessionId, readUtmFromLocation } from "@/lib/analytics/session";
 
 export interface CartOffer {
   code: "OFFER_1" | "OFFER_2" | "OFFER_3";
@@ -19,6 +21,20 @@ export interface CartItem {
   totalPrice: number;
   isUpsell?: boolean;
   image?: string;
+}
+
+function emitCartAnalytics(event_type: "add_to_cart" | "begin_checkout", slug: string | null) {
+  if (typeof window === "undefined") return;
+  const utm = readUtmFromLocation();
+  trackStoreEvent({
+    event_type,
+    path: window.location.pathname || "/",
+    product_slug: slug,
+    session_id: getOrCreateSessionId(),
+    utm_source: utm.utm_source,
+    utm_medium: utm.utm_medium,
+    utm_campaign: utm.utm_campaign,
+  });
 }
 
 interface CartState {
@@ -58,6 +74,7 @@ export const useCartStore = create<CartState>()(
           image: "/placeholders/serum-bottle.svg",
         };
         set({ items: [item], selectedOffer: offer, isDrawerOpen: true });
+        emitCartAnalytics("add_to_cart", product.slug);
       },
       addCrossSell: (item) => set((state) => ({ items: [...state.items, item] })),
       removeItem: (id) => set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
@@ -65,7 +82,11 @@ export const useCartStore = create<CartState>()(
       cartTotal: () => get().items.reduce((sum, item) => sum + item.totalPrice, 0),
       openDrawer: () => set({ isDrawerOpen: true }),
       closeDrawer: () => set({ isDrawerOpen: false }),
-      openCheckout: () => set({ isCheckoutOpen: true }),
+      openCheckout: () => {
+        const first = get().items[0];
+        emitCartAnalytics("begin_checkout", first ? first.slug : null);
+        set({ isCheckoutOpen: true });
+      },
       closeCheckout: () => set({ isCheckoutOpen: false }),
       setSelectedOffer: (offer) => set({ selectedOffer: offer }),
     }),
