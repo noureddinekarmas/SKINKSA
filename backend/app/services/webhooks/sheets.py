@@ -17,9 +17,10 @@ from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.upsell_offer import UpsellOffer
 
-# Must match row 1 of the sheet (see user template CSV).
+# Row 1 headers on Sheet1 — order matches append order. Only `status` is left blank.
 NETWORK_ORDERS_COLUMN_ORDER = [
     "OrderDate",
+    "orderid",
     "country",
     "name",
     "phone",
@@ -30,6 +31,7 @@ NETWORK_ORDERS_COLUMN_ORDER = [
     "quantity",
     "price",
     "currency",
+    "status",
     "notes",
     "utm_source",
     "utm_medium",
@@ -57,20 +59,29 @@ def _fallback_sku(seed: str) -> str:
 
 
 def _external_order_ref(order: Order) -> str:
-    """Human-readable id starting with nama (stored in notes; no separate column in sheet)."""
-    base = order.order_number.replace(" ", "").lower()
+    """Public order id for the sheet; always starts with nama."""
+    base = order.order_number.replace(" ", "").replace("_", "-").lower()
     return f"nama-{base}"
 
 
+def _filled_str(value: str | None, *, fallback: str = "-") -> str:
+    v = (value or "").strip()
+    return v if v else fallback
+
+
 def _sheet_phone(order: Order) -> str:
-    """Digits only 966XXXXXXXXX."""
+    """Digits only 966XXXXXXXXX (12 digits)."""
     d = (order.customer_phone_digits or "").strip()
+    if not d and order.customer_phone_e164:
+        d = "".join(c for c in order.customer_phone_e164 if c.isdigit())
     if not d:
         return "-"
     if d.startswith("966"):
-        return d
+        return d[:12] if len(d) >= 12 else d
     if d.startswith("5") and len(d) == 9:
         return f"966{d}"
+    if d.startswith("0") and len(d) == 10:
+        return f"966{d[1:]}"
     return d
 
 
@@ -83,14 +94,16 @@ def _sheet_address(order: Order) -> str:
         return addr
     if province:
         return province
-    return "-"
+    return "غير محدد"
 
 
 def _national_address(order: Order) -> str:
-    parts = [p for p in (order.customer_province, order.geo_postal_code) if p]
+    parts = [p.strip() for p in (order.customer_province, order.geo_postal_code) if p and str(p).strip()]
     if parts:
         return " ".join(parts)
-    return "-"
+    if (order.customer_address or "").strip():
+        return (order.customer_address or "").strip()
+    return "غير متوفر"
 
 
 def _sort_items(items: list[OrderItem]) -> list[OrderItem]:
@@ -185,25 +198,28 @@ async def send_sheets_webhook(
 
     ext_ref = _external_order_ref(order)
     price_total = float(order.total_sar)
+    base_url = (order.source_url or "").strip() or "https://officialskinksa.store"
 
     row_values = {
         "OrderDate": _format_order_date(order.created_at),
+        "orderid": ext_ref,
         "country": "KSA",
-        "name": order.customer_name,
+        "name": _filled_str(order.customer_name, fallback="عميل"),
         "phone": _sheet_phone(order),
         "address": _sheet_address(order),
-        "url": order.source_url or "https://officialskinksa.store",
-        "sku": non_empty_slash(skus),
-        "Product": non_empty_slash(titles_ar),
-        "quantity": non_empty_slash(quantities),
+        "url": base_url,
+        "sku": non_empty_slash(skus, empty="NAMA-UNKNOWN"),
+        "Product": non_empty_slash(titles_ar, empty="منتج"),
+        "quantity": non_empty_slash(quantities, empty="0"),
         "price": price_total,
         "currency": "SAR",
-        "notes": f"{ext_ref} | #{order.order_number} | {order.id}",
-        "utm_source": order.utm_source or "",
-        "utm_medium": order.utm_medium or "",
-        "utm_campaign": order.utm_campaign or "",
-        "utm_term": order.utm_term or "",
-        "utm_content": order.utm_content or "",
+        "status": "",
+        "notes": f"SKINKSA · {order.order_number} · {order.id}",
+        "utm_source": _filled_str(order.utm_source, fallback="-"),
+        "utm_medium": _filled_str(order.utm_medium, fallback="-"),
+        "utm_campaign": _filled_str(order.utm_campaign, fallback="-"),
+        "utm_term": _filled_str(order.utm_term, fallback="-"),
+        "utm_content": _filled_str(order.utm_content, fallback="-"),
         "national_address": _national_address(order),
     }
 

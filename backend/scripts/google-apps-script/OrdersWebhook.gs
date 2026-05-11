@@ -1,19 +1,14 @@
 /**
- * NETWORK ORDERS — Web App endpoint for SKINKSA backend.
+ * NETWORK ORDERS — Web App for SKINKSA (POST from backend, no secret).
  *
- * 1. Create a Google Sheet; on Sheet1, row 1 headers must match exactly (18 columns):
- *    OrderDate,country,name,phone,address,url,sku,Product,quantity,price,currency,notes,
- *    utm_source,utm_medium,utm_campaign,utm_term,utm_content,national_address
+ * Sheet1 — row 1 must be exactly these 20 headers (same order):
+ * OrderDate,orderid,country,name,phone,address,url,sku,Product,quantity,price,currency,status,notes,utm_source,utm_medium,utm_campaign,utm_term,utm_content,national_address
  *
- *    Tip: The backend sends `orderid` inside `notes` as: nama-sk-xxxxx | #SK-xxxxx | uuid
+ * - Only `status` stays empty (backend sends "").
+ * - All other cells get a value from the JSON payload.
  *
- * 2. Extensions → Apps Script → paste this file → Save.
- *
- * 3. Deploy → New deployment → type "Web app"
- *    - Execute as: Me
- *    - Who has access: Anyone
- *
- * 4. Copy the Web app URL into backend ORDERS_WEBHOOK_URL (no secret/token).
+ * Deploy → Web app → Execute as: Me, Who has access: Anyone
+ * Put the Web app URL in backend ORDERS_WEBHOOK_URL
  */
 
 const SHEET_NAME = 'Sheet1';
@@ -45,7 +40,10 @@ function doPost(e) {
     } else if (columns && Array.isArray(columns)) {
       values = columns.map(function (key) {
         var v = rowObj[key];
-        return v === undefined || v === null ? '' : v;
+        if (v === undefined || v === null) {
+          return key === 'status' ? '' : '-';
+        }
+        return v;
       });
     } else {
       return jsonResponse({ ok: false, error: 'missing row or column_order' }, 400);
@@ -59,33 +57,33 @@ function doPost(e) {
 }
 
 function jsonResponse(obj, statusCode) {
-  var out = ContentService.createTextOutput(JSON.stringify(obj))
+  return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
-  // Apps Script does not expose HTTP status to clients consistently; body carries result.
-  return out;
 }
 
-/** Optional: test from the script editor — verify 18 columns align with your header row. */
+/** Optional: verify 20 columns against your header row */
 function testAppendDummy() {
   var sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME);
   sheet.appendRow([
     '01/05/2026',
+    'nama-sk-10001',
     'KSA',
     'Test',
     '966501234567',
     'الرياض — حي النخيل',
     'https://officialskinksa.store',
-    'NAMA-BCP-30ML/NAMA-UPG-44721',
+    'NAMA-BCP/NAMA-UPG',
     'منتج١/منتج٢',
     '2/1',
     199,
     'SAR',
-    'nama-sk-10001 | #SK-10001 | test-uuid',
     '',
-    '',
-    '',
-    '',
-    '',
+    'SKINKSA · SK-10001 · uuid',
+    '-',
+    '-',
+    '-',
+    '-',
+    '-',
     'الرياض'
   ]);
 }

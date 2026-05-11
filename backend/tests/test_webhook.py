@@ -77,5 +77,6 @@ async def test_webhook_posts_when_url_configured():
         assert payload["sheet_row"]["country"] == "KSA"
         assert payload["sheet_row"]["currency"] == "SAR"
         assert payload["sheet_row"]["phone"] == "966501234567"
-        assert "nama-" in payload["sheet_row"]["notes"]
-        assert len(payload["row"]) == 18
+        assert str(payload["sheet_row"]["orderid"]).startswith("nama")
+        assert payload["sheet_row"]["status"] == ""
+        assert len(payload["row"]) == 20
