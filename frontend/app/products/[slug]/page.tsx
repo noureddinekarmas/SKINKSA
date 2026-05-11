@@ -20,7 +20,7 @@ const OFFERS = [
 ];
 
 const PRODUCT_ID = "blue-copper-peptide-serum";
-const PRODUCT_TITLE_AR = "سيروم ببتيد النحاس الأزرق لشد البشرة وتجديدها – 30 مل";
+const PRODUCT_TITLE_AR = "سيروم ببتيد النحاس الأزرق SKINKSA — منتجنا الوحيد: الببتيد، 30 مل";
 
 const benefits = [
   "يدعم مظهر الشد والمرونة لتبدين أصغر سناً",
@@ -77,7 +77,7 @@ export default function ProductPage() {
         <div className="mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
           
           {/* Image Gallery */}
-          <div className="flex flex-col gap-4 sticky top-20">
+          <div className="flex flex-col gap-4 md:sticky md:top-24">
             {/* Urgency Banner */}
             <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-4 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] text-center">
               <p className="font-black text-lg md:text-xl">⚠️ الكمية الحالية توشك على النفاذ!</p>
@@ -121,7 +121,7 @@ export default function ProductPage() {
           </div>
 
           {/* Details */}
-          <div className="flex flex-col gap-5 sticky top-20">
+          <div className="flex flex-col gap-5 md:sticky md:top-24">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex">
@@ -130,7 +130,7 @@ export default function ProductPage() {
                 <span className="text-xs text-[#4b5e78] font-medium">+1000 عميلة سعيدة</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-[#0f1c2e] leading-snug">
-                سيروم ببتيد النحاس الأزرق
+                سيروم ببتيد النحاس SKINKSA
               </h1>
               <p className="text-sm text-[#4b5e78] mt-2 leading-relaxed">ودعي مظهر البشرة المتعبة. السيروم العلمي الفاخر لشد البشرة وتجديدها، مصمم خصيصاً ليمنحك إشراقة استثنائية ونضارة تدوم.</p>
             </div>

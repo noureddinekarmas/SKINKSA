@@ -55,13 +55,13 @@ def _format_order_date(created_at: datetime | None) -> str:
 
 def _fallback_sku(seed: str) -> str:
     h = hashlib.sha256(seed.encode("utf-8")).hexdigest()[:10].upper()
-    return f"NAMA-{h}"
+    return f"SKINKSA-{h}"
 
 
 def _external_order_ref(order: Order) -> str:
-    """Public order id for the sheet; always starts with nama."""
-    base = order.order_number.replace(" ", "").replace("_", "-").lower()
-    return f"nama-{base}"
+    """Public order id for the sheet; starts with SKINKSA- (brand + order number)."""
+    base = order.order_number.replace(" ", "").replace("_", "-")
+    return f"SKINKSA-{base}"
 
 
 def _filled_str(value: str | None, *, fallback: str = "-") -> str:
@@ -208,7 +208,7 @@ async def send_sheets_webhook(
         "phone": _sheet_phone(order),
         "address": _sheet_address(order),
         "url": base_url,
-        "sku": non_empty_slash(skus, empty="NAMA-UNKNOWN"),
+        "sku": non_empty_slash(skus, empty="SKINKSA-UNKNOWN"),
         "Product": non_empty_slash(titles_ar, empty="منتج"),
         "quantity": non_empty_slash(quantities, empty="0"),
         "price": price_total,

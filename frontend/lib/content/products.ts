@@ -40,8 +40,8 @@ export const STATIC_PRODUCT: Product = {
   id: "prod_blue_copper_serum",
   slug: "blue-copper-peptide-serum",
   title_ar:
-    "سيروم ببتيد النحاس الأزرق لشد البشرة وتجديدها، مضاد للشيخوخة، 30 مل - تركيبة منشطة للبشرة مع خلاصة مُشرقة",
-  title_en: "Blue Copper Peptide Serum",
+    "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل",
+  title_en: "SKINKSA Blue Copper Peptide Serum — 30ml",
   description_ar:
     "سيروم فاخر مركّز بتقنية ببتيد النحاس الأزرق لدعم مظهر البشرة المشدودة والمتجددة. تركيبة علمية خفيفة تمتص بسرعة وتناسب الاستخدام اليومي.",
   status: "active",

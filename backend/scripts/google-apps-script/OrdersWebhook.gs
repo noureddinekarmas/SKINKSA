@@ -6,6 +6,7 @@
  *
  * - Only `status` stays empty (backend sends "").
  * - All other cells get a value from the JSON payload.
+ * - `orderid` format: SKINKSA-SK-xxxxx (brand + your order number).
  *
  * Deploy → Web app → Execute as: Me, Who has access: Anyone
  * Put the Web app URL in backend ORDERS_WEBHOOK_URL
@@ -66,13 +67,13 @@ function testAppendDummy() {
   var sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME);
   sheet.appendRow([
     '01/05/2026',
-    'nama-sk-10001',
+    'SKINKSA-SK-10001',
     'KSA',
     'Test',
     '966501234567',
     'الرياض — حي النخيل',
     'https://officialskinksa.store',
-    'NAMA-BCP/NAMA-UPG',
+    'SKINKSA-PEP-30ML/SKINKSA-PEP-ADDON',
     'منتج١/منتج٢',
     '2/1',
     199,

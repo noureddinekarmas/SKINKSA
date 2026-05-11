@@ -31,12 +31,9 @@ async def run_seed(db: AsyncSession | None = None) -> None:
             product = Product(
                 id=uuid.uuid4(),
                 slug=PRODUCT_SLUG,
-                sku="NAMA-BCP-30ML-01",
-                title_ar=(
-                    "سيروم ببتيد النحاس الأزرق لشد البشرة وتجديدها، مضاد للشيخوخة، 30 مل"
-                    " - تركيبة منشطة للبشرة مع خلاصة مُشرقة"
-                ),
-                title_en="Blue Copper Peptide Serum for Firming & Renewal, Anti-Aging, 30ml",
+                sku="SKINKSA-PEP-30ML",
+                title_ar="سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل",
+                title_en="SKINKSA Blue Copper Peptide Serum — 30ml",
                 status="active",
             )
             db.add(product)
@@ -105,8 +102,8 @@ async def run_seed(db: AsyncSession | None = None) -> None:
             upsell = UpsellOffer(
                 id=uuid.uuid4(),
                 product_id=product.id,
-                title_ar="منتج مكمل مميز",
-                sku="NAMA-UPG-44721",
+                title_ar="الببتيد — إضافة مكمّلة لنفس المنتج",
+                sku="SKINKSA-PEP-ADDON",
                 price_sar=Decimal("99"),
                 active=False,
                 sort_order=1,
