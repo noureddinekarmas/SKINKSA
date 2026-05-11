@@ -2,8 +2,9 @@ import { Suspense } from "react";
 import ThankYouContent from "./ThankYouContent";
 
 export const metadata = {
-  title: "تم تأكيد طلبك | SKINKSA",
-  description: "تم استلام طلبك بنجاح من SKINKSA",
+  title: "شكراً لكِ — طلبج مسجّل | SKINKSA",
+  description:
+    "تم استلام طلبك. تابعي خطوات التأكيد والتوصيل لضمان وصول أسرع لسيروم SKINKSA الأصلي مع الدفع عند الاستلام.",
 };
 
 export default function ThankYouPage() {

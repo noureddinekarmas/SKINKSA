@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { trackStoreEvent } from "@/lib/api/analytics";
 import { getOrCreateSessionId, readUtmFromLocation } from "@/lib/analytics/session";
+import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
 
 export interface CartOffer {
   code: "OFFER_1" | "OFFER_2" | "OFFER_3";
@@ -42,7 +43,10 @@ interface CartState {
   selectedOffer: CartOffer | null;
   isDrawerOpen: boolean;
   isCheckoutOpen: boolean;
-  addOfferToCart: (offer: CartOffer, product: { id: string; slug: string; titleAr: string }) => void;
+  addOfferToCart: (
+    offer: CartOffer,
+    product: { id: string; slug: string; titleAr: string; imageUrl?: string | null }
+  ) => void;
   addCrossSell: (item: CartItem) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
@@ -71,7 +75,7 @@ export const useCartStore = create<CartState>()(
           quantity: offer.quantity,
           unitPrice: offer.price_sar / offer.quantity,
           totalPrice: offer.price_sar,
-          image: "/placeholders/serum-bottle.svg",
+          image: product.imageUrl || PRODUCT_CART_IMAGE,
         };
         set({ items: [item], selectedOffer: offer, isDrawerOpen: true });
         emitCartAnalytics("add_to_cart", product.slug);

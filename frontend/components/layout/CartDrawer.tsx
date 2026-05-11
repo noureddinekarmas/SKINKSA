@@ -1,9 +1,12 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/lib/cart/store";
+import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
+import { formatSar } from "@/lib/currency";
 import { ShieldCheck } from "lucide-react";
 import CheckoutModal from "@/components/checkout/CheckoutModal";
 
@@ -23,16 +26,27 @@ export default function CartDrawer() {
             {items.length === 0 ? (
               <p className="text-[#4b5e78] text-center py-8">سلتك فارغة</p>
             ) : (
-              items.map((item) => (
+              items.map((item) => {
+                const thumbSrc =
+                  item.image && item.image !== "/placeholders/serum-bottle.svg"
+                    ? item.image
+                    : PRODUCT_CART_IMAGE;
+                return (
                 <div key={item.id} className="flex items-center gap-3 p-3 bg-[#f0f7ff] rounded-xl">
                   <Link
                     href={`/products/${item.slug}`}
                     onClick={closeDrawer}
-                    className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center"
+                    className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-[#d5e3f0] bg-white"
                   >
-                    <span className="text-2xl">✨</span>
+                    <Image
+                      src={thumbSrc}
+                      alt={item.titleAr}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
                   </Link>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <Link
                       href={`/products/${item.slug}`}
                       onClick={closeDrawer}
@@ -43,7 +57,12 @@ export default function CartDrawer() {
                     <p className="text-[#4b5e78] text-xs mt-1">
                       {item.offerCode} · {item.quantity} عبوة
                     </p>
-                    <p className="text-[#1a56db] font-bold mt-1">{item.totalPrice} ر.س</p>
+                    <p className="text-[#1a56db] font-bold mt-1">
+                      <span dir="ltr" className="sar-glyph tabular-nums">
+                        {formatSar(item.totalPrice)}
+                      </span>{" "}
+                      <span className="text-sm font-bold">ر.س</span>
+                    </p>
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
@@ -52,7 +71,8 @@ export default function CartDrawer() {
                     حذف
                   </button>
                 </div>
-              ))
+              );
+              })
             )}
           </div>
 
@@ -65,7 +85,12 @@ export default function CartDrawer() {
               <Separator />
               <div className="flex justify-between items-center">
                 <span className="text-[#4b5e78]">الإجمالي</span>
-                <span className="text-xl font-bold text-[#0f1c2e]">{total} ر.س</span>
+                <span className="text-xl font-bold text-[#0f1c2e]">
+                  <span dir="ltr" className="sar-glyph tabular-nums">
+                    {formatSar(total)}
+                  </span>{" "}
+                  <span className="text-base font-bold">ر.س</span>
+                </span>
               </div>
               <Button
                 onClick={() => {

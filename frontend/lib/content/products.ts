@@ -1,5 +1,8 @@
 import type { Offer, Product } from "@/lib/api/products";
 
+/** Cart drawer & checkout thumbnails (same asset as gallery hero). */
+export const PRODUCT_CART_IMAGE = "/images/product/gallery-main-1.png";
+
 export const STATIC_OFFERS: Offer[] = [
   {
     id: "offer_1",
