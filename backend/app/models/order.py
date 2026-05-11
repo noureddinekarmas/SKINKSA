@@ -48,6 +48,17 @@ class Order(Base):
     event_id_initiate_checkout: Mapped[str | None] = mapped_column(String(100), nullable=True)
     event_id_purchase: Mapped[str | None] = mapped_column(String(100), nullable=True)
     webhook_sent: Mapped[bool] = mapped_column(Boolean, default=False)
+    # MaxMind geo enrichment — stored for CAPI and ops
+    geo_country: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    geo_city: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    geo_subdivision: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    geo_postal_code: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    geo_latitude: Mapped[float | None] = mapped_column(nullable=True)
+    geo_longitude: Mapped[float | None] = mapped_column(nullable=True)
+    geo_is_vpn: Mapped[bool] = mapped_column(Boolean, default=False)
+    geo_is_proxy: Mapped[bool] = mapped_column(Boolean, default=False)
+    geo_risk_score: Mapped[float | None] = mapped_column(nullable=True)
+    geo_source: Mapped[str | None] = mapped_column(String(30), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

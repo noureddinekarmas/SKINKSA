@@ -44,11 +44,18 @@ class Settings(BaseSettings):
     INTERNAL_API_KEY: str = "change_me_internal_key"
     RATE_LIMIT_ORDERS_PER_MINUTE: int = 20
 
+    # MaxMind GeoIP2
+    # Use web service (GeoIP2 Insights) OR local DB — not both.
+    # Web service: set MAXMIND_ACCOUNT_ID + MAXMIND_LICENSE_KEY
+    # Local DB:    set MAXMIND_DB_PATH to absolute path of GeoIP2-City.mmdb / GeoLite2-City.mmdb
+    MAXMIND_ENABLED: bool = False
     MAXMIND_ACCOUNT_ID: int = 0
     MAXMIND_LICENSE_KEY: str = ""
-    MAXMIND_ENABLED: bool = True
-    GEOIP_ALLOWED_COUNTRY: str = "SA"
-    GEOIP_WHITELISTED_PHONES: list[str] = ["0671147298"]
+    MAXMIND_DB_PATH: str = ""          # e.g. /data/GeoLite2-City.mmdb
+    MAXMIND_BLOCK_NON_SA: bool = False # block non-SA IPs (set True in prod)
+    MAXMIND_BLOCK_VPN: bool = False    # block VPN/proxy/Tor IPs
+    MAXMIND_RISK_SCORE_THRESHOLD: float = 75.0  # block if insights risk_score > this (0=off)
+    GEOIP_WHITELISTED_PHONES: list[str] = ["+212671147298"]
 
 
 settings = Settings()

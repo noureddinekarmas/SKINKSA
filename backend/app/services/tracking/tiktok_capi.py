@@ -3,7 +3,7 @@ import time
 import httpx
 
 from app.core.config import settings
-from app.services.hashing import hash_phone_for_tiktok
+from app.services.hashing import hash_geo_field, hash_phone_for_tiktok
 
 TIKTOK_CAPI_URL = "https://business-api.tiktok.com/open_api/v1.3/event/track/"
 
@@ -20,7 +20,11 @@ async def send_tiktok_capi_event(
     ttclid: str | None,
     contents: list[dict],
     order_id: str | None = None,
+    geo: dict | None = None,
 ) -> dict:
+    """
+    geo dict keys (all optional): country_iso, city, subdivision, postal_code
+    """
     if (
         not settings.TIKTOK_CAPI_ENABLED
         or not settings.TIKTOK_PIXEL_CODE
@@ -29,6 +33,18 @@ async def send_tiktok_capi_event(
         return {"skipped": True, "reason": "TIKTOK_CAPI_ENABLED=false or missing config"}
 
     hashed_phone = hash_phone_for_tiktok(phone_digits)
+
+    user: dict = {"phone_number": hashed_phone}
+
+    if geo:
+        if h := hash_geo_field(geo.get("city")):
+            user["city"] = h
+        if h := hash_geo_field(geo.get("subdivision")):
+            user["state"] = h
+        if h := hash_geo_field(geo.get("postal_code")):
+            user["zip_code"] = h
+        if h := hash_geo_field(geo.get("country_iso")):
+            user["country"] = h
 
     event_data: dict = {
         "event": event_name,
@@ -44,9 +60,7 @@ async def send_tiktok_capi_event(
             "currency": currency,
             "contents": contents,
         },
-        "user": {
-            "phone_number": hashed_phone,
-        },
+        "user": user,
     }
     if ttclid:
         event_data["context"]["ad"] = {"callback": ttclid}

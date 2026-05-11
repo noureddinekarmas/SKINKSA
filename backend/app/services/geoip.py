@@ -1,133 +1,265 @@
-import logging
-from dataclasses import dataclass
+"""
+MaxMind GeoIP2 service.
 
+Supports two modes (configure one or the other via env vars):
+  • Web Service  — MAXMIND_ACCOUNT_ID + MAXMIND_LICENSE_KEY
+                   Requires GeoIP2 Insights subscription for full fraud signals.
+                   GeoIP2 City gives basic geo without fraud scores.
+  • Local DB     — MAXMIND_DB_PATH pointing to GeoIP2-City.mmdb or GeoLite2-City.mmdb
+                   Free with GeoLite2; no fraud signals, city/postal/subdivision only.
+
+Provides:
+  1. lookup(ip) → GeoData  — full geo + fraud enrichment for CAPI and order storage
+  2. check_ip(ip) → GeoIPResult  — backward-compat wrapper with allowed/blocked decision
+
+Both functions are fail-open: any MaxMind error returns safe defaults so orders are never
+silently dropped due to a geo lookup failure.
+"""
+
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass, field
+
+import geoip2.errors
 import geoip2.webservice
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-_client: geoip2.webservice.AsyncClient | None = None
-
-
-def _get_client() -> geoip2.webservice.AsyncClient:
-    global _client
-    if _client is None:
-        _client = geoip2.webservice.AsyncClient(
-            account_id=settings.MAXMIND_ACCOUNT_ID,
-            license_key=settings.MAXMIND_LICENSE_KEY,
-        )
-    return _client
+# Private / reserved IP prefixes — skip lookup for these.
+_PRIVATE_PREFIXES = (
+    "10.", "127.", "::1",
+    "172.16.", "172.17.", "172.18.", "172.19.", "172.20.",
+    "172.21.", "172.22.", "172.23.", "172.24.", "172.25.",
+    "172.26.", "172.27.", "172.28.", "172.29.", "172.30.", "172.31.",
+    "192.168.",
+)
 
 
 @dataclass
-class GeoIPResult:
-    allowed: bool
-    country_iso: str | None = None
+class GeoData:
+    """
+    Geo + fraud signals from MaxMind.
+
+    Geo fields (city, subdivision, postal_code, country_iso) are used for CAPI
+    enrichment — each platform expects SHA-256-hashed lowercase values.
+
+    Fraud fields are used for order-time risk scoring.
+    """
+    # ── Geo enrichment (CAPI) ────────────────────────────────────────────────
+    country_iso: str | None = None          # "SA"
+    city: str | None = None                 # "Riyadh"
+    subdivision: str | None = None          # "Riyadh Province"
+    subdivision_iso: str | None = None      # "01"
+    postal_code: str | None = None          # "12271"
+    latitude: float | None = None
+    longitude: float | None = None
+    accuracy_radius: int | None = None      # km
+
+    # ── Fraud signals (from GeoIP2 Insights only) ────────────────────────────
     is_vpn: bool = False
     is_proxy: bool = False
     is_tor: bool = False
     is_hosting: bool = False
     risk_score: float | None = None
+
+    # ── Lookup meta ──────────────────────────────────────────────────────────
+    source: str = "none"        # "webservice" | "localdb" | "private_ip" | "disabled" | "error"
+    error: str | None = None
+
+
+@dataclass
+class GeoIPResult:
+    """Backward-compatible result used by draft.py for allow/block decision."""
+    allowed: bool
+    geo: GeoData = field(default_factory=GeoData)
     reason: str | None = None
 
 
-_PRIVATE_PREFIXES = ("10.", "172.16.", "172.17.", "172.18.", "172.19.",
-                     "172.20.", "172.21.", "172.22.", "172.23.", "172.24.",
-                     "172.25.", "172.26.", "172.27.", "172.28.", "172.29.",
-                     "172.30.", "172.31.", "192.168.", "127.", "::1")
+# ── Web-service client (lazy singleton) ──────────────────────────────────────
+
+_ws_client: geoip2.webservice.AsyncClient | None = None
 
 
-async def check_ip(ip_address: str | None) -> GeoIPResult:
-    """Check an IP address against MaxMind GeoIP2 Insights.
+def _get_ws_client() -> geoip2.webservice.AsyncClient:
+    global _ws_client
+    if _ws_client is None:
+        _ws_client = geoip2.webservice.AsyncClient(
+            account_id=settings.MAXMIND_ACCOUNT_ID,
+            license_key=settings.MAXMIND_LICENSE_KEY,
+        )
+    return _ws_client
 
-    Returns a GeoIPResult indicating whether the order should be allowed.
+
+# ── Local DB reader (lazy singleton) ─────────────────────────────────────────
+
+_db_reader = None
+
+
+def _get_db_reader():
+    global _db_reader
+    if _db_reader is None:
+        import geoip2.database
+        _db_reader = geoip2.database.Reader(settings.MAXMIND_DB_PATH)
+    return _db_reader
+
+
+# ── Helper to extract GeoData from a geoip2 city/insights response ───────────
+
+def _extract_geo(response) -> GeoData:
+    loc = response.location
+    city_obj = response.city
+    sub_list = response.subdivisions
+    sub = sub_list.most_specific if sub_list else None
+    postal = response.postal
+
+    geo = GeoData(
+        country_iso=getattr(response.country, "iso_code", None),
+        city=getattr(city_obj, "name", None),
+        subdivision=getattr(sub, "name", None) if sub else None,
+        subdivision_iso=getattr(sub, "iso_code", None) if sub else None,
+        postal_code=getattr(postal, "code", None),
+        latitude=getattr(loc, "latitude", None),
+        longitude=getattr(loc, "longitude", None),
+        accuracy_radius=getattr(loc, "accuracy_radius", None),
+    )
+
+    # Fraud fields — only present in Insights responses
+    traits = getattr(response, "traits", None)
+    if traits:
+        geo.is_vpn = bool(getattr(traits, "is_anonymous_vpn", False))
+        geo.is_proxy = bool(
+            getattr(traits, "is_anonymous_proxy", False)
+            or getattr(traits, "is_public_proxy", False)
+        )
+        geo.is_tor = bool(getattr(traits, "is_tor_exit_node", False))
+        geo.is_hosting = bool(getattr(traits, "is_hosting_provider", False))
+
+    risk = getattr(response, "risk_score", None)
+    if risk is not None:
+        geo.risk_score = float(risk)
+
+    return geo
+
+
+# ── Core lookup ───────────────────────────────────────────────────────────────
+
+async def lookup(ip_address: str | None) -> GeoData:
+    """
+    Perform a MaxMind geo lookup for the given IP.
+
+    Always returns a GeoData object. On any error, returns empty GeoData with
+    source="error" — callers must not block orders based on lookup failures.
     """
     if not settings.MAXMIND_ENABLED:
-        return GeoIPResult(allowed=True, reason="geoip_disabled")
+        return GeoData(source="disabled")
 
+    if not ip_address or any(ip_address.startswith(p) for p in _PRIVATE_PREFIXES):
+        return GeoData(source="private_ip", country_iso="SA")  # assume SA for local/dev
+
+    # ── Local DB mode ─────────────────────────────────────────────────────────
+    if settings.MAXMIND_DB_PATH:
+        try:
+            import asyncio
+            reader = _get_db_reader()
+            # geoip2.database.Reader is sync — run in thread pool
+            response = await asyncio.get_event_loop().run_in_executor(
+                None, reader.city, ip_address
+            )
+            geo = _extract_geo(response)
+            geo.source = "localdb"
+            return geo
+        except geoip2.errors.AddressNotFoundError:
+            logger.debug("GeoIP local DB: IP %s not found", ip_address)
+            return GeoData(source="error", error="ip_not_found")
+        except Exception as exc:
+            logger.exception("GeoIP local DB lookup error for %s", ip_address)
+            return GeoData(source="error", error=str(exc))
+
+    # ── Web service mode ─────────────────────────────────────────────────────
     if not settings.MAXMIND_ACCOUNT_ID or not settings.MAXMIND_LICENSE_KEY:
-        logger.warning("MaxMind credentials not configured — skipping GeoIP check")
-        return GeoIPResult(allowed=True, reason="no_credentials")
-
-    if not ip_address:
-        logger.warning("No IP address provided — blocking order")
-        return GeoIPResult(allowed=False, reason="no_ip")
-
-    if any(ip_address.startswith(p) for p in _PRIVATE_PREFIXES):
-        logger.info("Private/local IP %s — allowing (dev/testing)", ip_address)
-        return GeoIPResult(allowed=True, country_iso=None, reason="private_ip")
+        logger.debug("MaxMind not configured — skipping geo lookup")
+        return GeoData(source="disabled", error="no_credentials")
 
     try:
-        client = _get_client()
-        response = await client.insights(ip_address)
+        client = _get_ws_client()
+        # Use insights() for fraud signals; falls back to city() if not subscribed
+        try:
+            response = await client.insights(ip_address)
+        except geoip2.errors.GeoIP2Error:
+            response = await client.city(ip_address)
+        geo = _extract_geo(response)
+        geo.source = "webservice"
+        return geo
+    except geoip2.errors.AddressNotFoundError:
+        logger.debug("GeoIP web service: IP %s not found", ip_address)
+        return GeoData(source="error", error="ip_not_found")
+    except Exception as exc:
+        logger.exception("GeoIP web service lookup error for %s", ip_address)
+        return GeoData(source="error", error=str(exc))
 
-        country_iso = response.country.iso_code
-        traits = response.traits
 
-        is_vpn = getattr(traits, "is_anonymous_vpn", False) or False
-        is_proxy = getattr(traits, "is_anonymous_proxy", False) or getattr(traits, "is_public_proxy", False) or False
-        is_tor = getattr(traits, "is_tor_exit_node", False) or False
-        is_hosting = getattr(traits, "is_hosting_provider", False) or False
-        risk_score = getattr(response, "risk_score", None)
+# ── Decision layer ────────────────────────────────────────────────────────────
 
-        result = GeoIPResult(
-            allowed=True,
-            country_iso=country_iso,
-            is_vpn=is_vpn,
-            is_proxy=is_proxy,
-            is_tor=is_tor,
-            is_hosting=is_hosting,
-            risk_score=risk_score,
+async def check_ip(ip_address: str | None) -> GeoIPResult:
+    """
+    Perform geo lookup and apply configured block rules.
+
+    Rules (all opt-in via env flags):
+      • MAXMIND_BLOCK_NON_SA=true  — block if country != SA
+      • MAXMIND_BLOCK_VPN=true     — block if VPN/proxy/Tor detected
+      • MAXMIND_RISK_SCORE_THRESHOLD > 0 — block if Insights risk_score exceeds threshold
+
+    Fail-open: lookup errors never block orders.
+    """
+    if not settings.MAXMIND_ENABLED:
+        return GeoIPResult(allowed=True, geo=GeoData(source="disabled"), reason="geoip_disabled")
+
+    geo = await lookup(ip_address)
+
+    if geo.source in ("disabled", "private_ip"):
+        return GeoIPResult(allowed=True, geo=geo, reason=geo.source)
+
+    if geo.source == "error":
+        # Fail-open on lookup errors
+        return GeoIPResult(allowed=True, geo=geo, reason=f"lookup_error:{geo.error}")
+
+    # Country block
+    if settings.MAXMIND_BLOCK_NON_SA and geo.country_iso and geo.country_iso.upper() != "SA":
+        logger.info("GeoIP: blocked non-SA order — country=%s ip=%s", geo.country_iso, ip_address)
+        return GeoIPResult(
+            allowed=False, geo=geo,
+            reason=f"country_blocked:{geo.country_iso}",
         )
 
-        if country_iso and country_iso.upper() != settings.GEOIP_ALLOWED_COUNTRY:
-            result.allowed = False
-            result.reason = f"country_blocked:{country_iso}"
-            logger.info("Blocked order from country %s (IP: %s)", country_iso, ip_address)
-            return result
+    # VPN / proxy / Tor block
+    if settings.MAXMIND_BLOCK_VPN and (geo.is_vpn or geo.is_proxy or geo.is_tor):
+        flags = [f for f, v in [("vpn", geo.is_vpn), ("proxy", geo.is_proxy), ("tor", geo.is_tor)] if v]
+        logger.info("GeoIP: blocked suspicious IP=%s flags=%s", ip_address, flags)
+        return GeoIPResult(
+            allowed=False, geo=geo,
+            reason=f"suspicious:{','.join(flags)}",
+        )
 
-        if is_vpn or is_proxy or is_tor:
-            result.allowed = False
-            flags = []
-            if is_vpn:
-                flags.append("vpn")
-            if is_proxy:
-                flags.append("proxy")
-            if is_tor:
-                flags.append("tor")
-            result.reason = f"suspicious:{','.join(flags)}"
-            logger.info("Blocked suspicious IP %s — flags: %s", ip_address, flags)
-            return result
+    # Risk score block (Insights only)
+    threshold = settings.MAXMIND_RISK_SCORE_THRESHOLD
+    if threshold > 0 and geo.risk_score is not None and geo.risk_score > threshold:
+        logger.info("GeoIP: blocked high-risk IP=%s score=%.1f", ip_address, geo.risk_score)
+        return GeoIPResult(
+            allowed=False, geo=geo,
+            reason=f"high_risk:{geo.risk_score:.1f}",
+        )
 
-        if is_hosting:
-            result.allowed = False
-            result.reason = "hosting_provider"
-            logger.info("Blocked hosting/datacenter IP %s", ip_address)
-            return result
-
-        if risk_score is not None and risk_score > 50:
-            result.allowed = False
-            result.reason = f"high_risk:{risk_score}"
-            logger.info("Blocked high-risk IP %s (score: %s)", ip_address, risk_score)
-            return result
-
-        result.reason = "allowed"
-        return result
-
-    except geoip2.errors.AddressNotFoundError:
-        logger.warning("IP %s not found in MaxMind — blocking", ip_address)
-        return GeoIPResult(allowed=False, reason="ip_not_found")
-    except Exception:
-        logger.exception("MaxMind GeoIP lookup failed for %s — allowing (fail-open)", ip_address)
-        return GeoIPResult(allowed=True, reason="lookup_error")
+    return GeoIPResult(allowed=True, geo=geo, reason="allowed")
 
 
 def is_phone_whitelisted(phone: str) -> bool:
-    """Check if a phone number is in the whitelist (bypasses GeoIP)."""
+    """Check if a phone number is in the whitelist (bypasses GeoIP checks)."""
     normalized = phone.strip().replace(" ", "").replace("-", "")
     for wl_phone in settings.GEOIP_WHITELISTED_PHONES:
-        wl_normalized = wl_phone.strip().replace(" ", "").replace("-", "")
-        if normalized == wl_normalized or normalized.endswith(wl_normalized):
+        wl = wl_phone.strip().replace(" ", "").replace("-", "")
+        if normalized == wl or normalized.endswith(wl.lstrip("+")) or wl.endswith(normalized.lstrip("+")):
             return True
     return False
