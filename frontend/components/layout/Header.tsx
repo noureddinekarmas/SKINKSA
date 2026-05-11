@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/cart/store";
+import { BrandLogoLockup } from "@/components/brand/BrandLogo";
 
 const navLinks = [
   { href: "/", label: "الرئيسية" },
@@ -67,18 +68,8 @@ export function Header() {
           </nav>
 
           {/* Brand lockup (right in RTL) */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a56db] text-sm font-bold text-white select-none">
-              S
-            </span>
-            <div className="flex flex-col leading-none">
-              <span className="text-base font-bold tracking-widest text-[#1a56db]">
-                SKINKSA
-              </span>
-              <span className="text-[10px] tracking-wider text-[#c9a44a] font-medium">
-                SKINKSA
-              </span>
-            </div>
+          <Link href="/" className="flex items-center" aria-label="SKINKSA — الصفحة الرئيسية">
+            <BrandLogoLockup variant="header" />
           </Link>
 
           {/* Mobile hamburger */}

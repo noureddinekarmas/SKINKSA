@@ -232,8 +232,8 @@ export default function ProductLanding() {
                   </p>
                   <footer className="relative mt-3 flex items-center gap-2 border-t border-[var(--color-brand-border)]/80 pt-3">
                     <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
-                    <span className="shrink-0 text-[11px] font-semibold tracking-wide text-[var(--color-brand-slate)]">
-                      SKINKSA
+                    <span className="shrink-0 text-[11px] font-semibold tracking-wide text-[#c9a44a]">
+                      جمالك الآن
                     </span>
                     <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
                   </footer>

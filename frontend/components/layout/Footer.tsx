@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Truck, CreditCard, MessageCircle, ShieldCheck } from "lucide-react";
 
+import { BrandLogoLockup } from "@/components/brand/BrandLogo";
+
 const policyLinks = [
   { href: "/privacy-policy", label: "سياسة الخصوصية" },
   { href: "/terms-and-conditions", label: "الشروط والأحكام" },
@@ -40,15 +42,9 @@ export function Footer() {
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
         {/* Brand */}
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a56db] text-sm font-bold text-white">
-              S
-            </span>
-            <div className="flex flex-col leading-none">
-              <span className="text-base font-bold tracking-widest text-white">SKINKSA</span>
-              <span className="text-[10px] tracking-wider text-[#c9a44a]">SKINKSA</span>
-            </div>
-          </div>
+          <Link href="/" className="flex w-fit items-center" aria-label="SKINKSA — الصفحة الرئيسية">
+            <BrandLogoLockup variant="footer" />
+          </Link>
           <p className="text-sm text-white/60 leading-relaxed max-w-xs">
             علامة تجارية سعودية متخصصة في العناية بالبشرة، مبنية على الشفافية والعلم والثقة.
           </p>
