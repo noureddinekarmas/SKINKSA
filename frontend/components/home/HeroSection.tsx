@@ -78,14 +78,13 @@ export default function HeroSection() {
         {/* Image */}
         <div className="order-1 md:order-2 flex justify-center">
           <div className="relative w-72 h-72 md:w-96 md:h-96">
-            <div className="w-full h-full bg-white/5 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl">
+            <div className="relative w-full h-full rounded-full overflow-hidden border border-white/10 shadow-2xl">
               <Image
-                src="/placeholders/serum-bottle.svg"
+                src="/images/product/hero-flowers.jpg"
                 alt="سيروم ببتيد النحاس الأزرق"
-                width={280}
-                height={280}
-                className="object-contain drop-shadow-2xl"
-                style={{ width: "auto", height: "auto", maxWidth: 280, maxHeight: 280 }}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 288px, 384px"
                 priority
               />
             </div>

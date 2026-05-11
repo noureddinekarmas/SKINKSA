@@ -1,9 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Star, ShieldCheck, Truck, MessageCircle, FlaskConical, Droplets, Sparkles, ChevronLeft, CheckCircle, ShieldAlert } from "lucide-react";
 import { useCartStore } from "@/lib/cart/store";
 import { faqItems } from "@/lib/content/faq";
+
+const GALLERY_IMAGES = [
+  { src: "/images/product/hero-flowers.jpg", alt: "سيروم ببتيد النحاس الأزرق مع الزهور" },
+  { src: "/images/product/bottle-plain.jpg", alt: "زجاجة سيروم ببتيد النحاس الأزرق" },
+  { src: "/images/product/woman-using.jpg", alt: "طريقة استخدام السيروم" },
+  { src: "/images/product/bottle-aloe.jpg", alt: "سيروم ببتيد النحاس مع الألوفيرا" },
+  { src: "/images/product/hand-sky.jpg", alt: "سيروم ببتيد النحاس الأزرق الأصلي" },
+];
 
 const OFFERS = [
   { pieces: 1, price: 129, compare: null, label: "كورس النضارة الفورية (عبوة واحدة)", badge: null, code: "OFFER_1" as const },
@@ -60,35 +69,56 @@ export default function ProductPage() {
     openDrawer();
   }
 
+  const [activeImg, setActiveImg] = useState(0);
+
   return (
     <>
       {/* ── PRODUCT HERO ── */}
       <section className="py-6 sm:py-12 px-4 sm:px-6">
         <div className="mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
           
-          {/* Gallery placeholder with Catchy Banner */}
-          <div className="flex flex-col gap-4">
-            {/* Catchy Urgency/Trust Banner */}
-            <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-4 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] text-center animate-in fade-in zoom-in duration-500">
+          {/* Image Gallery */}
+          <div className="flex flex-col gap-4 sticky top-20">
+            {/* Urgency Banner */}
+            <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-4 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] text-center">
               <p className="font-black text-lg md:text-xl">⚠️ الكمية الحالية توشك على النفاذ!</p>
               <p className="text-sm md:text-base mt-1 opacity-90 font-medium">اطلبي الآن قبل نفاذ المخزون - <span className="underline decoration-2 underline-offset-4">الدفع عند الاستلام</span></p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-            {["زجاجة السيروم", "ملمس التركيبة", "مكون النحاس", "مشهد حياتي"].map((label, i) => (
-              <div
-                key={label}
-                className={`rounded-2xl flex items-center justify-center aspect-square bg-gradient-to-br from-[#e0e7ff] to-[#bfdbfe] ${
-                  i === 0 ? "col-span-2 row-span-1 aspect-video" : ""
-                }`}
-              >
-                <div className="text-center text-[#312E81]/40">
-                  <div className="text-3xl">✦</div>
-                  <p className="text-[10px] mt-1">{label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+            {/* Main Image */}
+            <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-lg">
+              <Image
+                src={GALLERY_IMAGES[activeImg].src}
+                alt={GALLERY_IMAGES[activeImg].alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            </div>
+
+            {/* Thumbnails */}
+            <div className="grid grid-cols-5 gap-2">
+              {GALLERY_IMAGES.map((img, i) => (
+                <button
+                  key={img.src}
+                  onClick={() => setActiveImg(i)}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
+                    i === activeImg
+                      ? "border-[#312E81] shadow-md ring-2 ring-[#312E81]/20"
+                      : "border-[#E2E8F0] hover:border-[#312E81]/40"
+                  }`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Details */}
@@ -212,11 +242,14 @@ export default function ProductPage() {
             </ul>
           </div>
           <div className="order-2 flex justify-center">
-            <div className="w-full max-w-md aspect-[4/3] rounded-3xl bg-gradient-to-br from-[#e0e7ff] to-[#bfdbfe] flex items-center justify-center shadow-lg border border-white">
-              <div className="text-center text-[#312E81]/40">
-                <div className="text-5xl">✦</div>
-                <p className="text-sm mt-3 font-semibold">صورة تعبر عن النضارة والثقة</p>
-              </div>
+            <div className="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden shadow-lg border border-white">
+              <Image
+                src="/images/product/woman-using.jpg"
+                alt="طريقة استخدام سيروم ببتيد النحاس"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
             </div>
           </div>
         </div>
@@ -226,12 +259,14 @@ export default function ProductPage() {
       <section className="py-16 px-4 sm:px-6">
         <div className="mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1 flex justify-center">
-            <div className="w-full max-w-md aspect-square rounded-3xl bg-gradient-to-tr from-[#f1f5f9] to-[#e2e8f0] flex flex-col items-center justify-center shadow-inner border border-[#cbd5e1] p-6 text-center">
-                <ShieldCheck size={64} className="text-[#15803D] mb-4" />
-                <h3 className="text-xl font-bold text-[#0F172A]">جودة موثوقة وآمنة</h3>
-                <p className="mt-2 text-sm text-[#475569]">
-                  منتجاتنا تخضع لأعلى معايير الجودة العالمية وملتزمة بالمعايير الصارمة لضمان سلامة بشرتك في كل قطرة.
-                </p>
+            <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden shadow-lg border border-[#cbd5e1]">
+              <Image
+                src="/images/product/bottle-aloe.jpg"
+                alt="سيروم ببتيد النحاس - مكونات طبيعية"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
             </div>
           </div>
           <div className="order-1 md:order-2">
@@ -257,12 +292,20 @@ export default function ProductPage() {
       <section className="py-12 px-4 sm:px-6 bg-red-50 border-y border-red-100">
         <div className="mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div className="order-2 md:order-1 flex justify-center">
-             <div className="w-full max-w-md aspect-video rounded-3xl bg-white flex flex-col items-center justify-center shadow-lg border-2 border-red-200 p-8 text-center transform rotate-1 hover:rotate-0 transition-transform">
-                <div className="text-5xl mb-4">🚫</div>
-                <h4 className="font-black text-[#B91C1C] text-xl">احذري المنتجات المقلدة!</h4>
-                <p className="mt-3 text-sm text-[#475569] leading-relaxed">
-                  تنتشر في السوق منتجات رخيصة تدعي احتواءها على ببتيد النحاس. هذه المنتجات مجهولة المصدر، غير مرخصة، وقد تسبب تهيجاً وتلفاً دائماً لبشرتك.
-                </p>
+             <div className="relative w-full max-w-md aspect-video rounded-3xl overflow-hidden shadow-lg border-2 border-red-200">
+               <Image
+                 src="/images/product/hand-sky.jpg"
+                 alt="سيروم ببتيد النحاس الأصلي"
+                 fill
+                 className="object-cover"
+                 sizes="(max-width: 768px) 100vw, 400px"
+               />
+               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col items-center justify-end p-6 text-center">
+                 <h4 className="font-black text-white text-xl">احذري المنتجات المقلدة!</h4>
+                 <p className="mt-2 text-sm text-white/90 leading-relaxed">
+                   المنتج الأصلي متوفر فقط عبر متجرنا الرسمي
+                 </p>
+               </div>
              </div>
           </div>
           <div className="order-1 md:order-2">

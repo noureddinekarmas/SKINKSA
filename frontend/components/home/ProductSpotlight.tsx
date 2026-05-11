@@ -13,14 +13,13 @@ export default function ProductSpotlight() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center">
-            <div className="w-72 h-72 bg-gradient-to-br from-indigo-50 to-blue-100 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="relative w-72 h-72 rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/placeholders/serum-bottle.svg"
+                src="/images/product/bottle-plain.jpg"
                 alt="سيروم SKINKSA"
-                width={220}
-                height={220}
-                className="object-contain"
-                style={{ width: "auto", height: "auto", maxWidth: 220, maxHeight: 220 }}
+                fill
+                className="object-cover"
+                sizes="288px"
               />
             </div>
           </div>
