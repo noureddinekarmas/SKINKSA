@@ -68,7 +68,11 @@ async def create_draft_order(
     else:
         logger.info("Phone %s is whitelisted — skipping GeoIP check", payload.customer_phone)
 
-    order = await draft_svc.create_draft_order(db, payload)
+    order = await draft_svc.create_draft_order(
+        db,
+        payload,
+        skip_geoip=is_phone_whitelisted(payload.customer_phone),
+    )
     return order
 
 

@@ -13,7 +13,7 @@ from app.models.offer import Offer
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.schemas.order import DraftOrderRequest
-from app.services.geoip import check_ip
+from app.services.geoip import GeoData, check_ip
 from app.services.phone import is_valid_saudi_mobile, normalize_saudi_mobile
 
 
@@ -34,7 +34,12 @@ async def _next_order_number(db: AsyncSession) -> str:
     return f"{settings.ORDER_NUMBER_PREFIX}-{next_num}"
 
 
-async def create_draft_order(db: AsyncSession, payload: DraftOrderRequest) -> Order:
+async def create_draft_order(
+    db: AsyncSession,
+    payload: DraftOrderRequest,
+    *,
+    skip_geoip: bool = False,
+) -> Order:
     # ── Phone validation ──────────────────────────────────────────────────────
     if not is_valid_saudi_mobile(payload.customer_phone):
         raise HTTPException(
@@ -53,18 +58,21 @@ async def create_draft_order(db: AsyncSession, payload: DraftOrderRequest) -> Or
     attribution = payload.attribution
     ip_address = attribution.ip_address if attribution else None
 
-    geo_result = await check_ip(ip_address)
+    if skip_geoip:
+        geo = GeoData(source="whitelist_bypass")
+    else:
+        geo_result = await check_ip(ip_address)
 
-    if not geo_result.allowed:
-        logger.warning(
-            "Order blocked by GeoIP: ip=%s reason=%s", ip_address, geo_result.reason
-        )
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Order not accepted from this location.",
-        )
+        if not geo_result.allowed:
+            logger.warning(
+                "Order blocked by GeoIP: ip=%s reason=%s", ip_address, geo_result.reason
+            )
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Order not accepted from this location.",
+            )
 
-    geo = geo_result.geo
+        geo = geo_result.geo
 
     # ── Offer lookup ──────────────────────────────────────────────────────────
     primary_item = payload.cart_items[0]
