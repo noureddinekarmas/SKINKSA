@@ -196,28 +196,35 @@ export default function ProductLanding() {
                 </div>
               </div>
 
-              {/* Value props */}
-              <div className="grid gap-3 sm:grid-cols-3">
-                {[
-                  { icon: Truck, t: "توصيل لكل السعودية", s: "٣–٥ أيام عمل" },
-                  { icon: ShieldCheck, t: "ضمان ذهبي ٣٠ يوم", s: "جرّبي براحتج" },
-                  { icon: Award, t: "SFDA", s: "تسوقي واثقة" },
-                ].map(({ icon: Icon, t, s }) => (
-                  <div
-                    key={t}
-                    className="flex flex-col gap-1 rounded-2xl border border-[var(--color-brand-border)] bg-white p-4 shadow-sm"
-                  >
-                    <Icon className="h-5 w-5 text-[var(--color-brand-primary)]" aria-hidden />
-                    <p className="text-sm font-bold text-[var(--color-brand-ink)]">{t}</p>
-                    <p className="text-xs text-[var(--color-brand-slate)]">{s}</p>
-                  </div>
-                ))}
+              {/* Value props — compact strip */}
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 px-3 py-2 text-[11px] font-medium text-[var(--color-brand-slate)] sm:justify-start sm:text-xs">
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <Truck className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                  توصيل داخل المملكة · ٣–٥ أيام عمل
+                </span>
+                <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
+                  |
+                </span>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                  ضمان ٣٠ يوماً
+                </span>
+                <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
+                  |
+                </span>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <Award className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                  منتج مرخّص SFDA
+                </span>
               </div>
 
               {/* Offers */}
               <div>
-                <p className="mb-2 text-sm font-black text-[var(--color-brand-ink)]">اختاري عرضج — الأكثر طلباً عادةً عرض العبوتين</p>
-                <div className="flex flex-col gap-2">
+                <p className="text-sm font-semibold text-[var(--color-brand-ink)]">اختيار الكمية</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--color-brand-slate)] sm:text-xs">
+                  مفعول أي روتين عناية يتوقف كثيراً على الاستمرار لعدة أسابيع. عبوتان فأكثر تقلّل فرصة توقّفك قبل أن تتكوّن النتيجة — والاختيار يظل لكِ.
+                </p>
+                <div className="mt-3 flex flex-col gap-2">
                   {offers.map((offer, idx) => {
                     const savings = offer.compare ? offer.compare - offer.price : 0;
                     const per = (offer.price / offer.pieces).toFixed(0);
@@ -226,27 +233,29 @@ export default function ProductLanding() {
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`relative flex items-center justify-between rounded-2xl border-2 px-4 py-3.5 text-right transition ${
+                        className={`relative flex items-center justify-between rounded-2xl border-2 px-4 py-3 text-right transition ${
                           idx === selectedIdx
                             ? "border-[var(--color-brand-primary)] bg-[var(--color-brand-light)]/60 shadow-md"
                             : "border-[var(--color-brand-border)] bg-white hover:border-[var(--color-brand-primary)]/35"
                         }`}
                       >
                         {offer.badge && (
-                          <span className="absolute -top-2.5 right-4 rounded-full bg-[var(--color-brand-accent)] px-2.5 py-0.5 text-[10px] font-black text-white shadow">
+                          <span className="absolute -top-2 right-4 max-w-[calc(100%-2rem)] rounded-md border border-[var(--color-brand-border)] bg-white px-2 py-0.5 text-[10px] font-semibold text-[var(--color-brand-ink)] shadow-sm">
                             {offer.badge}
                           </span>
                         )}
                         <span className="flex flex-col gap-0.5 pe-2">
-                          <span className="text-sm font-black text-[var(--color-brand-ink)]">{offer.label}</span>
-                          <span className="text-[11px] text-[var(--color-brand-slate)]">{per} ر.س للعبوة ضمن العرض</span>
+                          <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
+                          <span className="text-[11px] text-[var(--color-brand-slate)]">متوسط ‎{per} ر.س للعبوة ضمن الخيار</span>
                           {savings > 0 && (
-                            <span className="text-xs font-bold text-[var(--color-brand-success)]">وفّرت {savings} ر.س</span>
+                            <span className="text-[11px] text-[var(--color-brand-success)]">
+                              أقل من السعر المرجعي بمقدار ‎{savings} ر.س لهذا العدد
+                            </span>
                           )}
                         </span>
                         <span className="flex shrink-0 flex-col items-end">
                           <span className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-[var(--color-brand-ink)]">{offer.price}</span>
+                            <span className="text-xl font-bold text-[var(--color-brand-ink)] sm:text-2xl">{offer.price}</span>
                             <span className="text-xs text-[var(--color-brand-slate)]">ر.س</span>
                           </span>
                           {offer.compare != null && (
@@ -264,7 +273,7 @@ export default function ProductLanding() {
                 onClick={handleAddToCart}
                 className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-[var(--color-brand-primary)] to-[#0f2d66] py-4 text-lg font-black text-white shadow-[0_20px_44px_-14px_rgba(26,86,219,0.85)] transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
               >
-                أبشري… ضيفيه للسلة — وادفعي لما يوصل
+                أضيفي للسلة — الدفع عند الاستلام
                 <ChevronLeft size={22} aria-hidden />
               </button>
 
@@ -589,7 +598,7 @@ export default function ProductLanding() {
           onClick={handleAddToCart}
           className="shrink-0 rounded-xl bg-[var(--color-brand-primary)] px-5 py-3.5 text-sm font-black text-white shadow-lg"
         >
-          أبشري… للسلة
+          إضافة للسلة
         </button>
       </div>
     </>

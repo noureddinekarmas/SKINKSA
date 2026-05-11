@@ -29,10 +29,8 @@ export function Header() {
   return (
     <>
       {/* ── ANNOUNCEMENT BAR ── */}
-      <div className="bg-gradient-to-r from-[#1a56db] to-[#3b82f6] text-white text-center py-2 px-4 text-xs sm:text-sm font-bold shadow-md relative z-[60]">
-        <div className="animate-pulse inline-block mr-2">🔥</div>
-        عرض محدود: اطلبي كورس التجديد المتكامل واحصلي على النتيجة المضمونة (الدفع عند الاستلام)
-        <div className="animate-pulse inline-block ml-2">🔥</div>
+      <div className="relative z-[60] bg-gradient-to-r from-[#1e3a5f] to-[#1a56db] px-4 py-2 text-center text-[11px] font-medium text-white sm:text-xs">
+        توصيل داخل المملكة · الدفع عند الاستلام · منتج مرخّص SFDA
       </div>
 
       <header
