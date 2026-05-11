@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy import func as sql_func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -134,5 +135,7 @@ async def create_draft_order(db: AsyncSession, payload: DraftOrderRequest) -> Or
         db.add(order_item)
 
     await db.commit()
-    await db.refresh(order)
-    return order
+    refreshed = await db.execute(
+        select(Order).options(selectinload(Order.items)).where(Order.id == order.id)
+    )
+    return refreshed.scalar_one()

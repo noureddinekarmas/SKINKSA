@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.models.order import Order
 from app.models.order_item import OrderItem
@@ -162,6 +163,9 @@ async def finalize_order(db: AsyncSession, order_id: str, payload: FinalizeReque
         webhook_delivery.attempt_count += 1
 
     await db.commit()
-    await db.refresh(order)
+    refreshed = await db.execute(
+        select(Order).options(selectinload(Order.items)).where(Order.id == order.id)
+    )
+    order = refreshed.scalar_one()
 
     return {"order": order, "thank_you_token": str(order.id)}

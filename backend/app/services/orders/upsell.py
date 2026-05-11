@@ -4,6 +4,7 @@ from decimal import Decimal
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.order import Order
 from app.models.order_item import OrderItem
@@ -53,5 +54,7 @@ async def process_upsell(db: AsyncSession, order_id: str, payload: UpsellRequest
         order.upsell_decision = "skipped"
 
     await db.commit()
-    await db.refresh(order)
-    return order
+    refreshed = await db.execute(
+        select(Order).options(selectinload(Order.items)).where(Order.id == order.id)
+    )
+    return refreshed.scalar_one()
