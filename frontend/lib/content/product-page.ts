@@ -1,6 +1,6 @@
 /**
  * Product landing: high-conversion DTC narrative (KSA tone).
- * Images: Unsplash placeholders — replace with /images/product/*.png when ready.
+ * Gallery + story frames use assets under /public/images/product/.
  */
 import type { StaticImageData } from "next/image";
 
@@ -18,7 +18,7 @@ export type GalleryImage = {
 
 export const PRODUCT_GALLERY: GalleryImage[] = [
   {
-    src: "https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=1400&q=85",
+    src: "/images/product/gallery-main-1.png",
     alt: "تركيبة عناية فاخرة بتركيز نظيف",
     thumbLabel: "العبوة",
     overlay: {
@@ -28,7 +28,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=85",
+    src: "/images/product/gallery-texture-2.png",
     alt: "قوام سائل أنيق يُوزّع بلطف",
     thumbLabel: "القوام",
     overlay: {
@@ -38,7 +38,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=85",
+    src: "/images/product/gallery-usage-3.png",
     alt: "لمسة يد ناعمة على الوجه",
     thumbLabel: "الاستخدام",
     overlay: {
@@ -48,7 +48,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "https://images.unsplash.com/photo-1571875257727-256c39da42af?auto=format&fit=crop&w=1400&q=85",
+    src: "/images/product/gallery-quality-4.png",
     alt: "مختبر وجودة ونظافة",
     thumbLabel: "الجودة",
     overlay: {
@@ -70,21 +70,21 @@ export type StoryFrame = {
 
 export const STORY_FRAMES: StoryFrame[] = [
   {
-    src: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=85",
+    src: "/images/product/story-card-1.png",
     alt: "ترطيب لطيف",
     badge: "وجهج يقول تعب؟",
     headline: "التكييف والسهر يبانون… بس مو لازم يثبتون",
     body: "دايم تلاحظين بعد الظهر: ملمس مو حلو، وجه يبين متعبان، ومع المكياج يزيد الإحساس؟ هذا مو كسل منج… بشرتج تحتاج شي يدعم مظهر المرونة والنضارة مو بس يرطب لحظة ويخلص.",
   },
   {
-    src: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=85",
+    src: "/images/product/story-card-2.png",
     alt: "مكوّنات وماء وزهور",
     badge: "ليش ذا المكوّن؟",
     headline: "ببتيد النحاس الأزرق: اسم يدور… والسبب علمي",
     body: "GHK-Cu من المكوّنات اللي تدرس في عالم العناية لدوره في دعم مظهر البشرة الأكثر تماسكاً و«مظهر شبابي» عند الالتزام. مو سِحْر — روتين ذكي يلاقي بشرتج في المنتصف: مركّز وما يثقل.",
   },
   {
-    src: "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=900&q=85",
+    src: "/images/product/story-card-3.png",
     alt: "عبوات عناية راقية",
     badge: "ثقة قبل الفلوس",
     headline: "تسوّقين أونلاين بس خايفة؟ عندج حق",
@@ -211,6 +211,39 @@ export const PRODUCT_REVIEWS = [
     text: "عندنا الجو يقطع البشرة، ولقيته يرطب بدون ما يكرّش. ضمان ٣٠ يوم خلاني أقول خلاص… أجرب بارتياح.",
   },
 ];
+
+/** Authentic product vs unofficial sellers — trust band above the fold */
+export const AUTHENTICITY_SECTION = {
+  eyebrow: "المصدر الرسمي فقط",
+  title: "الأصلي من SKINKSA… والباقي؟ ما نقدر نضمن تركيبته",
+  lead:
+    "التركيبة المرخّصة وعرض العبوات الرسمي يُباعان عبر هذا المتجر فقط. أي عبوة خارج قنواتنا معرضة للتقليد — ولا نملك آلية للتحقق من مصدرها أو سلامتها.",
+  real: {
+    label: "المنتج الرسمي من المتجر",
+    items: [
+      "نفس التغليف واللوت اللي تتوقعينه من المصدر المعتمد.",
+      "سياسة استرجاع مكتوبة + دعم فريقنا بعد الشراء.",
+      "تتبّع شحن من نظامنا — مو وسيط مجهول.",
+    ],
+  },
+  fake: {
+    label: "عروض خارج المتجر الرسمي",
+    items: [
+      "أسعار غير منطقية أو قوائم بيع عشوائية بلا مرجع واضح.",
+      "عبوات بلا بيانات ترخيص أو مطابقة للمعايير اللي تعلنينها لعائلتج.",
+      "لا يوجد ضمان مطابق لسياسة SKINKSA المنشورة.",
+    ],
+  },
+  guarantee: {
+    kicker: "ضمان ذهبي",
+    title: "٣٠ يوم راحة بال",
+    body:
+      "إذا ما كانت تجربتج مع المنتج الأصلي تستحق الاستمرار — ارجعي وفق سياسة الاسترجاع المنشورة. نخلي قرارك سهل… من غير لغو.",
+    footBeforeLink: "التفاصيل الكاملة في",
+    returnsLink: { href: "/returns-policy", label: "سياسة الإرجاع" },
+    footAfterLink: "قبل الدفع.",
+  },
+};
 
 export const AUTHORITY_BAND = {
   title: "ليش مصدرك يهم؟",

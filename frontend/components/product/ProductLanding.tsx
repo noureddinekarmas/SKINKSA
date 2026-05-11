@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Award,
   Beaker,
+  AlertTriangle,
   CheckCircle,
   ChevronLeft,
   MapPin,
@@ -19,6 +21,7 @@ import { useState } from "react";
 import ProductGallery from "@/components/product/ProductGallery";
 import { faqItems } from "@/lib/content/faq";
 import {
+  AUTHENTICITY_SECTION,
   AUTHORITY_BAND,
   MECHANISM_BLOCK,
   OBJECTION_BUSTER,
@@ -38,6 +41,7 @@ import {
   type StoryFrame,
 } from "@/lib/content/product-page";
 import { STATIC_PRODUCT } from "@/lib/content/products";
+import { formatSar } from "@/lib/currency";
 import { useCartStore } from "@/lib/cart/store";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
 
@@ -348,21 +352,36 @@ export default function ProductLanding() {
                         <span className="flex flex-col gap-0.5 pe-6">
                           <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
                           <span className="text-[11px] text-[var(--color-brand-slate)]">
-                            متوسط ‎{per} ر.س للعبوة ضمن الخيار
+                            متوسط{" "}
+                            <span dir="ltr" className="sar-glyph tabular-nums">
+                              {formatSar(per)}
+                            </span>{" "}
+                            للعبوة ضمن الخيار
                           </span>
                           {savings > 0 && (
                             <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
-                              أقل من السعر المرجعي بمقدار ‎{savings} ر.س لهذا العدد
+                              أقل من السعر المرجعي بمقدار{" "}
+                              <span dir="ltr" className="sar-glyph tabular-nums">
+                                {formatSar(savings)}
+                              </span>{" "}
+                              لهذا العدد
                             </span>
                           )}
                         </span>
                         <span className="flex shrink-0 flex-col items-end">
-                          <span className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-[var(--color-brand-ink)] sm:text-2xl">{offer.price}</span>
-                            <span className="text-xs text-[var(--color-brand-slate)]">ر.س</span>
+                          <span
+                            dir="ltr"
+                            className="sar-glyph text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl"
+                          >
+                            {formatSar(offer.price)}
                           </span>
                           {offer.compare != null && (
-                            <span className="text-xs text-[var(--color-brand-slate)] line-through">{offer.compare} ر.س</span>
+                            <span
+                              dir="ltr"
+                              className="sar-glyph text-xs tabular-nums text-[var(--color-brand-slate)] line-through"
+                            >
+                              {formatSar(offer.compare)}
+                            </span>
                           )}
                         </span>
                       </button>
@@ -390,6 +409,100 @@ export default function ProductLanding() {
                 </a>
                 . إذا عندج حمل أو علاج جلدي قوي، استشيري طبيبتج.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Authentic product vs unofficial / guarantee */}
+        <section
+          className="relative overflow-hidden border-y border-white/10 bg-gradient-to-b from-[#0a1524] via-[#0f1c2e] to-[#142a42] py-16 text-white sm:py-24"
+          aria-labelledby="authenticity-heading"
+        >
+          <div
+            className="pointer-events-none absolute -left-32 top-0 h-80 w-80 rounded-full bg-[var(--color-brand-primary)]/20 blur-[100px]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-amber-400/15 blur-[90px]"
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-amber-400/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-amber-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-amber-300" aria-hidden />
+                {AUTHENTICITY_SECTION.eyebrow}
+              </span>
+              <h2
+                id="authenticity-heading"
+                className="mt-5 text-balance text-3xl font-black leading-tight sm:text-4xl md:text-[2.35rem]"
+              >
+                {AUTHENTICITY_SECTION.title}
+              </h2>
+              <p className="mt-4 text-pretty text-sm leading-relaxed text-white/72 sm:text-base">{AUTHENTICITY_SECTION.lead}</p>
+            </div>
+
+            <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:items-stretch lg:gap-8">
+              <div className="grid gap-6 md:grid-cols-2 lg:col-span-7">
+                <div className="flex flex-col rounded-3xl border border-emerald-400/25 bg-white/[0.06] p-6 shadow-[0_24px_64px_-24px_rgba(0,0,0,0.55)] backdrop-blur-md ring-1 ring-white/10">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-300/30">
+                      <ShieldCheck className="h-6 w-6" aria-hidden />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-white">{AUTHENTICITY_SECTION.real.label}</h3>
+                      <ul className="mt-4 flex flex-col gap-3">
+                        {AUTHENTICITY_SECTION.real.items.map((item) => (
+                          <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-white/85">
+                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col rounded-3xl border border-dashed border-red-400/35 bg-red-950/20 p-6 shadow-[0_24px_64px_-24px_rgba(0,0,0,0.5)] backdrop-blur-md ring-1 ring-red-400/10">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-500/15 text-red-200 ring-1 ring-red-400/25">
+                      <AlertTriangle className="h-6 w-6" aria-hidden />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-red-100">{AUTHENTICITY_SECTION.fake.label}</h3>
+                      <ul className="mt-4 flex flex-col gap-3">
+                        {AUTHENTICITY_SECTION.fake.items.map((item) => (
+                          <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-red-100/85">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/90" aria-hidden />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="flex h-full flex-col justify-between rounded-3xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-400/[0.12] via-white/[0.05] to-transparent p-6 shadow-[0_28px_80px_-28px_rgba(201,164,74,0.45)] ring-1 ring-amber-200/20 backdrop-blur-md sm:p-8">
+                  <div>
+                    <span className="inline-flex rounded-full bg-amber-400/20 px-3 py-1 text-[11px] font-black text-amber-100 ring-1 ring-amber-300/40">
+                      {AUTHENTICITY_SECTION.guarantee.kicker}
+                    </span>
+                    <h3 className="mt-4 text-2xl font-black text-white sm:text-[1.65rem]">{AUTHENTICITY_SECTION.guarantee.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-[0.95rem]">{AUTHENTICITY_SECTION.guarantee.body}</p>
+                  </div>
+                  <p className="mt-6 border-t border-amber-200/20 pt-4 text-xs leading-relaxed text-amber-100/75">
+                    {AUTHENTICITY_SECTION.guarantee.footBeforeLink}{" "}
+                    <Link
+                      href={AUTHENTICITY_SECTION.guarantee.returnsLink.href}
+                      className="font-bold text-amber-200 underline underline-offset-2 transition hover:text-white"
+                    >
+                      {AUTHENTICITY_SECTION.guarantee.returnsLink.label}
+                    </Link>{" "}
+                    {AUTHENTICITY_SECTION.guarantee.footAfterLink}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -692,7 +805,9 @@ export default function ProductLanding() {
         <div className="min-w-0 flex-1">
           <p className={`text-[10px] font-black ${primaryTheme.stickyHint}`}>الدفع عند الاستلام</p>
           <p className="truncate text-lg font-black text-[var(--color-brand-ink)]">
-            {selected.price} <span className="text-xs font-bold text-[var(--color-brand-slate)]">ر.س</span>
+            <span dir="ltr" className="sar-glyph tabular-nums">
+              {formatSar(selected.price)}
+            </span>
           </p>
           <p className="truncate text-[10px] text-[var(--color-brand-slate)]">{selected.label}</p>
         </div>
