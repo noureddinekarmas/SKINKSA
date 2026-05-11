@@ -57,6 +57,13 @@ function defaultOfferIndex() {
   return i >= 0 ? i : 1;
 }
 
+/** ألوان مختلفة قليلاً حتى تبدو الدائرة أو كـ «عملاء» وليس شعاراً مكرراً */
+const HERO_AVATAR_GRADIENTS = [
+  "from-[#1a56db] to-[#143a8c]",
+  "from-[#0d9488] to-[#0d7c57]",
+  "from-[#7c2d12] to-[#b45309]",
+] as const;
+
 function StoryFrameCard({ frame }: { frame: StoryFrame }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border-2 border-white bg-white shadow-[0_20px_50px_-20px_rgba(15,28,46,0.35)] ring-1 ring-[var(--color-brand-border)]">
@@ -175,12 +182,13 @@ export default function ProductLanding() {
                 <div className="flex flex-wrap items-end justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2 space-x-reverse rtl:space-x-reverse">
-                      {[0, 1, 2].map((i) => (
+                      {PRODUCT_REVIEWS.slice(0, 3).map((r, i) => (
                         <div
-                          key={i}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-[var(--color-brand-primary)] to-[#143a8c] text-xs font-bold text-white shadow"
+                          key={r.name}
+                          title={`${r.name} — ${r.city}`}
+                          className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br ${HERO_AVATAR_GRADIENTS[i]} text-xs font-bold text-white shadow`}
                         >
-                          SK
+                          {r.name.charAt(0)}
                         </div>
                       ))}
                     </div>
