@@ -24,13 +24,13 @@ const trustBadges = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#0F172A] text-white mt-auto">
+    <footer className="bg-[#0f1c2e] text-white mt-auto">
       {/* Trust strip */}
       <div className="border-b border-white/10">
         <div className="mx-auto max-w-screen-xl px-4 sm:px-6 py-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {trustBadges.map(({ icon: Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-2 text-center">
-              <Icon size={20} className="text-[#B7791F]" />
+              <Icon size={20} className="text-[#c9a44a]" />
               <span className="text-xs text-white/70 font-medium">{label}</span>
             </div>
           ))}
@@ -41,12 +41,12 @@ export function Footer() {
         {/* Brand */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#312E81] text-sm font-bold text-white">
-              N
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a56db] text-sm font-bold text-white">
+              S
             </span>
             <div className="flex flex-col leading-none">
               <span className="text-base font-bold tracking-widest text-white">SKINKSA</span>
-              <span className="text-[10px] tracking-wider text-[#B7791F]">SKINKSA</span>
+              <span className="text-[10px] tracking-wider text-[#c9a44a]">SKINKSA</span>
             </div>
           </div>
           <p className="text-sm text-white/60 leading-relaxed max-w-xs">

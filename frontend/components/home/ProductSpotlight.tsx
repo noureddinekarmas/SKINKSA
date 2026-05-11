@@ -7,8 +7,8 @@ export default function ProductSpotlight() {
     <section className="py-16 bg-white">
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-[#0F172A]">المنتج الرئيسي</h2>
-          <p className="text-[#475569] mt-3">اختاري الباقة التي تناسبك</p>
+          <h2 className="text-3xl font-bold text-[#0f1c2e]">المنتج الرئيسي</h2>
+          <p className="text-[#4b5e78] mt-3">اختاري الباقة التي تناسبك</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -26,10 +26,10 @@ export default function ProductSpotlight() {
 
           <div className="space-y-4">
             <div>
-              <h3 className="text-xl font-bold text-[#0F172A] leading-snug">
+              <h3 className="text-xl font-bold text-[#0f1c2e] leading-snug">
                 {STATIC_PRODUCT.title_ar}
               </h3>
-              <p className="text-[#475569] mt-2 text-sm leading-relaxed">
+              <p className="text-[#4b5e78] mt-2 text-sm leading-relaxed">
                 {STATIC_PRODUCT.description_ar}
               </p>
             </div>

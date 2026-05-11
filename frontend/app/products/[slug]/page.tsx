@@ -85,7 +85,7 @@ export default function ProductPage() {
             </div>
 
             {/* Main Image */}
-            <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-lg">
+            <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-[#f0f7ff] border border-[#d5e3f0] shadow-lg">
               <Image
                 src={GALLERY_IMAGES[activeImg].src}
                 alt={GALLERY_IMAGES[activeImg].alt}
@@ -104,8 +104,8 @@ export default function ProductPage() {
                   onClick={() => setActiveImg(i)}
                   className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
                     i === activeImg
-                      ? "border-[#312E81] shadow-md ring-2 ring-[#312E81]/20"
-                      : "border-[#E2E8F0] hover:border-[#312E81]/40"
+                      ? "border-[#1a56db] shadow-md ring-2 ring-[#1a56db]/20"
+                      : "border-[#d5e3f0] hover:border-[#1a56db]/40"
                   }`}
                 >
                   <Image
@@ -125,31 +125,31 @@ export default function ProductPage() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex">
-                  {[1,2,3,4,5].map(s => <Star key={s} size={13} fill="#B7791F" className="text-[#B7791F]" />)}
+                  {[1,2,3,4,5].map(s => <Star key={s} size={13} fill="#c9a44a" className="text-[#c9a44a]" />)}
                 </div>
-                <span className="text-xs text-[#475569] font-medium">+1000 عميلة سعيدة</span>
+                <span className="text-xs text-[#4b5e78] font-medium">+1000 عميلة سعيدة</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] leading-snug">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#0f1c2e] leading-snug">
                 سيروم ببتيد النحاس الأزرق
               </h1>
-              <p className="text-sm text-[#475569] mt-2 leading-relaxed">ودعي مظهر البشرة المتعبة. السيروم العلمي الفاخر لشد البشرة وتجديدها، مصمم خصيصاً ليمنحك إشراقة استثنائية ونضارة تدوم.</p>
+              <p className="text-sm text-[#4b5e78] mt-2 leading-relaxed">ودعي مظهر البشرة المتعبة. السيروم العلمي الفاخر لشد البشرة وتجديدها، مصمم خصيصاً ليمنحك إشراقة استثنائية ونضارة تدوم.</p>
             </div>
 
             {/* Trust Badges */}
-            <div className="bg-[#F8FAFC] rounded-xl p-3 flex flex-col gap-2 border border-[#E2E8F0]">
-              <div className="flex items-center gap-2 text-sm text-[#15803D] font-bold">
+            <div className="bg-[#f0f7ff] rounded-xl p-3 flex flex-col gap-2 border border-[#d5e3f0]">
+              <div className="flex items-center gap-2 text-sm text-[#0d9464] font-bold">
                 <CheckCircle size={16} />
                 <span>مكونات آمنة ومختبرة</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-[#0F172A] font-semibold">
-                <ShieldCheck size={16} className="text-[#B7791F]"/>
+              <div className="flex items-center gap-2 text-sm text-[#0f1c2e] font-semibold">
+                <ShieldCheck size={16} className="text-[#c9a44a]"/>
                 <span>ضمان ذهبي 30 يوماً - استرداد فوري إن لم تلاحظي الفرق</span>
               </div>
             </div>
 
             {/* Offer selector */}
             <div className="flex flex-col gap-2 mt-2">
-              <p className="text-sm font-semibold text-[#0F172A]">اختاري العرض المناسب لكِ</p>
+              <p className="text-sm font-semibold text-[#0f1c2e]">اختاري العرض المناسب لكِ</p>
               {OFFERS.map((offer, idx) => {
                 const savings = offer.compare ? offer.compare - offer.price : 0;
                 return (
@@ -158,24 +158,24 @@ export default function ProductPage() {
                     onClick={() => setSelectedIdx(idx)}
                     className={`relative flex items-center justify-between rounded-xl border-2 px-4 py-3 text-right transition ${
                       idx === selectedIdx
-                        ? "border-[#312E81] bg-[#eef2ff] shadow-md"
-                        : "border-[#E2E8F0] bg-white hover:border-[#312E81]/40"
+                        ? "border-[#1a56db] bg-[#eff6ff] shadow-md"
+                        : "border-[#d5e3f0] bg-white hover:border-[#1a56db]/40"
                     }`}
                   >
                     {offer.badge && (
-                      <span className="absolute -top-2.5 right-3 rounded-full bg-[#B7791F] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                      <span className="absolute -top-2.5 right-3 rounded-full bg-[#c9a44a] px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         {offer.badge}
                       </span>
                     )}
                     <span className="flex flex-col gap-0.5">
-                      <span className="text-sm font-bold text-[#0F172A]">{offer.label}</span>
+                      <span className="text-sm font-bold text-[#0f1c2e]">{offer.label}</span>
                       {savings > 0 && (
-                        <span className="text-xs text-[#15803D] font-semibold">وفرتي {savings} ريال</span>
+                        <span className="text-xs text-[#0d9464] font-semibold">وفرتي {savings} ريال</span>
                       )}
                     </span>
                     <span className="flex items-end gap-1.5">
-                      <span className="text-xl font-bold text-[#0F172A]">{offer.price}</span>
-                      <span className="text-sm text-[#475569] mb-0.5">ريال</span>
+                      <span className="text-xl font-bold text-[#0f1c2e]">{offer.price}</span>
+                      <span className="text-sm text-[#4b5e78] mb-0.5">ريال</span>
                       {offer.compare && (
                         <span className="text-sm text-[#94a3b8] line-through mb-0.5">{offer.compare}</span>
                       )}
@@ -188,31 +188,31 @@ export default function ProductPage() {
             {/* CTA */}
             <button
               onClick={handleAddToCart}
-              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-[#312E81] to-[#3730a3] py-4 text-lg font-bold text-white hover:shadow-xl transition-all shadow-lg transform hover:-translate-y-0.5 mt-2"
+              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-[#1a56db] to-[#1e4fba] py-4 text-lg font-bold text-white hover:shadow-xl transition-all shadow-lg transform hover:-translate-y-0.5 mt-2"
             >
               اطلبي الآن وادفعي عند الاستلام
               <ChevronLeft size={20} />
             </button>
 
             {/* Delivery Reassurance */}
-            <div className="flex flex-col gap-2 bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl">
-               <div className="flex items-center gap-2 text-[#0F172A] font-semibold text-sm">
-                 <Truck size={18} className="text-[#312E81]" />
+            <div className="flex flex-col gap-2 bg-[#f0f7ff] border border-[#d5e3f0] p-4 rounded-xl">
+               <div className="flex items-center gap-2 text-[#0f1c2e] font-semibold text-sm">
+                 <Truck size={18} className="text-[#1a56db]" />
                  <span>توصيل سريع ومضمون في جميع أنحاء المملكة</span>
                </div>
-               <p className="text-xs text-[#475569] mr-7 leading-relaxed">
+               <p className="text-xs text-[#4b5e78] mr-7 leading-relaxed">
                  نؤكد طلبك خلال 24 ساعة، وتصلك شحنتك بسلام من 3-5 أيام عمل. لا تدفعي شيئاً حتى تستلمي طلبك بيدك!
                </p>
             </div>
             
             {/* Authority */}
-            <div className="flex flex-wrap gap-3 mt-2 justify-center border-t border-[#E2E8F0] pt-4">
-              <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-[#475569]">
-                <ShieldAlert size={14} className="text-[#15803D]" />
+            <div className="flex flex-wrap gap-3 mt-2 justify-center border-t border-[#d5e3f0] pt-4">
+              <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-[#4b5e78]">
+                <ShieldAlert size={14} className="text-[#0d9464]" />
                 آمن تماماً
               </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-[#475569]">
-                <FlaskConical size={14} className="text-[#312E81]" />
+              <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-[#4b5e78]">
+                <FlaskConical size={14} className="text-[#1a56db]" />
                 مدعوم علمياً
               </span>
             </div>
@@ -221,19 +221,19 @@ export default function ProductPage() {
       </section>
 
       {/* ── PAIN & SOLUTION (Text Right, Image Left) ── */}
-      <section className="bg-[#F8FAFC] py-16 px-4 sm:px-6">
+      <section className="bg-[#f0f7ff] py-16 px-4 sm:px-6">
         <div className="mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="order-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#B91C1C]">وجهك باين تعبان؟</span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0F172A] leading-snug">نحن نفهم معاناتك تماماً</h2>
-            <p className="mt-4 text-[#475569] leading-relaxed text-sm md:text-base">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#dc2626]">وجهك باين تعبان؟</span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0f1c2e] leading-snug">نحن نفهم معاناتك تماماً</h2>
+            <p className="mt-4 text-[#4b5e78] leading-relaxed text-sm md:text-base">
               الإرهاق اليومي، والمنتجات التجارية التي لا تقدم أي نتيجة، كلها تسرق من بشرتك حيويتها. نعلم أنك تبحثين عن منتج حقيقي يمكنك الوثوق به.
             </p>
             <ul className="mt-6 flex flex-col gap-4">
               {benefits.map((b) => (
-                <li key={b} className="flex items-start gap-3 text-sm font-medium text-[#0F172A]">
-                  <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#15803D]/20 shrink-0">
-                    <CheckCircle size={12} className="text-[#15803D]" />
+                <li key={b} className="flex items-start gap-3 text-sm font-medium text-[#0f1c2e]">
+                  <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#0d9464]/20 shrink-0">
+                    <CheckCircle size={12} className="text-[#0d9464]" />
                   </span>
                   {b}
                 </li>
@@ -269,17 +269,17 @@ export default function ProductPage() {
             </div>
           </div>
           <div className="order-1 md:order-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#312E81]">العلم والثقة</span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0F172A] leading-snug">تركيبة مثبتة.. أمان لا يقبل المساومة</h2>
-            <p className="mt-4 text-[#475569] leading-relaxed text-sm md:text-base">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#1a56db]">العلم والثقة</span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0f1c2e] leading-snug">تركيبة مثبتة.. أمان لا يقبل المساومة</h2>
+            <p className="mt-4 text-[#4b5e78] leading-relaxed text-sm md:text-base">
               لأن بشرتك غالية، صممنا هذا السيروم وفق أسس علمية دقيقة. لا نعتمد على الوعود الوهمية، بل على المكونات الفعالة التي تخضع لاختبارات صارمة لضمان حصولك على نتائج مبهرة وآمنة.
             </p>
-            <div className="mt-8 bg-white border-2 border-[#15803D]/20 rounded-2xl p-5 shadow-sm">
-                <h4 className="font-bold text-[#15803D] text-lg flex items-center gap-2">
+            <div className="mt-8 bg-white border-2 border-[#0d9464]/20 rounded-2xl p-5 shadow-sm">
+                <h4 className="font-bold text-[#0d9464] text-lg flex items-center gap-2">
                   <ShieldCheck size={20} />
                   ضماننا الذهبي 30 يوماً
                 </h4>
-                <p className="mt-2 text-sm text-[#475569]">
+                <p className="mt-2 text-sm text-[#4b5e78]">
                   نحن واثقون من جودة منتجنا. استخدميه لمدة 30 يوماً، وإذا لم تلاحظي تحسناً في ملمس ونضارة بشرتك، سنعيد لكِ كامل المبلغ بكل رحابة صدر. راحتك وثقتك هي أولويتنا!
                 </p>
             </div>
@@ -308,21 +308,21 @@ export default function ProductPage() {
              </div>
           </div>
           <div className="order-1 md:order-2">
-            <span className="inline-block bg-[#B91C1C] text-white text-xs font-bold px-3 py-1 rounded-full mb-2">تنبيه هام جداً</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] leading-snug">نحن المصدر الوحيد للسيروم الأصلي</h2>
-            <p className="mt-4 text-[#475569] leading-relaxed text-base">
-              علامة SKINKSA هي الجهة الوحيدة المالكة والمصرح لها ببيع هذه التركيبة الفاخرة في السعودية. جميع المنتجات الأخرى التي تباع عبر وسطاء أو متاجر غير رسمية هي <strong className="text-[#B91C1C] font-black">نسخ مقلدة ومغشوشة بالكامل</strong>.
+            <span className="inline-block bg-[#dc2626] text-white text-xs font-bold px-3 py-1 rounded-full mb-2">تنبيه هام جداً</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#0f1c2e] leading-snug">نحن المصدر الوحيد للسيروم الأصلي</h2>
+            <p className="mt-4 text-[#4b5e78] leading-relaxed text-base">
+              علامة SKINKSA هي الجهة الوحيدة المالكة والمصرح لها ببيع هذه التركيبة الفاخرة في السعودية. جميع المنتجات الأخرى التي تباع عبر وسطاء أو متاجر غير رسمية هي <strong className="text-[#dc2626] font-black">نسخ مقلدة ومغشوشة بالكامل</strong>.
             </p>
             <ul className="mt-6 flex flex-col gap-3">
-              <li className="flex items-start gap-3 text-sm font-semibold text-[#0F172A]">
-                <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#15803D]/20 shrink-0">
-                  <CheckCircle size={12} className="text-[#15803D]" />
+              <li className="flex items-start gap-3 text-sm font-semibold text-[#0f1c2e]">
+                <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#0d9464]/20 shrink-0">
+                  <CheckCircle size={12} className="text-[#0d9464]" />
                 </span>
                 اشترى دائماً من متجرنا الرسمي (هذا الموقع) لضمان حقك.
               </li>
-              <li className="flex items-start gap-3 text-sm font-semibold text-[#0F172A]">
-                <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#15803D]/20 shrink-0">
-                  <CheckCircle size={12} className="text-[#15803D]" />
+              <li className="flex items-start gap-3 text-sm font-semibold text-[#0f1c2e]">
+                <span className="mt-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-[#0d9464]/20 shrink-0">
+                  <CheckCircle size={12} className="text-[#0d9464]" />
                 </span>
                 منتجنا الأصلي هو الوحيد الذي يحمل التراخيص الرسمية من SFDA.
               </li>
@@ -332,21 +332,21 @@ export default function ProductPage() {
       </section>
 
       {/* ── EMOTIONAL INGREDIENTS ── */}
-      <section className="bg-[#F8FAFC] py-16 px-4 sm:px-6">
+      <section className="bg-[#f0f7ff] py-16 px-4 sm:px-6">
         <div className="mx-auto max-w-screen-xl">
           <div className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#B7791F]">سر التركيبة</span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0F172A]">مكونات تحبها بشرتك</h2>
-            <p className="text-[#475569] mt-3">اكتشفي كيف تعمل هذه المكونات الفاخرة معاً لإعادة الحياة لوجهك</p>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#c9a44a]">سر التركيبة</span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#0f1c2e]">مكونات تحبها بشرتك</h2>
+            <p className="text-[#4b5e78] mt-3">اكتشفي كيف تعمل هذه المكونات الفاخرة معاً لإعادة الحياة لوجهك</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {ingredients.map(({ icon: Icon, name, desc }) => (
-              <div key={name} className="rounded-2xl bg-white border border-[#E2E8F0] p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow group">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#312E81]/5 group-hover:bg-[#312E81]/10 transition-colors">
-                  <Icon size={24} className="text-[#312E81]" />
+              <div key={name} className="rounded-2xl bg-white border border-[#d5e3f0] p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow group">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a56db]/5 group-hover:bg-[#1a56db]/10 transition-colors">
+                  <Icon size={24} className="text-[#1a56db]" />
                 </div>
-                <h3 className="font-bold text-lg text-[#0F172A]">{name}</h3>
-                <p className="text-sm text-[#475569] leading-relaxed">{desc}</p>
+                <h3 className="font-bold text-lg text-[#0f1c2e]">{name}</h3>
+                <p className="text-sm text-[#4b5e78] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -357,18 +357,18 @@ export default function ProductPage() {
       <section className="py-16 px-4 sm:px-6">
           <div className="mx-auto max-w-2xl">
           <div className="text-center mb-10">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#B7791F]">طريقة الاستخدام</span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-[#0F172A]">خطوات بسيطة لروتينك اليومي</h2>
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#c9a44a]">طريقة الاستخدام</span>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-[#0f1c2e]">خطوات بسيطة لروتينك اليومي</h2>
           </div>
           <div className="flex flex-col gap-5">
             {howToUse.map(({ step, title, desc }) => (
-              <div key={step} className="flex items-start gap-4 bg-white rounded-2xl border border-[#E2E8F0] p-6 shadow-sm hover:shadow-md transition">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#312E81] text-white font-bold text-lg">
+              <div key={step} className="flex items-start gap-4 bg-white rounded-2xl border border-[#d5e3f0] p-6 shadow-sm hover:shadow-md transition">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1a56db] text-white font-bold text-lg">
                   {step}
                 </span>
                 <div>
-                  <p className="font-bold text-lg text-[#0F172A]">{title}</p>
-                  <p className="text-sm text-[#475569] mt-1.5 leading-relaxed">{desc}</p>
+                  <p className="font-bold text-lg text-[#0f1c2e]">{title}</p>
+                  <p className="text-sm text-[#4b5e78] mt-1.5 leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -377,26 +377,26 @@ export default function ProductPage() {
       </section>
 
       {/* ── REVIEWS ── */}
-      <section className="bg-[#F8FAFC] py-16 px-4 sm:px-6">
+      <section className="bg-[#f0f7ff] py-16 px-4 sm:px-6">
         <div className="mx-auto max-w-screen-xl">
           <div className="text-center mb-10">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#B7791F]">تجارب حقيقية</span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-[#0F172A]">قصص نجاح من بناتنا</h2>
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#c9a44a]">تجارب حقيقية</span>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-[#0f1c2e]">قصص نجاح من بناتنا</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reviews.map((r) => (
-              <div key={r.name} className="rounded-2xl border border-[#E2E8F0] p-6 flex flex-col gap-4 bg-white shadow-sm">
+              <div key={r.name} className="rounded-2xl border border-[#d5e3f0] p-6 flex flex-col gap-4 bg-white shadow-sm">
                 <div className="flex">
-                  {[1,2,3,4,5].map(s => <Star key={s} size={15} fill="#B7791F" className="text-[#B7791F]" />)}
+                  {[1,2,3,4,5].map(s => <Star key={s} size={15} fill="#c9a44a" className="text-[#c9a44a]" />)}
                 </div>
-                <p className="text-sm text-[#0F172A] font-medium leading-relaxed">&ldquo;{r.text}&rdquo;</p>
-                <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#E2E8F0]">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#312E81]/10 text-sm font-bold text-[#312E81]">
+                <p className="text-sm text-[#0f1c2e] font-medium leading-relaxed">&ldquo;{r.text}&rdquo;</p>
+                <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#d5e3f0]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1a56db]/10 text-sm font-bold text-[#1a56db]">
                     {r.name[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#0F172A]">{r.name}</p>
-                    <p className="text-xs text-[#94a3b8]">من {r.city} - <span className="text-[#15803D]">مشتري موثق</span></p>
+                    <p className="text-sm font-bold text-[#0f1c2e]">{r.name}</p>
+                    <p className="text-xs text-[#94a3b8]">من {r.city} - <span className="text-[#0d9464]">مشتري موثق</span></p>
                   </div>
                 </div>
               </div>
@@ -410,18 +410,18 @@ export default function ProductPage() {
       <section className="py-16 px-4 sm:px-6">
         <div className="mx-auto max-w-2xl">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">أسئلة شائعة تدور في بالك</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#0f1c2e]">أسئلة شائعة تدور في بالك</h2>
           </div>
           <div className="flex flex-col gap-4">
             {faqItems.map((item) => (
-              <details key={item.question} className="group rounded-xl border border-[#E2E8F0] bg-white p-5 cursor-pointer shadow-sm hover:shadow-md transition">
-                <summary className="flex items-center justify-between gap-4 font-bold text-[#0F172A] list-none text-base">
+              <details key={item.question} className="group rounded-xl border border-[#d5e3f0] bg-white p-5 cursor-pointer shadow-sm hover:shadow-md transition">
+                <summary className="flex items-center justify-between gap-4 font-bold text-[#0f1c2e] list-none text-base">
                   {item.question}
-                  <span className="shrink-0 text-[#312E81] transition group-open:rotate-45">
+                  <span className="shrink-0 text-[#1a56db] transition group-open:rotate-45">
                     <ChevronLeft size={20} className="transform -rotate-90 group-open:rotate-90 transition-transform" />
                   </span>
                 </summary>
-                <p className="mt-4 text-sm text-[#475569] leading-relaxed border-t border-[#E2E8F0] pt-4">{item.answer}</p>
+                <p className="mt-4 text-sm text-[#4b5e78] leading-relaxed border-t border-[#d5e3f0] pt-4">{item.answer}</p>
               </details>
             ))}
           </div>
@@ -429,14 +429,14 @@ export default function ProductPage() {
       </section>
 
       {/* ── STICKY MOBILE CTA ── */}
-      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-[#E2E8F0] px-4 py-4 flex items-center gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-[#d5e3f0] px-4 py-4 flex items-center gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
         <div className="flex-1">
-          <p className="text-xs text-[#15803D] font-bold mb-0.5">الدفع عند الاستلام</p>
-          <p className="font-black text-[#0F172A] text-lg">{OFFERS[selectedIdx].price} <span className="text-sm font-normal">ريال</span></p>
+          <p className="text-xs text-[#0d9464] font-bold mb-0.5">الدفع عند الاستلام</p>
+          <p className="font-black text-[#0f1c2e] text-lg">{OFFERS[selectedIdx].price} <span className="text-sm font-normal">ريال</span></p>
         </div>
         <button
           onClick={handleAddToCart}
-          className="rounded-xl bg-gradient-to-l from-[#312E81] to-[#3730a3] px-6 py-3.5 text-base font-bold text-white shadow-lg"
+          className="rounded-xl bg-gradient-to-l from-[#1a56db] to-[#1e4fba] px-6 py-3.5 text-base font-bold text-white shadow-lg"
         >
           اطلبي الآن
         </button>

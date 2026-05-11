@@ -22,7 +22,7 @@ export default function FinalCtaSection() {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-[#312E81] via-indigo-900 to-[#1e1b4b] text-white text-center relative overflow-hidden">
+    <section className="py-24 bg-gradient-to-br from-[#1e3a5f] via-[#1a3d6d] to-[#0f2744] text-white text-center relative overflow-hidden">
       <div className="absolute inset-0 bg-[url('/placeholders/pattern.svg')] opacity-5"></div>
       <div className="max-w-3xl mx-auto px-4 space-y-8 relative z-10">
         <h2 className="text-3xl md:text-5xl font-bold leading-tight">
@@ -35,7 +35,7 @@ export default function FinalCtaSection() {
           <Button
             onClick={handleCTA}
             size="lg"
-            className="bg-gradient-to-l from-[#B7791F] to-[#d97706] hover:from-[#d97706] hover:to-[#B7791F] text-white h-16 px-12 text-xl font-bold rounded-2xl shadow-[0_0_30px_rgba(183,121,31,0.5)] transform hover:-translate-y-1 transition-all"
+            className="bg-gradient-to-l from-[#c9a44a] to-[#d4a843] hover:from-[#d4a843] hover:to-[#c9a44a] text-white h-16 px-12 text-xl font-bold rounded-2xl shadow-[0_0_30px_rgba(201,164,74,0.5)] transform hover:-translate-y-1 transition-all"
           >
             اطلبي الآن - الدفع عند الاستلام
           </Button>

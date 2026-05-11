@@ -58,38 +58,38 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0F172A]/90 flex items-center justify-center p-4" dir="rtl">
+    <div className="fixed inset-0 z-50 bg-[#0f1c2e]/90 flex items-center justify-center p-4" dir="rtl">
       <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-5">
-        <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center mx-auto">
           <span className="text-3xl">✨</span>
         </div>
-        <h2 className="text-xl font-bold text-[#0F172A]">عرض خاص بعد الطلب</h2>
-        <p className="text-[#475569] text-sm">
+        <h2 className="text-xl font-bold text-[#0f1c2e]">عرض خاص بعد الطلب</h2>
+        <p className="text-[#4b5e78] text-sm">
           أضيفي منتج مكمل بسعر{" "}
-          <span className="font-bold text-[#312E81]">99 ر.س</span> فقط قبل تثبيت الطلب النهائي.
+          <span className="font-bold text-[#1a56db]">99 ر.س</span> فقط قبل تثبيت الطلب النهائي.
         </p>
 
         {!expired ? (
-          <div className="text-[#475569] text-sm">
+          <div className="text-[#4b5e78] text-sm">
             ينتهي العرض خلال{" "}
-            <span className="font-bold text-[#B7791F] text-lg">{timeLeft}</span> ثانية
+            <span className="font-bold text-[#c9a44a] text-lg">{timeLeft}</span> ثانية
           </div>
         ) : (
-          <div className="text-[#475569] text-sm">العرض انتهى</div>
+          <div className="text-[#4b5e78] text-sm">العرض انتهى</div>
         )}
 
         <div className="space-y-3">
           <Button
             onClick={() => handleDecision(true)}
             disabled={processing}
-            className="w-full bg-[#312E81] hover:bg-indigo-800 text-white h-12 font-bold text-base rounded-xl"
+            className="w-full bg-[#1a56db] hover:bg-[#1a4a8a] text-white h-12 font-bold text-base rounded-xl"
           >
             {processing ? "جاري التأكيد..." : "نعم، أضيفيه للطلب"}
           </Button>
           <button
             onClick={() => handleDecision(false)}
             disabled={processing}
-            className="w-full text-[#475569] text-sm underline"
+            className="w-full text-[#4b5e78] text-sm underline"
           >
             لا، كملي طلبي بدون إضافة
           </button>

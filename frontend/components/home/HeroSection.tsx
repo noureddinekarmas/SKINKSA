@@ -30,7 +30,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="bg-gradient-to-br from-[#312E81] via-indigo-900 to-[#1e1b4b] text-white py-16 md:py-24 overflow-hidden relative">
+    <section className="bg-gradient-to-br from-[#1e3a5f] via-[#1a3d6d] to-[#0f2744] text-white py-16 md:py-24 overflow-hidden relative">
       <div className="absolute inset-0 bg-[url('/placeholders/pattern.svg')] opacity-5"></div>
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
         {/* Text */}
@@ -46,7 +46,7 @@ export default function HeroSection() {
 
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
             وجهك باين تعبان؟
-            <span className="block text-[#B7791F] mt-2 text-2xl md:text-4xl">سيروم ببتيد النحاس لشد البشرة وتجديدها</span>
+            <span className="block text-[#c9a44a] mt-2 text-2xl md:text-4xl">سيروم ببتيد النحاس لشد البشرة وتجديدها</span>
           </h1>
 
           <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-xl">
@@ -57,7 +57,7 @@ export default function HeroSection() {
             <Button
               onClick={handleCTA}
               size="lg"
-              className="bg-gradient-to-l from-[#B7791F] to-[#d97706] hover:from-[#d97706] hover:to-[#B7791F] text-white h-16 px-10 text-lg font-bold rounded-xl shadow-[0_0_20px_rgba(183,121,31,0.4)] transform hover:-translate-y-1 transition-all"
+              className="bg-gradient-to-l from-[#c9a44a] to-[#d4a843] hover:from-[#d4a843] hover:to-[#c9a44a] text-white h-16 px-10 text-lg font-bold rounded-xl shadow-[0_0_20px_rgba(201,164,74,0.4)] transform hover:-translate-y-1 transition-all"
             >
               اطلبي الآن - الدفع عند الاستلام
             </Button>
@@ -88,7 +88,7 @@ export default function HeroSection() {
                 priority
               />
             </div>
-            <div className="absolute -top-4 -right-4 bg-gradient-to-r from-[#B7791F] to-[#d97706] text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg border border-[#fcd34d]/30">
+            <div className="absolute -top-4 -right-4 bg-gradient-to-r from-[#c9a44a] to-[#d4a843] text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg border border-[#e8c65a]/30">
               الخيار الأول للنضارة
             </div>
           </div>

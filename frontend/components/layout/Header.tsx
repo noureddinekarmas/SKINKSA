@@ -29,7 +29,7 @@ export function Header() {
   return (
     <>
       {/* ── ANNOUNCEMENT BAR ── */}
-      <div className="bg-[#B91C1C] text-white text-center py-2 px-4 text-xs sm:text-sm font-bold shadow-md relative z-[60]">
+      <div className="bg-gradient-to-r from-[#1a56db] to-[#3b82f6] text-white text-center py-2 px-4 text-xs sm:text-sm font-bold shadow-md relative z-[60]">
         <div className="animate-pulse inline-block mr-2">🔥</div>
         عرض محدود: اطلبي كورس التجديد المتكامل واحصلي على النتيجة المضمونة (الدفع عند الاستلام)
         <div className="animate-pulse inline-block ml-2">🔥</div>
@@ -37,7 +37,7 @@ export function Header() {
 
       <header
         className={`sticky top-0 z-50 w-full bg-white transition-shadow duration-300 ${
-          scrolled ? "shadow-md backdrop-blur-sm" : "border-b border-[#E2E8F0]"
+          scrolled ? "shadow-md backdrop-blur-sm" : "border-b border-[#d5e3f0]"
         }`}
       >
         <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 sm:px-6">
@@ -45,11 +45,11 @@ export function Header() {
           <button
             onClick={openDrawer}
             aria-label="عربة التسوق"
-            className="relative flex items-center gap-1.5 rounded-full p-2 text-[#0F172A] transition hover:bg-[#F8FAFC]"
+            className="relative flex items-center gap-1.5 rounded-full p-2 text-[#0f1c2e] transition hover:bg-[#f0f7ff]"
           >
             <ShoppingBag size={22} />
             {totalItems > 0 && (
-              <span className="absolute -top-0.5 -left-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#312E81] text-[10px] font-bold text-white">
+              <span className="absolute -top-0.5 -left-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1a56db] text-[10px] font-bold text-white">
                 {totalItems}
               </span>
             )}
@@ -61,7 +61,7 @@ export function Header() {
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm font-medium text-[#475569] transition hover:text-[#312E81]"
+                className="text-sm font-medium text-[#4b5e78] transition hover:text-[#1a56db]"
               >
                 {l.label}
               </Link>
@@ -70,14 +70,14 @@ export function Header() {
 
           {/* Brand lockup (right in RTL) */}
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#312E81] text-sm font-bold text-white select-none">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a56db] text-sm font-bold text-white select-none">
               S
             </span>
             <div className="flex flex-col leading-none">
-              <span className="text-base font-bold tracking-widest text-[#312E81]">
+              <span className="text-base font-bold tracking-widest text-[#1a56db]">
                 SKINKSA
               </span>
-              <span className="text-[10px] tracking-wider text-[#B7791F] font-medium">
+              <span className="text-[10px] tracking-wider text-[#c9a44a] font-medium">
                 SKINKSA
               </span>
             </div>
@@ -85,7 +85,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="flex md:hidden p-2 text-[#0F172A]"
+            className="flex md:hidden p-2 text-[#0f1c2e]"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="القائمة"
           >
@@ -95,13 +95,13 @@ export function Header() {
 
         {/* Mobile nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-[#E2E8F0] bg-white px-4 py-4 flex flex-col gap-3">
+          <div className="md:hidden border-t border-[#d5e3f0] bg-white px-4 py-4 flex flex-col gap-3">
             {navLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-base font-medium text-[#475569] py-1"
+                className="text-base font-medium text-[#4b5e78] py-1"
               >
                 {l.label}
               </Link>

@@ -104,18 +104,18 @@ export default function CheckoutModal() {
 
   return (
     <Dialog open={isCheckoutOpen} onOpenChange={(open) => !open && closeCheckout()}>
-      <DialogContent className="sm:max-w-md bg-[#F8FAFC] p-0 overflow-hidden border-0 shadow-2xl" dir="rtl">
+      <DialogContent className="sm:max-w-md bg-[#f0f7ff] p-0 overflow-hidden border-0 shadow-2xl" dir="rtl">
         
         {/* HEADER / TRUST SECTION */}
-        <div className="bg-gradient-to-l from-[#312E81] to-indigo-900 px-6 py-5 text-white">
+        <div className="bg-gradient-to-l from-[#1e3a5f] to-[#1a3d6d] px-6 py-5 text-white">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">خطوة أخيرة لتأكيد طلبك</h2>
-            <Lock className="w-5 h-5 text-indigo-200" />
+            <Lock className="w-5 h-5 text-blue-200" />
           </div>
           
           <div className="bg-white/10 rounded-xl p-3 flex items-center justify-between backdrop-blur-sm border border-white/20">
             <div className="flex flex-col">
-              <span className="text-xs text-indigo-200">الإجمالي المطلوب</span>
+              <span className="text-xs text-blue-200">الإجمالي المطلوب</span>
               <span className="text-2xl font-black">{cartTotal()} ر.س</span>
             </div>
             <div className="flex items-center gap-1.5 bg-green-500/20 text-green-100 px-3 py-1.5 rounded-lg border border-green-500/30">
@@ -128,7 +128,7 @@ export default function CheckoutModal() {
         {/* FORM SECTION */}
         <div className="px-6 py-5">
           <div className="text-center mb-5">
-            <p className="text-[#475569] text-sm font-medium">
+            <p className="text-[#4b5e78] text-sm font-medium">
               يرجى إدخال بياناتك بدقة لتسريع عملية التوصيل المجاني إلى باب بيتك.
             </p>
           </div>
@@ -144,11 +144,11 @@ export default function CheckoutModal() {
                 {...register("customer_name")}
                 type="text"
                 placeholder="الاسم الكامل (مثال: نورة محمد)"
-                className={`w-full bg-white border ${errors.customer_name ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#312E81]'} text-[#0F172A] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm`}
+                className={`w-full bg-white border ${errors.customer_name ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#1a56db]'} text-[#0f1c2e] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm`}
                 dir="rtl"
               />
               {errors.customer_name && (
-                <p className="text-[#B91C1C] text-xs mt-1.5 px-1 font-medium">{errors.customer_name.message}</p>
+                <p className="text-[#dc2626] text-xs mt-1.5 px-1 font-medium">{errors.customer_name.message}</p>
               )}
             </div>
 
@@ -161,11 +161,11 @@ export default function CheckoutModal() {
                 {...register("customer_phone")}
                 type="tel"
                 placeholder="رقم الجوال (05XXXXXXXX)"
-                className={`w-full bg-white border ${errors.customer_phone ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#312E81]'} text-[#0F172A] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm text-right placeholder:text-right`}
+                className={`w-full bg-white border ${errors.customer_phone ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#1a56db]'} text-[#0f1c2e] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm text-right placeholder:text-right`}
                 dir="ltr"
               />
               {errors.customer_phone && (
-                <p className="text-[#B91C1C] text-xs mt-1.5 px-1 font-medium">{errors.customer_phone.message}</p>
+                <p className="text-[#dc2626] text-xs mt-1.5 px-1 font-medium">{errors.customer_phone.message}</p>
               )}
             </div>
 
@@ -176,7 +176,7 @@ export default function CheckoutModal() {
               </div>
               <select
                 {...register("customer_province")}
-                className={`w-full bg-white border ${errors.customer_province ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#312E81]'} text-[#0F172A] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm appearance-none cursor-pointer`}
+                className={`w-full bg-white border ${errors.customer_province ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#1a56db]'} text-[#0f1c2e] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm appearance-none cursor-pointer`}
                 dir="rtl"
               >
                 <option value="" disabled hidden>المنطقة / المحافظة</option>
@@ -198,7 +198,7 @@ export default function CheckoutModal() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
               {errors.customer_province && (
-                <p className="text-[#B91C1C] text-xs mt-1.5 px-1 font-medium">{errors.customer_province.message}</p>
+                <p className="text-[#dc2626] text-xs mt-1.5 px-1 font-medium">{errors.customer_province.message}</p>
               )}
             </div>
 
@@ -211,16 +211,16 @@ export default function CheckoutModal() {
                 {...register("customer_address")}
                 placeholder="المدينة والحي (أو العنوان الوطني) لتسهيل وصول المندوب"
                 rows={2}
-                className={`w-full bg-white border ${errors.customer_address ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#312E81]'} text-[#0F172A] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm resize-none`}
+                className={`w-full bg-white border ${errors.customer_address ? 'border-red-400 focus:ring-red-400' : 'border-[#cbd5e1] focus:ring-[#1a56db]'} text-[#0f1c2e] text-sm rounded-xl block pr-10 p-3.5 focus:outline-none focus:ring-2 transition-shadow shadow-sm resize-none`}
                 dir="rtl"
               />
               {errors.customer_address && (
-                <p className="text-[#B91C1C] text-xs mt-1.5 px-1 font-medium">{errors.customer_address.message}</p>
+                <p className="text-[#dc2626] text-xs mt-1.5 px-1 font-medium">{errors.customer_address.message}</p>
               )}
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-[#B91C1C] text-sm p-3 rounded-xl flex items-center gap-2">
+              <div className="bg-red-50 border border-red-200 text-[#dc2626] text-sm p-3 rounded-xl flex items-center gap-2">
                 <span className="font-bold">⚠️</span>
                 <span>{error}</span>
               </div>
@@ -231,7 +231,7 @@ export default function CheckoutModal() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-l from-[#B7791F] to-[#d97706] hover:from-[#d97706] hover:to-[#B7791F] text-white h-14 font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(183,121,31,0.3)] transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group"
+                className="w-full bg-gradient-to-l from-[#c9a44a] to-[#d4a843] hover:from-[#d4a843] hover:to-[#c9a44a] text-white h-14 font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(201,164,74,0.3)] transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group"
               >
                 {loading ? (
                   "جاري تأكيد الطلب..."
