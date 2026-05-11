@@ -1,0 +1,100 @@
+"use client";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { applyUpsell, finalizeOrder } from "@/lib/api/orders";
+import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
+
+interface Props {
+  orderId: string;
+  orderNumber: string;
+  baseTotal: number;
+  onComplete: (finalTotal: number) => void;
+}
+
+export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: Props) {
+  const [timeLeft, setTimeLeft] = useState(12);
+  const [processing, setProcessing] = useState(false);
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    const eventId = generateEventId("upsell_view");
+    trackCommerceEvent({ eventName: "UpsellView", eventId, value: 99, currency: "SAR" });
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (timeLeft === 1) {
+        setExpired(true);
+      }
+      setTimeLeft((t) => t - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
+
+  const handleDecision = async (accepted: boolean) => {
+    if (processing) return;
+    setProcessing(true);
+    const eventId = generateEventId(accepted ? "upsell_accept" : "upsell_skip");
+    trackCommerceEvent({
+      eventName: accepted ? "UpsellAccept" : "UpsellSkip",
+      eventId,
+      value: accepted ? 99 : 0,
+      currency: "SAR",
+    });
+    try {
+      await applyUpsell(orderId, accepted);
+      const finalEventId = generateEventId("purchase");
+      await finalizeOrder(orderId, finalEventId);
+      const finalTotal = accepted ? baseTotal + 99 : baseTotal;
+      trackCommerceEvent({ eventName: "Purchase", eventId: finalEventId, value: finalTotal, currency: "SAR" });
+      onComplete(finalTotal);
+    } catch (err) {
+      console.error("Finalize error:", err);
+      onComplete(baseTotal);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-[#0F172A]/90 flex items-center justify-center p-4" dir="rtl">
+      <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-5">
+        <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-full flex items-center justify-center mx-auto">
+          <span className="text-3xl">✨</span>
+        </div>
+        <h2 className="text-xl font-bold text-[#0F172A]">عرض خاص بعد الطلب</h2>
+        <p className="text-[#475569] text-sm">
+          أضيفي منتج مكمل بسعر{" "}
+          <span className="font-bold text-[#312E81]">99 ر.س</span> فقط قبل تثبيت الطلب النهائي.
+        </p>
+
+        {!expired ? (
+          <div className="text-[#475569] text-sm">
+            ينتهي العرض خلال{" "}
+            <span className="font-bold text-[#B7791F] text-lg">{timeLeft}</span> ثانية
+          </div>
+        ) : (
+          <div className="text-[#475569] text-sm">العرض انتهى</div>
+        )}
+
+        <div className="space-y-3">
+          <Button
+            onClick={() => handleDecision(true)}
+            disabled={processing}
+            className="w-full bg-[#312E81] hover:bg-indigo-800 text-white h-12 font-bold text-base rounded-xl"
+          >
+            {processing ? "جاري التأكيد..." : "نعم، أضيفيه للطلب"}
+          </Button>
+          <button
+            onClick={() => handleDecision(false)}
+            disabled={processing}
+            className="w-full text-[#475569] text-sm underline"
+          >
+            لا، كملي طلبي بدون إضافة
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

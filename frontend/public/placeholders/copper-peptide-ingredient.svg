@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="copperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B7791F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="20" fill="url(#copperGrad)" />
+  <!-- Molecule structure -->
+  <circle cx="100" cy="80" r="18" fill="white" fill-opacity="0.9" />
+  <circle cx="60" cy="120" r="12" fill="white" fill-opacity="0.7" />
+  <circle cx="140" cy="120" r="12" fill="white" fill-opacity="0.7" />
+  <circle cx="80" cy="155" r="10" fill="white" fill-opacity="0.5" />
+  <circle cx="120" cy="155" r="10" fill="white" fill-opacity="0.5" />
+  <!-- Bonds -->
+  <line x1="100" y1="98" x2="65" y2="112" stroke="white" stroke-width="2.5" stroke-opacity="0.6" />
+  <line x1="100" y1="98" x2="135" y2="112" stroke="white" stroke-width="2.5" stroke-opacity="0.6" />
+  <line x1="62" y1="132" x2="82" y2="147" stroke="white" stroke-width="2" stroke-opacity="0.5" />
+  <line x1="138" y1="132" x2="118" y2="147" stroke="white" stroke-width="2" stroke-opacity="0.5" />
+  <!-- Cu symbol -->
+  <text x="100" y="86" text-anchor="middle" fill="#1e40af" font-size="13" font-family="sans-serif" font-weight="bold">Cu</text>
+  <text x="100" y="174" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif" opacity="0.9">Blue Copper Peptide</text>
+</svg>
