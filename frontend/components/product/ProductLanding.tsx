@@ -29,7 +29,6 @@ import {
   PRODUCT_BENEFITS,
   PRODUCT_DESCRIPTION_GALLERY,
   PRODUCT_HEADLINE,
-  DESKTOP_SKINKSA_LISTED_IMAGES,
   PRODUCT_HERO_GALLERY,
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
@@ -238,45 +237,6 @@ export default function ProductLanding() {
                 </span>
               </div>
               <ProductGallery images={PRODUCT_HERO_GALLERY} />
-              <aside
-                className="mt-6 rounded-2xl border border-[var(--color-brand-border)] bg-white/95 p-4 shadow-sm backdrop-blur-sm"
-                aria-label="معرض صور الحملة"
-              >
-                <p className="text-xs font-black uppercase tracking-wider text-[var(--color-brand-primary)]">
-                  صور الحملة — معروضة ومرقّمة
-                </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-[var(--color-brand-slate)]">
-                  ثلاث صور من مجلد التصميم. اضغطي على أي بطاقة لفتح الصورة الأصلية بحجم كامل في تبويب جديد.
-                </p>
-                <ol className="mt-4 grid list-decimal gap-4 ps-4 marker:font-black marker:text-[var(--color-brand-primary)] sm:grid-cols-3 sm:gap-3 sm:ps-3">
-                  {DESKTOP_SKINKSA_LISTED_IMAGES.map((item) => (
-                    <li key={item.src} className="min-w-0 ps-1">
-                      <a
-                        href={item.src}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group block overflow-hidden rounded-xl border-2 border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/30 shadow-sm transition hover:border-[var(--color-brand-primary)] hover:shadow-md"
-                      >
-                        <span className="block px-2 py-2 text-center text-[11px] font-bold text-[var(--color-brand-ink)]">
-                          {item.listTitle}
-                        </span>
-                        <div className="relative aspect-[4/5] w-full bg-white">
-                          <Image
-                            src={item.src}
-                            alt={item.alt}
-                            fill
-                            className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                            sizes="(max-width: 640px) 100vw, 33vw"
-                          />
-                        </div>
-                        <span className="block px-2 py-2 text-center text-[10px] font-semibold text-[var(--color-brand-primary)]">
-                          فتح بالحجم الكامل ↗
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              </aside>
             </div>
 
             <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">

@@ -117,30 +117,6 @@ export const STORY_FRAMES: StoryFrame[] = [
   },
 ];
 
-/** The three campaign assets from Desktop/skinksa — listed + open full size in new tab. */
-export type ListedCampaignImage = {
-  src: string;
-  alt: string;
-  listTitle: string;
-};
-export const DESKTOP_SKINKSA_LISTED_IMAGES: ListedCampaignImage[] = [
-  {
-    src: productAsset("/images/product/story-card-1.png"),
-    alt: "بطاقة قصة تسويقية — ترطيب وملمس البشرة",
-    listTitle: "بطاقة القصة",
-  },
-  {
-    src: productAsset("/images/product/gallery-texture-2.png"),
-    alt: "لقطة قوام سيروم SKINKSA",
-    listTitle: "القوام والتركيبة",
-  },
-  {
-    src: productAsset("/images/product/section-before-after.jpg"),
-    alt: "صورة قبل وبعد — توضيحية",
-    listTitle: "قبل وبعد",
-  },
-];
-
 /**
  * Hero carousel: main pack shot first, then the three marketing assets synced from
  * Desktop/skinksa (story-card-1, gallery-texture-2, section-before-after).
