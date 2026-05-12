@@ -22,9 +22,11 @@ from app.schemas.admin import (
     AdminOrderItemOut,
     AdminOrderListItem,
     AdminProductCountrySalesRow,
+    AdminProductPageStatsRow,
     AdminTrafficAttributionOut,
     AdminTrafficSourceRow,
 )
+from app.services.ad_platform import infer_ad_platform
 from app.services.traffic_validity import order_geo_valid_for_kpi
 
 router = APIRouter(
@@ -245,6 +247,7 @@ async def admin_traffic_attribution(
         conv = round(ocount / sess, 6) if sess else 0.0
         rows.append(
             AdminTrafficSourceRow(
+                ad_platform=infer_ad_platform(key[0], key[1]),
                 utm_source=key[0],
                 utm_medium=key[1],
                 sessions=sess,
@@ -288,6 +291,105 @@ async def admin_traffic_attribution(
         total_orders_kpi=total_orders_kpi,
         overall_conversion_rate=overall_conv,
     )
+
+
+@router.get("/product-pages", response_model=list[AdminProductPageStatsRow])
+async def admin_product_page_stats(
+    db: AsyncSession = Depends(get_db),
+    from_date: date = Query(..., alias="from"),
+    to_date: date = Query(..., alias="to"),
+):
+    """
+    Valid-traffic events that carry product_slug (product page, cart with slug).
+    Sessions = distinct session_id on product_view. Conversion = KPI orders containing that product / sessions.
+    """
+    start, end_excl = _utc_day_range(from_date, to_date)
+    ae_base = and_(
+        AnalyticsEvent.created_at >= start,
+        AnalyticsEvent.created_at < end_excl,
+        AnalyticsEvent.is_valid_traffic.is_(True),
+        AnalyticsEvent.product_slug.isnot(None),
+        AnalyticsEvent.product_slug != "",
+    )
+    slug_col = AnalyticsEvent.product_slug
+
+    async def _slug_counts(event_type: str, *, distinct_sessions: bool) -> dict[str, int]:
+        cnt = (
+            func.count(func.distinct(AnalyticsEvent.session_id))
+            if distinct_sessions
+            else func.count()
+        )
+        conds = [ae_base, AnalyticsEvent.event_type == event_type]
+        if distinct_sessions:
+            conds.extend(
+                [
+                    AnalyticsEvent.session_id.isnot(None),
+                    AnalyticsEvent.session_id != "",
+                ]
+            )
+        stmt = (
+            select(slug_col.label("slug"), cnt.label("c"))
+            .where(and_(*conds))
+            .group_by(slug_col)
+        )
+        res = await db.execute(stmt)
+        return {str(row["slug"]): int(row["c"] or 0) for row in res.mappings()}
+
+    pv_map = await _slug_counts("product_view", distinct_sessions=False)
+    sess_map = await _slug_counts("product_view", distinct_sessions=True)
+    atc_map = await _slug_counts("add_to_cart", distinct_sessions=False)
+    bc_map = await _slug_counts("begin_checkout", distinct_sessions=False)
+
+    product_ref = func.coalesce(OrderItem.product_id, Offer.product_id, UpsellOffer.product_id)
+    ord_date = and_(Order.created_at >= start, Order.created_at < end_excl)
+    stmt_o = (
+        select(Product.slug.label("slug"), func.count(func.distinct(Order.id)).label("c"))
+        .select_from(Order)
+        .join(OrderItem, OrderItem.order_id == Order.id)
+        .outerjoin(Offer, Offer.id == OrderItem.offer_id)
+        .outerjoin(UpsellOffer, UpsellOffer.id == OrderItem.upsell_offer_id)
+        .join(Product, Product.id == product_ref)
+        .where(
+            ord_date,
+            _finalized_status_clause(),
+            _valid_geo_clause(),
+        )
+        .group_by(Product.slug)
+    )
+    res_o = await db.execute(stmt_o)
+    ord_map = {str(row["slug"]): int(row["c"] or 0) for row in res_o.mappings()}
+
+    all_slugs = sorted(set(pv_map) | set(sess_map) | set(atc_map) | set(bc_map) | set(ord_map))
+
+    prod_by_slug: dict[str, Product] = {}
+    if all_slugs:
+        res_p = await db.execute(select(Product).where(Product.slug.in_(all_slugs)))
+        prod_by_slug = {p.slug: p for p in res_p.scalars()}
+
+    rows: list[AdminProductPageStatsRow] = []
+    for slug in all_slugs:
+        pv = pv_map.get(slug, 0)
+        sess = sess_map.get(slug, 0)
+        atc = atc_map.get(slug, 0)
+        bc = bc_map.get(slug, 0)
+        oc = ord_map.get(slug, 0)
+        conv = round(oc / sess, 6) if sess else 0.0
+        p = prod_by_slug.get(slug)
+        rows.append(
+            AdminProductPageStatsRow(
+                product_slug=slug,
+                page_path=f"/products/{slug}",
+                product_title_ar=p.title_ar if p else None,
+                product_sku=p.sku if p else None,
+                sessions=sess,
+                product_views=pv,
+                add_to_cart=atc,
+                begin_checkout=bc,
+                orders_kpi=oc,
+                conversion_rate=conv,
+            )
+        )
+    return rows
 
 
 @router.get("/sales-by-product", response_model=list[AdminProductCountrySalesRow])

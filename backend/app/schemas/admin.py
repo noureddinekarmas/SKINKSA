@@ -25,10 +25,26 @@ class AdminProductCountrySalesRow(BaseModel):
 class AdminTrafficSourceRow(BaseModel):
     """Valid-traffic sessions / page views grouped by UTM, plus KPI orders and conversion."""
 
+    ad_platform: str  # inferred: TikTok Ads, Snapchat Ads, Meta, etc.
     utm_source: str  # normalized; "(direct)" when missing
     utm_medium: str  # normalized; "(none)" when missing
     sessions: int
     page_views: int
+    orders_kpi: int
+    conversion_rate: float
+
+
+class AdminProductPageStatsRow(BaseModel):
+    """Per product landing page (/products/{slug}): funnel + KPI orders (valid geo, finalized)."""
+
+    product_slug: str
+    page_path: str
+    product_title_ar: Optional[str] = None
+    product_sku: Optional[str] = None
+    sessions: int
+    product_views: int
+    add_to_cart: int
+    begin_checkout: int
     orders_kpi: int
     conversion_rate: float
 

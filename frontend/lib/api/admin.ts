@@ -1,10 +1,24 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.officialskinksa.store";
 
 export interface AdminTrafficSourceRow {
+  ad_platform: string;
   utm_source: string;
   utm_medium: string;
   sessions: number;
   page_views: number;
+  orders_kpi: number;
+  conversion_rate: number;
+}
+
+export interface AdminProductPageRow {
+  product_slug: string;
+  page_path: string;
+  product_title_ar: string | null;
+  product_sku: string | null;
+  sessions: number;
+  product_views: number;
+  add_to_cart: number;
+  begin_checkout: number;
   orders_kpi: number;
   conversion_rate: number;
 }
@@ -128,6 +142,23 @@ export interface AdminOrderDetail {
 function authHeader(user: string, password: string): HeadersInit {
   const token = btoa(`${user}:${password}`);
   return { Authorization: `Basic ${token}` };
+}
+
+export async function fetchAdminProductPages(
+  user: string,
+  password: string,
+  from: string,
+  to: string
+): Promise<AdminProductPageRow[]> {
+  const q = new URLSearchParams({ from, to });
+  const res = await fetch(`${API_BASE}/v1/admin/product-pages?${q}`, {
+    headers: { ...authHeader(user, password) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
 export async function fetchAdminTrafficAttribution(

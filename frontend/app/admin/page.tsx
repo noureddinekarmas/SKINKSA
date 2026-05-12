@@ -6,11 +6,13 @@ import {
   fetchAdminMetrics,
   fetchAdminOrderDetail,
   fetchAdminOrders,
+  fetchAdminProductPages,
   fetchAdminProductSales,
   fetchAdminTrafficAttribution,
   type AdminMetrics,
   type AdminOrderDetail,
   type AdminOrderRow,
+  type AdminProductPageRow,
   type AdminProductSalesRow,
   type AdminTrafficAttribution,
 } from "@/lib/api/admin";
@@ -37,9 +39,12 @@ export default function AdminDashboardPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [connected, setConnected] = useState(false);
-  const [tab, setTab] = useState<"overview" | "traffic" | "orders" | "products">("overview");
+  const [tab, setTab] = useState<"overview" | "traffic" | "product-pages" | "orders" | "products">(
+    "overview"
+  );
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [trafficAttribution, setTrafficAttribution] = useState<AdminTrafficAttribution | null>(null);
+  const [productPages, setProductPages] = useState<AdminProductPageRow[]>([]);
   const [orders, setOrders] = useState<AdminOrderRow[]>([]);
   const [productSales, setProductSales] = useState<AdminProductSalesRow[]>([]);
   const [salesFinalizedOnly, setSalesFinalizedOnly] = useState(true);
@@ -53,18 +58,20 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const [m, list, sales, traffic] = await Promise.all([
+      const [m, list, sales, traffic, pages] = await Promise.all([
         fetchAdminMetrics(creds.user, creds.password, from, to),
         fetchAdminOrders(creds.user, creds.password, { from, to, limit: 100 }),
         fetchAdminProductSales(creds.user, creds.password, from, to, {
           finalizedOnly: salesFinalizedOnly,
         }),
         fetchAdminTrafficAttribution(creds.user, creds.password, from, to),
+        fetchAdminProductPages(creds.user, creds.password, from, to),
       ]);
       setMetrics(m);
       setOrders(list);
       setProductSales(sales);
       setTrafficAttribution(traffic);
+      setProductPages(pages);
       setConnected(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
@@ -150,6 +157,7 @@ export default function AdminDashboardPage() {
               [
                 ["overview", "Overview"],
                 ["traffic", "Traffic & platforms"],
+                ["product-pages", "Product pages"],
                 ["orders", "Orders"],
                 ["products", "Products & countries"],
               ] as const
@@ -205,6 +213,7 @@ export default function AdminDashboardPage() {
                 setTrafficAttribution(null);
                 setOrders([]);
                 setProductSales([]);
+                setProductPages([]);
                 setDetail(null);
               }}
             >
@@ -262,12 +271,10 @@ export default function AdminDashboardPage() {
             <section className="mt-8 space-y-6">
               <p className="text-sm text-[var(--color-brand-slate)]">
                 <strong>Valid store visits only</strong> (Saudi, non-VPN) from page-view beacons.{" "}
-                <strong>Platform</strong> is your ad / traffic type:{" "}
-                <code className="text-xs">utm_source</code> +{" "}
-                <code className="text-xs">utm_medium</code> (empty shows as{" "}
-                <strong>(direct)</strong> / <strong>(none)</strong>).{" "}
-                <strong>Conversion</strong> = finalized COD orders that pass the KPI geo check ÷ sessions in
-                the same UTM bucket (order UTMs captured at checkout should match the landing link).
+                <strong>Ad platform</strong> is inferred from your UTMs (e.g. TikTok Ads, Snapchat Ads, Meta).
+                Raw <code className="text-xs">utm_source</code> / <code className="text-xs">utm_medium</code>{" "}
+                are still shown. Use consistent UTMs on ad links so checkout attribution matches.{" "}
+                <strong>Conversion</strong> = KPI-ready finalized orders ÷ sessions in that UTM bucket.
               </p>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <MetricCard title="Sessions (valid)" value={trafficAttribution.total_valid_sessions} />
@@ -282,8 +289,9 @@ export default function AdminDashboardPage() {
                 <table className="min-w-full text-left text-sm">
                   <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
                     <tr>
-                      <th className="px-4 py-3">Source (platform)</th>
-                      <th className="px-4 py-3">Medium</th>
+                      <th className="px-4 py-3">Ad platform</th>
+                      <th className="px-4 py-3">utm_source</th>
+                      <th className="px-4 py-3">utm_medium</th>
                       <th className="px-4 py-3 text-right">Sessions</th>
                       <th className="px-4 py-3 text-right">Page views</th>
                       <th className="px-4 py-3 text-right">Orders</th>
@@ -293,9 +301,12 @@ export default function AdminDashboardPage() {
                   <tbody>
                     {trafficAttribution.rows.map((row, idx) => (
                       <tr
-                        key={`${row.utm_source}-${row.utm_medium}-${idx}`}
+                        key={`${row.ad_platform}-${row.utm_source}-${row.utm_medium}-${idx}`}
                         className="border-b border-[var(--color-brand-border)] last:border-0"
                       >
+                        <td className="px-4 py-3 font-medium text-[var(--color-brand-deep)]">
+                          {row.ad_platform}
+                        </td>
                         <td className="px-4 py-3 font-mono text-xs">{row.utm_source}</td>
                         <td className="px-4 py-3 font-mono text-xs">{row.utm_medium}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{row.sessions}</td>
@@ -311,6 +322,65 @@ export default function AdminDashboardPage() {
                 {trafficAttribution.rows.length === 0 && !loading ? (
                   <p className="p-6 text-center text-sm text-[var(--color-brand-slate)]">
                     No traffic in this range (or beacons not yet received).
+                  </p>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          {tab === "product-pages" ? (
+            <section className="mt-8 space-y-4">
+              <p className="text-sm text-[var(--color-brand-slate)]">
+                Each row is a <strong>product PDP</strong> (<code className="text-xs">/products/&lt;slug&gt;</code>
+                ). Metrics use only <strong>valid</strong> (KSA, non-VPN) analytics events that include{" "}
+                <code className="text-xs">product_slug</code> (product views, add to cart, checkout open from the
+                storefront). <strong>Orders</strong> = finalized COD with KPI geo that include that product.
+              </p>
+              <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
+                    <tr>
+                      <th className="px-4 py-3">Path</th>
+                      <th className="px-4 py-3">Slug</th>
+                      <th className="px-4 py-3">SKU</th>
+                      <th className="px-4 py-3">Product</th>
+                      <th className="px-4 py-3 text-right">Sessions</th>
+                      <th className="px-4 py-3 text-right">Product views</th>
+                      <th className="px-4 py-3 text-right">Add to cart</th>
+                      <th className="px-4 py-3 text-right">Checkout</th>
+                      <th className="px-4 py-3 text-right">Orders</th>
+                      <th className="px-4 py-3 text-right">Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productPages.map((row) => (
+                      <tr
+                        key={row.product_slug}
+                        className="border-b border-[var(--color-brand-border)] last:border-0"
+                      >
+                        <td className="px-4 py-3 font-mono text-xs text-[var(--color-brand-primary)]">
+                          {row.page_path}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">{row.product_slug}</td>
+                        <td className="px-4 py-3 font-mono text-xs">{row.product_sku || "—"}</td>
+                        <td className="max-w-[200px] px-4 py-3 text-xs leading-snug text-[var(--color-brand-ink)]">
+                          {row.product_title_ar || "—"}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.sessions}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.product_views}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.add_to_cart}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.begin_checkout}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.orders_kpi}</td>
+                        <td className="px-4 py-3 text-right font-medium tabular-nums">
+                          {formatPct(row.conversion_rate)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {productPages.length === 0 && !loading ? (
+                  <p className="p-6 text-center text-sm text-[var(--color-brand-slate)]">
+                    No product-page events in this range.
                   </p>
                 ) : null}
               </div>
