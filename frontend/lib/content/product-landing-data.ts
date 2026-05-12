@@ -1,7 +1,6 @@
 import type { Offer, Product } from "@/lib/api/products";
 import type { ProductMarketSlug } from "@/lib/content/main-product";
 import {
-  AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES,
   AUTHORITY_BAND,
   MECHANISM_BLOCK,
   OBJECTION_BUSTER,
@@ -65,13 +64,18 @@ export type ProductLandingData = {
   productHeroQuote: typeof PRODUCT_HERO_QUOTE;
   productHowTo: typeof PRODUCT_HOW_TO;
   productIngredients: typeof PRODUCT_INGREDIENTS;
-  productKicker: typeof PRODUCT_KICKER;
+  productKicker: string;
   productLifestyleVisual: typeof PRODUCT_LIFESTYLE_VISUAL;
   productResultVisual: typeof PRODUCT_RESULT_VISUAL;
-  productTagline: typeof PRODUCT_TAGLINE;
+  productTagline: string;
   productReviews: (typeof REVIEWS_KSA)[number][];
-  scienceProofList: readonly string[];
-  socialStrip: typeof SOCIAL_KSA;
+  scienceProofList: readonly string[] | typeof SCIENCE_KSA;
+  socialStrip: {
+    stat: string;
+    statLabel: string;
+    ratingLine: string;
+    cities: readonly string[];
+  };
   storyFrames: StoryFrame[];
 };
 
@@ -579,11 +583,11 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       regionLabelMinMessage: "اختاري المنطقة",
       addressPlaceholder: "المنطقة، الشارع، رقم المبنى — وأي علامة قريبة تساعد المندوب",
       checkoutRegions: REGIONS_QATAR,
-      authenticity: AUTH_QATAR,
-      authorityBand: AUTH_QA_BAND,
+      authenticity: AUTH_QATAR as typeof AUTHENTICITY_SECTION,
+      authorityBand: AUTH_QA_BAND as typeof AUTHORITY_BAND,
       mechanismBlock: MECHANISM_BLOCK,
-      objectionBuster: OBJ_QATAR,
-      painChecklist: PAIN_QA,
+      objectionBuster: OBJ_QATAR as typeof OBJECTION_BUSTER,
+      painChecklist: PAIN_QA as typeof PAIN_CHECKLIST,
       productBenefits: PRODUCT_BENEFITS,
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
@@ -624,11 +628,11 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     regionLabelMinMessage: "اختاري المحافظة",
     addressPlaceholder: "المنطقة، القطعة، الشارع — وأي تفاصيل تسهّل التوصيل",
     checkoutRegions: REGIONS_KUWAIT,
-    authenticity: AUTH_KUWAIT,
-    authorityBand: AUTH_KW_BAND,
+    authenticity: AUTH_KUWAIT as typeof AUTHENTICITY_SECTION,
+    authorityBand: AUTH_KW_BAND as typeof AUTHORITY_BAND,
     mechanismBlock: MECHANISM_BLOCK,
-    objectionBuster: OBJ_KUWAIT,
-    painChecklist: PAIN_KW,
+    objectionBuster: OBJ_KUWAIT as typeof OBJECTION_BUSTER,
+    painChecklist: PAIN_KW as typeof PAIN_CHECKLIST,
     productBenefits: PRODUCT_BENEFITS,
     productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
     productHeadline: PRODUCT_HEADLINE,
