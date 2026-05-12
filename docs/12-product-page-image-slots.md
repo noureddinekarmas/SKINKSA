@@ -2,7 +2,7 @@
 
 Put files in: **`frontend/public/images/product/`**
 
-Use **exact filenames** below (or rename your exports to match before copying). The site loads them as static URLs: `/images/product/<filename>?v=<PRODUCT_ASSET_VERSION>`.
+Use **exact filenames** below (or rename your exports to match before copying). The site loads them as static URLs: **`/images/product/<filename>`** (no `?v=` query — Next.js image optimization breaks otherwise).
 
 ## Nine slots (current layout)
 
@@ -33,7 +33,7 @@ Pick one merge strategy and tell us:
 1. **Wrong folder** — must be `frontend/public/images/product/`, not Desktop only.
 2. **Wrong filename** — must match the table (Linux servers are **case-sensitive**: `.JPG` ≠ `.jpg`).
 3. **Deploy** — after pushing, the hosting build must include `public/` and a new deploy must run.
-4. **Cache** — after replacing files, bump `PRODUCT_ASSET_VERSION` in `frontend/lib/content/product-assets.ts`.
+4. **Cache** — `next.config` sets short cache on `/images/product/*`. After replacing files, **redeploy** so the new bytes ship; no version query string on URLs.
 
 ## What to send next
 
