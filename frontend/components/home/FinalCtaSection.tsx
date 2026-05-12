@@ -15,8 +15,9 @@ export default function FinalCtaSection() {
       {
         code: offer.code as "OFFER_1" | "OFFER_2" | "OFFER_3",
         quantity: offer.quantity,
-        price_sar: offer.price_sar,
-        label_ar: offer.label_ar,
+        price_sar: Number(offer.price_sar),
+        label_ar: offer.label_ar ?? "",
+        currency: "SAR",
       },
       { id: STATIC_PRODUCT.id, slug: STATIC_PRODUCT.slug, titleAr: STATIC_PRODUCT.title_ar }
     );
