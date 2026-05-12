@@ -308,15 +308,11 @@ export const AUTHENTICITY_SECTION = {
   },
 };
 
-/** Product-only frames between «المصدر الرسمي» and «شفتي نفسج في هالنقاط؟» — images only, no copy */
+/** Product-only frames between «المصدر الرسمي» and «شفتي نفسج في هالنقاط؟» — label shows SKINKSA above BLUE COPPER PEPTIDE */
 export const AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES = [
   {
     imageSrc: productAsset("/images/product/gallery-main-1.png"),
-    imageAlt: "عبوة سيروم SKINKSA الأصلية — ببتيد النحاس الأزرق، ٣٠ مل",
-  },
-  {
-    imageSrc: productAsset("/images/product/bottle-plain.png"),
-    imageAlt: "سيروم SKINKSA — لقطة إضافية لعبوة المنتج",
+    imageAlt: "عبوة سيروم SKINKSA — العلامة فوق اسم المنتج ببتيد النحاس الأزرق",
   },
 ] as const;
 
