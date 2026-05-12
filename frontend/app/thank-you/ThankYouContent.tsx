@@ -14,8 +14,9 @@ import {
   Sparkles,
   Truck,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
+import { cn } from "@/lib/utils";
 
 const TIMELINE = [
   {
@@ -219,19 +220,24 @@ export default function ThankYouContent() {
 
         {/* CTAs */}
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button
-            asChild
-            className="h-12 rounded-2xl border-0 bg-gradient-to-l from-[#1a56db] to-[#0f2d66] px-8 text-base font-black text-white shadow-[0_16px_40px_-12px_rgba(26,86,219,0.75)] hover:from-[#2563eb] hover:to-[#0f2d66]"
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "h-12 rounded-2xl border-0 bg-gradient-to-l from-[#1a56db] to-[#0f2d66] px-8 text-base font-black text-white shadow-[0_16px_40px_-12px_rgba(26,86,219,0.75)] hover:from-[#2563eb] hover:to-[#0f2d66]"
+            )}
           >
-            <Link href="/">العودة للمتجر</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-12 rounded-2xl border-2 border-white/25 bg-white/5 text-base font-bold text-white backdrop-blur-sm hover:bg-white/10"
+            العودة للمتجر
+          </Link>
+          <Link
+            href="/contact"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-12 rounded-2xl border-2 border-white/25 bg-white/5 text-base font-bold text-white backdrop-blur-sm hover:bg-white/10"
+            )}
           >
-            <Link href="/contact">تواصل معنا لأي تعديل</Link>
-          </Button>
+            تواصل معنا لأي تعديل
+          </Link>
         </div>
 
         <p className="mx-auto mt-8 max-w-md text-center text-[11px] leading-relaxed text-white/45">
