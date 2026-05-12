@@ -15,7 +15,7 @@ from app.models.offer import Offer
 from app.models.product import Product
 from app.models.upsell_offer import UpsellOffer
 
-PRODUCT_SLUG = "blue-copper-peptide-serum"
+PRODUCT_SLUG = "blueKSA"
 
 
 async def run_seed(db: AsyncSession | None = None) -> None:

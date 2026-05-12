@@ -42,7 +42,7 @@ export const STATIC_OFFERS: Offer[] = [
 
 export const STATIC_PRODUCT: Product = {
   id: "prod_blue_copper_serum",
-  slug: "blue-copper-peptide-serum",
+  slug: "blueKSA",
   title_ar:
     "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل",
   title_en: "SKINKSA Blue Copper Peptide Serum — 30ml",

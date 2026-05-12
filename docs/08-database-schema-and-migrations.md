@@ -143,7 +143,7 @@ Use:
 
 Seed main product:
 
-- slug: `blue-copper-peptide-serum`
+- slug: `blueKSA`
 - active status
 - Arabic title from brief.
 

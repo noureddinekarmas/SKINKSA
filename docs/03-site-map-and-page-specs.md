@@ -4,7 +4,7 @@
 
 - `/` - Home
 - `/collections` - Collection page
-- `/products/blue-copper-peptide-serum` - Main product landing page
+- `/products/blueKSA` - Main product landing page
 - `/about` - About SKINKSA
 - `/contact` - Contact
 - `/thank-you` - Order confirmation

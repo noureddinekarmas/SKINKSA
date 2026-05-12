@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { STATIC_PRODUCT } from "@/lib/content/products";
 
 export const metadata: Metadata = {
   title: "عن SKINKSA | عناية فاخرة بالبشرة",
@@ -74,7 +75,7 @@ export default function AboutPage() {
         <div className="max-w-2xl mx-auto px-4 space-y-5">
           <h2 className="text-3xl font-bold">جربي SKINKSA اليوم</h2>
           <p className="text-white/80">الدفع عند الاستلام · لا مخاطرة · توصيل سريع</p>
-          <Link href="/products/blue-copper-peptide-serum">
+          <Link href={`/products/${STATIC_PRODUCT.slug}`}>
             <Button size="lg" className="bg-[#B7791F] hover:bg-amber-700 text-white h-12 px-8 font-bold rounded-xl">
               اطلبي الآن
             </Button>

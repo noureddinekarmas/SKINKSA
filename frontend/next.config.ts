@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  async redirects() {
+    return [
+      {
+        source: "/products/blue-copper-peptide-serum",
+        destination: "/products/blueKSA",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     /** Avoid long-lived optimizer cache for the same URL (stale art after deploy). */
     minimumCacheTTL: 0,
