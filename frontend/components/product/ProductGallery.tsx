@@ -38,28 +38,30 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3">
-        {images.map((img, i) => (
-          <button
-            key={`${typeof img.src === "string" ? img.src : "local"}-${i}`}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-label={img.alt || img.thumbLabel || `صورة ${i + 1}`}
-            className={`relative aspect-square overflow-hidden rounded-2xl border-2 transition-all ${
-              i === active
-                ? "border-[var(--color-brand-primary)] shadow-lg ring-2 ring-[var(--color-brand-primary)]/30"
-                : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
-            }`}
-          >
-            <Image src={img.src} alt="" fill className="object-cover" sizes="96px" />
-            {img.thumbLabel && (
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent py-2 text-center text-[10px] font-bold text-white sm:text-[11px]">
-                {img.thumbLabel}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      {images.length > 1 && (
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          {images.map((img, i) => (
+            <button
+              key={`${typeof img.src === "string" ? img.src : "local"}-${i}`}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-label={img.alt || img.thumbLabel || `صورة ${i + 1}`}
+              className={`relative aspect-square overflow-hidden rounded-2xl border-2 transition-all ${
+                i === active
+                  ? "border-[var(--color-brand-primary)] shadow-lg ring-2 ring-[var(--color-brand-primary)]/30"
+                  : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
+              }`}
+            >
+              <Image src={img.src} alt="" fill className="object-cover" sizes="96px" />
+              {img.thumbLabel && (
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent py-2 text-center text-[10px] font-bold text-white sm:text-[11px]">
+                  {img.thumbLabel}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

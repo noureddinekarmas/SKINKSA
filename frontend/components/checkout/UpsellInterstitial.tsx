@@ -100,6 +100,7 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
             </span>
           </span>{" "}
           فقط قبل تثبيت الطلب النهائي.
+        </p>
 
         {!expired ? (
           <div className="text-[#4b5e78] text-sm">

@@ -27,12 +27,15 @@ import {
   OBJECTION_BUSTER,
   PAIN_CHECKLIST,
   PRODUCT_BENEFITS,
-  PRODUCT_GALLERY,
+  PRODUCT_DESCRIPTION_GALLERY,
   PRODUCT_HEADLINE,
+  PRODUCT_HERO_IMAGE,
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
   PRODUCT_KICKER,
+  PRODUCT_LIFESTYLE_VISUAL,
+  PRODUCT_RESULT_VISUAL,
   PRODUCT_REVIEWS,
   PRODUCT_TAGLINE,
   SCIENCE_PROOF_LIST,
@@ -233,7 +236,7 @@ export default function ProductLanding() {
                   مرخّص SFDA
                 </span>
               </div>
-              <ProductGallery images={PRODUCT_GALLERY} />
+              <ProductGallery images={[PRODUCT_HERO_IMAGE]} />
             </div>
 
             <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">
@@ -560,6 +563,39 @@ export default function ProductLanding() {
           </div>
         </section>
 
+        {/* Before / after — results narrative */}
+        <section className="border-t border-[var(--color-brand-border)] bg-white py-16 sm:py-24">
+          <div className="mx-auto grid max-w-screen-xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
+            <div className="text-right lg:max-w-xl lg:justify-self-end">
+              <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-primary)]">
+                {PRODUCT_RESULT_VISUAL.eyebrow}
+              </span>
+              <h2 className="mt-3 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">
+                {PRODUCT_RESULT_VISUAL.title}
+              </h2>
+              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{PRODUCT_RESULT_VISUAL.body}</p>
+              <p className="mt-4 text-xs leading-relaxed text-[var(--color-brand-slate)]/85">
+                الوصف تجميلي. النتائج فردية ولا تُعد تشخيصاً طبياً أو علاجاً لمرض.
+              </p>
+            </div>
+            <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] shadow-[0_24px_60px_-24px_rgba(26,86,219,0.45)] ring-1 ring-black/[0.04]">
+                <Image
+                  src={PRODUCT_RESULT_VISUAL.imageSrc}
+                  alt={PRODUCT_RESULT_VISUAL.imageAlt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width:1024px) 100vw, 480px"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex border-t border-white/20 bg-gradient-to-t from-black/75 via-black/35 to-transparent pt-10 pb-4">
+                  <span className="flex-1 text-center text-sm font-black tracking-wide text-white">بعد</span>
+                  <span className="flex-1 text-center text-sm font-black tracking-wide text-white">قبل</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Story frames — bento */}
         <section className="bg-white py-16 sm:py-24">
           <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
@@ -572,6 +608,32 @@ export default function ProductLanding() {
               </h2>
             </div>
             <div className="grid gap-6 lg:grid-cols-3">{STORY_FRAMES.map((f) => <StoryFrameCard key={f.headline} frame={f} />)}</div>
+          </div>
+        </section>
+
+        {/* Lifestyle — model + product in hand */}
+        <section className="border-t border-[var(--color-brand-border)] bg-white py-16 sm:py-24">
+          <div className="mx-auto grid max-w-screen-xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
+            <div className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:max-w-none">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-br from-[#e8f2ff] to-[#dbeafe] shadow-[0_24px_60px_-24px_rgba(15,28,46,0.35)] ring-1 ring-black/[0.04]">
+                <Image
+                  src={PRODUCT_LIFESTYLE_VISUAL.imageSrc}
+                  alt={PRODUCT_LIFESTYLE_VISUAL.imageAlt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width:1024px) 100vw, 480px"
+                />
+              </div>
+            </div>
+            <div className="order-1 text-right lg:order-2 lg:max-w-xl lg:justify-self-end">
+              <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-accent)]">
+                {PRODUCT_LIFESTYLE_VISUAL.eyebrow}
+              </span>
+              <h2 className="mt-3 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">
+                {PRODUCT_LIFESTYLE_VISUAL.title}
+              </h2>
+              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{PRODUCT_LIFESTYLE_VISUAL.body}</p>
+            </div>
           </div>
         </section>
 
@@ -612,8 +674,8 @@ export default function ProductLanding() {
               <div className="relative overflow-hidden rounded-3xl border border-[var(--color-brand-border)] shadow-md">
                 <div className="relative aspect-[4/3] w-full">
                   <Image
-                    src={PRODUCT_GALLERY[3].src}
-                    alt={PRODUCT_GALLERY[3].alt}
+                    src={PRODUCT_DESCRIPTION_GALLERY[2].src}
+                    alt={PRODUCT_DESCRIPTION_GALLERY[2].alt}
                     fill
                     className="object-cover"
                     sizes="(max-width:1024px) 100vw, 520px"
@@ -650,8 +712,8 @@ export default function ProductLanding() {
             <div className="order-1 md:order-2">
               <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl ring-2 ring-[var(--color-brand-primary)]/20">
                 <Image
-                  src={PRODUCT_GALLERY[2].src}
-                  alt={PRODUCT_GALLERY[2].alt}
+                  src={PRODUCT_DESCRIPTION_GALLERY[1].src}
+                  alt={PRODUCT_DESCRIPTION_GALLERY[1].alt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 400px"

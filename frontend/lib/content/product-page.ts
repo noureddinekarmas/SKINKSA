@@ -59,6 +59,29 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
   },
 ];
 
+/** Hero shows only this image; secondary shots live under the description block */
+export const PRODUCT_HERO_IMAGE: GalleryImage = PRODUCT_GALLERY[0];
+export const PRODUCT_DESCRIPTION_GALLERY: GalleryImage[] = PRODUCT_GALLERY.slice(1);
+
+/** Full-width visuals: قبل/بعد + لقطة حياة يومية (مسارات تحت /public/images/product/) */
+export const PRODUCT_RESULT_VISUAL = {
+  eyebrow: "وقت المقارنة",
+  title: "قبل وبعد… لما تهتمّين للمنطقة الحساسة حول العين",
+  body:
+    "لما يلتزم الروتين، كثير من العميلات يلاحظن بشرة تبين أهدأ وأوضح. الصورة توضيحية للاتجاه العام — مو نتيجة مضمونة للجميع، وتختلف حسب نوع البشرة والنوم والعوامل الخارجية.",
+  imageSrc: "/images/product/section-before-after.jpg",
+  imageAlt: "مقارنة قبل وبعد لمنطقة تحت العين — مظهر أكثر إشراقاً ونعومة",
+} as const;
+
+export const PRODUCT_LIFESTYLE_VISUAL = {
+  eyebrow: "في يومج العادي",
+  title: "نفس العبوة اللي تشوفينها… بين إيديك بوضوح",
+  body:
+    "سيروم SKINKSA بلون أزرق نقي يمتص بسرعة — يناسبج إذا تبغين مظهر نضارة من غير طبقات تقيلة، وتمشين مع المكياج لما يسكن على البشرة.",
+  imageSrc: "/images/product/section-lifestyle-model.png",
+  imageAlt: "لقطة ترويجية لعارضة تحمل عبوة سيروم SKINKSA ببتيد النحاس الأزرق بلون سائل أزرق واضح",
+} as const;
+
 /** Bento / story frames: image + matched marketing caption */
 export type StoryFrame = {
   src: string;
