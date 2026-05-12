@@ -308,11 +308,17 @@ export const AUTHENTICITY_SECTION = {
   },
 };
 
-/** Visual bridge between «المصدر الرسمي» band and «شفتي نفسج في هالنقاط؟» — عبوة المنتج */
-export const AUTHENTICITY_TO_PAIN_VISUAL = {
-  imageSrc: productAsset("/images/product/gallery-main-1.png"),
-  imageAlt: "عبوة سيروم SKINKSA الأصلية — ببتيد النحاس الأزرق، ٣٠ مل",
-} as const;
+/** Product-only frames between «المصدر الرسمي» and «شفتي نفسج في هالنقاط؟» — images only, no copy */
+export const AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES = [
+  {
+    imageSrc: productAsset("/images/product/gallery-main-1.png"),
+    imageAlt: "عبوة سيروم SKINKSA الأصلية — ببتيد النحاس الأزرق، ٣٠ مل",
+  },
+  {
+    imageSrc: productAsset("/images/product/bottle-plain.png"),
+    imageAlt: "سيروم SKINKSA — لقطة إضافية لعبوة المنتج",
+  },
+] as const;
 
 export const AUTHORITY_BAND = {
   title: "ليش مصدرك يهم؟",

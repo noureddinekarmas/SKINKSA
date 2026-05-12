@@ -22,7 +22,7 @@ import ProductGallery from "@/components/product/ProductGallery";
 import { faqItems } from "@/lib/content/faq";
 import {
   AUTHENTICITY_SECTION,
-  AUTHENTICITY_TO_PAIN_VISUAL,
+  AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES,
   AUTHORITY_BAND,
   MECHANISM_BLOCK,
   OBJECTION_BUSTER,
@@ -533,21 +533,26 @@ export default function ProductLanding() {
           </div>
         </section>
 
-        {/* Bridge: trust band → pain checklist */}
+        {/* Bridge: product-only frames → pain checklist */}
         <section
           className="border-y border-[var(--color-brand-border)] bg-white py-10 sm:py-14"
-          aria-label={AUTHENTICITY_TO_PAIN_VISUAL.imageAlt}
+          aria-label="لقطات المنتج"
         >
-          <div className="mx-auto max-w-md px-4 sm:max-w-lg sm:px-6">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-[var(--color-brand-border)] bg-gradient-to-b from-[var(--color-brand-mist)] to-white shadow-[0_20px_56px_-24px_rgba(26,86,219,0.35)] ring-1 ring-black/[0.04]">
-              <Image
-                src={AUTHENTICITY_TO_PAIN_VISUAL.imageSrc}
-                alt={AUTHENTICITY_TO_PAIN_VISUAL.imageAlt}
-                fill
-                className="object-contain object-center p-6 sm:p-8"
-                sizes="(max-width: 640px) 100vw, 512px"
-              />
-            </div>
+          <div className="mx-auto flex max-w-md flex-col gap-8 px-4 sm:max-w-lg sm:px-6">
+            {AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES.map((item) => (
+              <div
+                key={item.imageSrc}
+                className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-[var(--color-brand-border)] bg-gradient-to-b from-[var(--color-brand-mist)] to-white shadow-[0_20px_56px_-24px_rgba(26,86,219,0.35)] ring-1 ring-black/[0.04]"
+              >
+                <Image
+                  src={item.imageSrc}
+                  alt={item.imageAlt}
+                  fill
+                  className="object-contain object-center p-6 sm:p-8"
+                  sizes="(max-width: 640px) 100vw, 512px"
+                />
+              </div>
+            ))}
           </div>
         </section>
 
