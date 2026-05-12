@@ -18,14 +18,14 @@ The product page is built for **nine** distinct images. If you only have **eight
 | 6 | `section-lifestyle-model.png` | **«في يومج العادي»** — lifestyle / model holding product. |
 | 7 | `story-card-1.png` | **Story bento — card 1** («وجهج يقول تعب؟»). **Listed gallery** block. |
 | 8 | `story-card-2.png` | **Story bento — card 2** («ليش ذا المكوّن؟»). |
-| 9 | `story-card-3.png` | **Story bento — card 3** («ثقة قبل الفلوس»). |
+| 9 | `story-card-4.png` | **Story bento — card 3** («ثقة قبل الفلوس»). *(Same art as your `story-card-4.png`; not `story-card-3.png`.)* |
 
 ## Eight images?
 
 Pick one merge strategy and tell us:
 
 - **Option A:** Use the same file for `gallery-quality-4.png` and `gallery-usage-3.png` (we point both slots to one asset in code), **or**
-- **Option B:** Use one image for both `story-card-2.png` and `story-card-3.png`, **or**
+- **Option B:** Use one image for both `story-card-2.png` and `story-card-4.png`, **or**
 - **Option C:** Skip a hero thumb (only 3 carousel extras instead of 4) — requires a small code change.
 
 ## Why images «don’t appear»

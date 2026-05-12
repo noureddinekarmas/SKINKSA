@@ -109,7 +109,7 @@ export const STORY_FRAMES: StoryFrame[] = [
     body: "GHK-Cu من المكوّنات اللي تدرس في عالم العناية لدوره في دعم مظهر البشرة الأكثر تماسكاً و«مظهر شبابي» عند الالتزام. مو سِحْر — روتين ذكي يلاقي بشرتج في المنتصف: مركّز وما يثقل.",
   },
   {
-    src: productAsset("/images/product/story-card-3.png"),
+    src: productAsset("/images/product/story-card-4.png"),
     alt: "عبوات عناية راقية",
     badge: "ثقة قبل الفلوس",
     headline: "تسوّقين أونلاين بس خايفة؟ عندج حق",
