@@ -29,7 +29,7 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
           sizes={single ? "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px" : "(max-width: 768px) 100vw, 50vw"}
           priority
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f1c2e]/85 via-[#0f1c2e]/15 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-[#0f1c2e]/92 via-[#0f1c2e]/35 to-transparent" />
         {overlay && (
           <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 text-right text-white">
             {overlay.kicker && (

@@ -3,7 +3,7 @@
  * both fetch fresh bytes after art swaps (browser + CDN).
  * Bump when replacing assets.
  */
-export const PRODUCT_ASSET_VERSION = "9";
+export const PRODUCT_ASSET_VERSION = "10";
 
 export function productAsset(path: string): string {
   const sep = path.includes("?") ? "&" : "?";
