@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, Lock, Map, MapPin, Phone, ShieldCheck, Truck, User } from "lucide-react";
+import { ChevronLeft, Lock, Phone, ShieldCheck, Truck, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,16 +25,12 @@ function buildSchema(meta: ReturnType<typeof checkoutMetaForCurrency>) {
       (p) => isValidPhoneForCurrency(p, meta.currency),
       meta.phoneSchemaMessage
     ),
-    customer_province: z.string().min(2, meta.regionLabelMinMessage),
-    customer_address: z.string().min(5, "اكتبي اسم المنطقة والشارع أو تفاصيل أوضح للعنوان"),
   });
 }
 
 type FormData = {
   customer_name: string;
   customer_phone: string;
-  customer_province: string;
-  customer_address: string;
 };
 
 export default function CheckoutModal() {
@@ -93,8 +89,6 @@ export default function CheckoutModal() {
       const result = await createDraftOrder({
         customer_name: data.customer_name,
         customer_phone: data.customer_phone,
-        customer_province: data.customer_province,
-        customer_address: data.customer_address,
         checkout_currency: ccy,
         cart_items: items.map((item) => ({
           product_id: item.productId,
@@ -218,54 +212,6 @@ export default function CheckoutModal() {
               />
               {errors.customer_phone && (
                 <p className="mt-1.5 px-1 text-xs font-medium text-[#dc2626]">{errors.customer_phone.message}</p>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#94a3b8]">
-                <Map size={18} />
-              </div>
-              <select
-                {...register("customer_province")}
-                className={`block w-full cursor-pointer appearance-none rounded-xl border bg-white p-3.5 pr-10 text-sm text-[#0f1c2e] shadow-sm transition-shadow focus:outline-none focus:ring-2 ${
-                  errors.customer_province ? "border-red-400 focus:ring-red-400" : "border-[#cbd5e1] focus:ring-[#1a56db]"
-                }`}
-                dir="rtl"
-              >
-                <option value="" disabled hidden>
-                  {meta.regionSelectPlaceholder}
-                </option>
-                {meta.checkoutRegions.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#94a3b8]">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              {errors.customer_province && (
-                <p className="mt-1.5 px-1 text-xs font-medium text-[#dc2626]">{errors.customer_province.message}</p>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="pointer-events-none absolute right-0 top-3.5 flex items-center pr-3 text-[#94a3b8]">
-                <MapPin size={18} />
-              </div>
-              <textarea
-                {...register("customer_address")}
-                placeholder={meta.addressPlaceholder}
-                rows={2}
-                className={`block w-full resize-none rounded-xl border bg-white p-3.5 pr-10 text-sm text-[#0f1c2e] shadow-sm transition-shadow focus:outline-none focus:ring-2 ${
-                  errors.customer_address ? "border-red-400 focus:ring-red-400" : "border-[#cbd5e1] focus:ring-[#1a56db]"
-                }`}
-                dir="rtl"
-              />
-              {errors.customer_address && (
-                <p className="mt-1.5 px-1 text-xs font-medium text-[#dc2626]">{errors.customer_address.message}</p>
               )}
             </div>
 
