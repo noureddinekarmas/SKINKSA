@@ -8,6 +8,8 @@ import QualitySection from "@/components/home/QualitySection";
 import FaqSection from "@/components/home/FaqSection";
 import FinalCtaSection from "@/components/home/FinalCtaSection";
 
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   return (
     <main>

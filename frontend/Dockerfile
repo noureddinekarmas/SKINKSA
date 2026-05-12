@@ -8,7 +8,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# Pass from CI/EasyPanel, e.g. --build-arg GIT_COMMIT=$(git rev-parse HEAD), to verify logs match the code you expect.
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=${GIT_COMMIT}
+RUN echo "GIT_COMMIT=${GIT_COMMIT}" && npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app

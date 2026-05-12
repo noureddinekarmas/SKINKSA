@@ -1,0 +1,9 @@
+# Keep Docker context small and never ship a local build into the image.
+node_modules
+.next
+.git
+**/.DS_Store
+*.log
+.env
+.env.*
+!.env.example
