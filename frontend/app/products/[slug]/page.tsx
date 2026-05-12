@@ -1,7 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 
 import ProductLanding from "@/components/product/ProductLanding";
-import { MAIN_PRODUCT_SLUG } from "@/lib/content/main-product";
+import { isProductMarketSlug, MAIN_PRODUCT_SLUG } from "@/lib/content/main-product";
 
 /** Old paths → must redirect here if next.config redirects are skipped in production. */
 const LEGACY_PRODUCT_SLUGS = ["blue-copper-peptide-serum", "blueKSA"] as const;
@@ -11,20 +11,19 @@ export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const canonical = MAIN_PRODUCT_SLUG;
+  const normalized = slug.toLowerCase();
 
-  if (
-    LEGACY_PRODUCT_SLUGS.some((legacy) => legacy.toLowerCase() === slug.toLowerCase())
-  ) {
-    permanentRedirect(`/products/${canonical}`);
+  if (LEGACY_PRODUCT_SLUGS.some((legacy) => legacy.toLowerCase() === normalized)) {
+    permanentRedirect(`/products/${MAIN_PRODUCT_SLUG}`);
   }
 
-  if (slug.toLowerCase() === canonical.toLowerCase()) {
-    if (slug !== canonical) {
-      permanentRedirect(`/products/${canonical}`);
-    }
-    return <ProductLanding />;
+  if (!isProductMarketSlug(normalized)) {
+    notFound();
   }
 
-  notFound();
+  if (slug !== normalized) {
+    permanentRedirect(`/products/${normalized}`);
+  }
+
+  return <ProductLanding marketSlug={normalized} />;
 }

@@ -66,12 +66,14 @@ async def test_check_ip_disabled_always_allows():
 @pytest.mark.asyncio
 async def test_check_ip_blocks_non_sa():
     geo = GeoData(country_iso="US", source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
-         patch("app.services.geoip.settings") as mock:
+    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), patch(
+        "app.services.geoip.settings"
+    ) as mock:
         mock.MAXMIND_ENABLED = True
         mock.MAXMIND_BLOCK_NON_SA = True
         mock.MAXMIND_BLOCK_VPN = False
         mock.MAXMIND_RISK_SCORE_THRESHOLD = 0.0
+        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
         result = await check_ip("1.2.3.4")
     assert result.allowed is False
     assert "country_blocked" in result.reason
@@ -80,12 +82,14 @@ async def test_check_ip_blocks_non_sa():
 @pytest.mark.asyncio
 async def test_check_ip_allows_sa():
     geo = GeoData(country_iso="SA", source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
-         patch("app.services.geoip.settings") as mock:
+    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), patch(
+        "app.services.geoip.settings"
+    ) as mock:
         mock.MAXMIND_ENABLED = True
         mock.MAXMIND_BLOCK_NON_SA = True
         mock.MAXMIND_BLOCK_VPN = False
         mock.MAXMIND_RISK_SCORE_THRESHOLD = 0.0
+        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
         result = await check_ip("1.2.3.4")
     assert result.allowed is True
 
@@ -141,5 +145,6 @@ async def test_check_ip_fail_open_on_error():
         mock.MAXMIND_BLOCK_NON_SA = True
         mock.MAXMIND_BLOCK_VPN = True
         mock.MAXMIND_RISK_SCORE_THRESHOLD = 75.0
+        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
         result = await check_ip("1.2.3.4")
     assert result.allowed is True  # fail-open

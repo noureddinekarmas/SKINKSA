@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { trackStoreEvent } from "@/lib/api/analytics";
 import { getOrCreateSessionId, readUtmFromLocation } from "@/lib/analytics/session";
+import type { ShopCurrency } from "@/lib/content/product-landing-data";
 import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
 
 export interface CartOffer {
@@ -9,6 +10,7 @@ export interface CartOffer {
   quantity: number;
   price_sar: number;
   label_ar: string;
+  currency: ShopCurrency;
 }
 
 export interface CartItem {
@@ -20,6 +22,7 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  currency: ShopCurrency;
   isUpsell?: boolean;
   image?: string;
 }
@@ -75,6 +78,7 @@ export const useCartStore = create<CartState>()(
           quantity: offer.quantity,
           unitPrice: offer.price_sar / offer.quantity,
           totalPrice: offer.price_sar,
+          currency: offer.currency,
           image: product.imageUrl || PRODUCT_CART_IMAGE,
         };
         set({ items: [item], selectedOffer: offer, isDrawerOpen: true });
@@ -94,6 +98,6 @@ export const useCartStore = create<CartState>()(
       closeCheckout: () => set({ isCheckoutOpen: false }),
       setSelectedOffer: (offer) => set({ selectedOffer: offer }),
     }),
-    { name: "skinksa-cart", partialize: (state) => ({ items: state.items, selectedOffer: state.selectedOffer }) }
+    { name: "skinksa-cart-v2", partialize: (state) => ({ items: state.items, selectedOffer: state.selectedOffer }) }
   )
 );

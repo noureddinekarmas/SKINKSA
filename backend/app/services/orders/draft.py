@@ -15,7 +15,7 @@ from app.models.order_item import OrderItem
 from app.schemas.order import DraftOrderRequest
 from app.services.geoip import GeoData, check_ip
 from app.services.ip_intel_secondary import lookup_secondary_vpn
-from app.services.phone import is_valid_saudi_mobile, normalize_saudi_mobile
+from app.services.phone import is_valid_gcc_mobile, normalize_gcc_mobile
 
 
 async def _next_order_number(db: AsyncSession) -> str:
@@ -41,13 +41,20 @@ async def create_draft_order(
     *,
     skip_geoip: bool = False,
 ) -> Order:
-    # ── Phone validation ──────────────────────────────────────────────────────
-    if not is_valid_saudi_mobile(payload.customer_phone):
+    checkout_currency = (payload.checkout_currency or settings.DEFAULT_CURRENCY).upper()
+    if checkout_currency not in ("SAR", "QAR", "KWD"):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid Saudi mobile number",
+            detail="Invalid checkout currency",
         )
-    phone_data = normalize_saudi_mobile(payload.customer_phone)
+
+    # ── Phone validation ──────────────────────────────────────────────────────
+    if not is_valid_gcc_mobile(payload.customer_phone, checkout_currency):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid mobile number for selected storefront",
+        )
+    phone_data = normalize_gcc_mobile(payload.customer_phone, checkout_currency)
 
     if not payload.cart_items:
         raise HTTPException(
@@ -98,7 +105,7 @@ async def create_draft_order(
         customer_phone_digits=phone_data["digits"],
         customer_address=payload.customer_address,
         customer_province=payload.customer_province,
-        currency=settings.DEFAULT_CURRENCY,
+        currency=checkout_currency,
         subtotal_sar=subtotal,
         upsell_sar=Decimal("0"),
         total_sar=subtotal,

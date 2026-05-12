@@ -62,7 +62,8 @@ class Settings(BaseSettings):
     MAXMIND_ACCOUNT_ID: int = 0
     MAXMIND_LICENSE_KEY: str = ""
     MAXMIND_DB_PATH: str = ""          # e.g. /data/GeoLite2-City.mmdb
-    MAXMIND_BLOCK_NON_SA: bool = False # block non-SA IPs (set True in prod)
+    MAXMIND_BLOCK_NON_SA: bool = False  # with True, only ISO codes in MAXMIND_ALLOWED_COUNTRIES may order
+    MAXMIND_ALLOWED_COUNTRIES: str = "SA,QA,KW"
     MAXMIND_BLOCK_VPN: bool = False    # block VPN/proxy/Tor IPs
     MAXMIND_RISK_SCORE_THRESHOLD: float = 75.0  # block if insights risk_score > this (0=off)
     # Comma-separated phone numbers that bypass GeoIP checks.
@@ -71,6 +72,10 @@ class Settings(BaseSettings):
     @property
     def geoip_whitelisted_phones(self) -> list[str]:
         return _split(self.GEOIP_WHITELISTED_PHONES)
+
+    @property
+    def maxmind_allowed_iso_countries(self) -> set[str]:
+        return {c.upper() for c in _split(self.MAXMIND_ALLOWED_COUNTRIES)}
 
     # Optional second opinion for VPN (see app/services/ip_intel_secondary.py)
     IPQUALITY_API_KEY: str = ""

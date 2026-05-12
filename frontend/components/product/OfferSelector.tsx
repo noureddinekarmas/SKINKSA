@@ -1,9 +1,11 @@
 "use client";
+
 import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import type { Offer } from "@/lib/api/products";
 import { useCartStore } from "@/lib/cart/store";
-import { formatSar } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
 
 interface Props {
@@ -29,6 +31,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
         quantity: selectedOffer.quantity,
         price_sar: Number(selectedOffer.price_sar),
         label_ar: selectedOffer.label_ar,
+        currency: "SAR",
       },
       { id: productId, slug: productSlug, titleAr: productTitleAr }
     );
@@ -53,7 +56,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
       <div className="grid gap-3">
         {offers.map((offer) => {
           const isSelected = selectedCode === offer.code;
-          const perPiece = (Number(offer.price_sar) / offer.quantity).toFixed(1);
+          const perPiece = Number(offer.price_sar) / offer.quantity;
           const saving = offer.compare_at_sar
             ? Number(offer.compare_at_sar) - Number(offer.price_sar)
             : null;
@@ -77,7 +80,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
                   <span className="font-bold text-[#0F172A]">{offer.label_ar}</span>
                   <p className="text-xs text-[#475569] mt-0.5">
                     <span dir="ltr" className="sar-glyph tabular-nums">
-                      {formatSar(perPiece)}
+                      {formatMoney(perPiece, "SAR", "en-SA")}
                     </span>{" "}
                     / العبوة
                   </p>
@@ -85,7 +88,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
                     <p className="text-xs text-[#15803D] mt-0.5">
                       وفر{" "}
                       <span dir="ltr" className="sar-glyph tabular-nums">
-                        {formatSar(saving)}
+                        {formatMoney(saving, "SAR", "en-SA")}
                       </span>
                     </p>
                   )}
@@ -93,13 +96,13 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
                 <div className="text-right">
                   <span className="text-xl font-bold text-[#312E81]">
                     <span dir="ltr" className="sar-glyph tabular-nums">
-                      {formatSar(Number(offer.price_sar))}
+                      {formatMoney(Number(offer.price_sar), "SAR", "en-SA")}
                     </span>
                   </span>
                   {offer.compare_at_sar && (
                     <p className="text-xs text-[#475569] line-through">
                       <span dir="ltr" className="sar-glyph tabular-nums">
-                        {formatSar(Number(offer.compare_at_sar))}
+                        {formatMoney(Number(offer.compare_at_sar), "SAR", "en-SA")}
                       </span>
                     </p>
                   )}

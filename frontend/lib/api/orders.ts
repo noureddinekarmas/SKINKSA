@@ -5,6 +5,8 @@ export interface DraftOrderPayload {
   customer_phone: string;
   customer_address?: string;
   customer_province?: string;
+  /** ISO currency for the storefront checkout (SAR / QAR / KWD). Stored on the order; amounts still use `unit_price_sar` field name in the payload for API compatibility. */
+  checkout_currency?: string;
   cart_items: Array<{
     product_id?: string;
     offer_code: string;

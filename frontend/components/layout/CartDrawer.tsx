@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/lib/cart/store";
 import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
-import { formatSar } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 import { ShieldCheck } from "lucide-react";
 import CheckoutModal from "@/components/checkout/CheckoutModal";
 
@@ -31,6 +31,9 @@ export default function CartDrawer() {
                   item.image && item.image !== "/placeholders/serum-bottle.svg"
                     ? item.image
                     : PRODUCT_CART_IMAGE;
+                const ccy = item.currency ?? "SAR";
+                const loc = ccy === "SAR" ? "en-SA" : ccy === "QAR" ? "en-QA" : "en-KW";
+                const label = ccy === "SAR" ? "ر.س" : ccy === "QAR" ? "ر.ق" : "د.ك";
                 return (
                 <div key={item.id} className="flex items-center gap-3 p-3 bg-[#f0f7ff] rounded-xl">
                   <Link
@@ -58,10 +61,10 @@ export default function CartDrawer() {
                       {item.offerCode} · {item.quantity} عبوة
                     </p>
                     <p className="text-[#1a56db] font-bold mt-1">
-                      <span dir="ltr" className="sar-glyph tabular-nums">
-                        {formatSar(item.totalPrice)}
+                      <span dir="ltr" className="tabular-nums">
+                        {formatMoney(item.totalPrice, ccy, loc)}
                       </span>{" "}
-                      <span className="text-sm font-bold">ر.س</span>
+                      <span className="text-sm font-bold">{label}</span>
                     </p>
                   </div>
                   <button
@@ -77,19 +80,35 @@ export default function CartDrawer() {
           </div>
 
           {items.length > 0 && (
-            <div className="border-t border-[#d5e3f0] pt-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#0d9464] text-sm">
-                <ShieldCheck className="w-4 h-4 flex-shrink-0" />
-                <span>الدفع عند الاستلام داخل السعودية</span>
+            <div className="border-t border-[#d5e3f0] space-y-4 pt-4">
+              <div className="flex items-center gap-2 text-sm text-[#0d9464]">
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                <span>
+                  {items[0]?.currency === "SAR"
+                    ? "الدفع عند الاستلام داخل السعودية"
+                    : items[0]?.currency === "QAR"
+                      ? "الدفع عند الاستلام داخل قطر"
+                      : "الدفع عند الاستلام داخل الكويت"}
+                </span>
               </div>
               <Separator />
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <span className="text-[#4b5e78]">الإجمالي</span>
                 <span className="text-xl font-bold text-[#0f1c2e]">
-                  <span dir="ltr" className="sar-glyph tabular-nums">
-                    {formatSar(total)}
+                  <span dir="ltr" className="tabular-nums">
+                    {formatMoney(
+                      total,
+                      items[0]?.currency ?? "SAR",
+                      items[0]?.currency === "SAR"
+                        ? "en-SA"
+                        : items[0]?.currency === "QAR"
+                          ? "en-QA"
+                          : "en-KW"
+                    )}
                   </span>{" "}
-                  <span className="text-base font-bold">ر.س</span>
+                  <span className="text-base font-bold">
+                    {items[0]?.currency === "SAR" ? "ر.س" : items[0]?.currency === "QAR" ? "ر.ق" : "د.ك"}
+                  </span>
                 </span>
               </div>
               <Button

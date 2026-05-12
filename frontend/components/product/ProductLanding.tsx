@@ -19,51 +19,17 @@ import {
 import { useEffect, useState } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
-import { faqItems } from "@/lib/content/faq";
 import {
-  AUTHENTICITY_SECTION,
   AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES,
-  AUTHORITY_BAND,
-  MECHANISM_BLOCK,
-  OBJECTION_BUSTER,
-  PAIN_CHECKLIST,
-  PRODUCT_BENEFITS,
-  PRODUCT_DESCRIPTION_GALLERY,
-  PRODUCT_HEADLINE,
-  PRODUCT_HERO_GALLERY,
-  PRODUCT_HERO_QUOTE,
-  PRODUCT_HOW_TO,
-  PRODUCT_INGREDIENTS,
-  PRODUCT_KICKER,
-  PRODUCT_LIFESTYLE_VISUAL,
-  PRODUCT_RESULT_VISUAL,
-  PRODUCT_REVIEWS,
-  PRODUCT_TAGLINE,
-  SCIENCE_PROOF_LIST,
-  SOCIAL_STRIP,
-  STORY_FRAMES,
-  type StoryFrame,
 } from "@/lib/content/product-page";
-import { STATIC_PRODUCT } from "@/lib/content/products";
-import { formatSar } from "@/lib/currency";
+import type { StoryFrame } from "@/lib/content/product-page";
+import type { ProductMarketSlug } from "@/lib/content/main-product";
+import { getProductLandingData } from "@/lib/content/product-landing-data";
+import { formatMoney } from "@/lib/currency";
 import { useCartStore } from "@/lib/cart/store";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
 
 type OfferCode = "OFFER_1" | "OFFER_2" | "OFFER_3";
-
-const offers = STATIC_PRODUCT.offers.map((o) => ({
-  code: o.code as OfferCode,
-  pieces: o.quantity,
-  price: Number(o.price_sar),
-  compare: o.compare_at_sar != null ? Number(o.compare_at_sar) : null,
-  label: o.label_ar,
-  badge: o.badge_ar,
-}));
-
-function defaultOfferIndex() {
-  const i = STATIC_PRODUCT.offers.findIndex((o) => o.is_default);
-  return i >= 0 ? i : 1;
-}
 
 /** ألوان مختلفة قليلاً حتى تبدو الدائرة أو كـ «عملاء» وليس شعاراً مكرراً */
 const HERO_AVATAR_GRADIENTS = [
@@ -154,13 +120,32 @@ function StoryFrameCard({ frame }: { frame: StoryFrame }) {
   );
 }
 
-export default function ProductLanding() {
-  const [selectedIdx, setSelectedIdx] = useState(defaultOfferIndex);
+export default function ProductLanding({ marketSlug }: { marketSlug: ProductMarketSlug }) {
+  const d = getProductLandingData(marketSlug);
+  const offers = d.product.offers.map((o) => ({
+    code: o.code as OfferCode,
+    pieces: o.quantity,
+    price: Number(o.price_sar),
+    compare: o.compare_at_sar != null ? Number(o.compare_at_sar) : null,
+    label: o.label_ar,
+    badge: o.badge_ar,
+  }));
+
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const addOfferToCart = useCartStore((s) => s.addOfferToCart);
   const selected = offers[selectedIdx];
   const primaryTheme = OFFER_THEME[selected.code];
 
-  const defaultIdx = defaultOfferIndex();
+  useEffect(() => {
+    const dd = getProductLandingData(marketSlug);
+    const i = dd.product.offers.findIndex((o) => o.is_default);
+    setSelectedIdx(i >= 0 ? i : 1);
+  }, [marketSlug]);
+
+  const defaultIdx =
+    d.product.offers.findIndex((o) => o.is_default) >= 0
+      ? d.product.offers.findIndex((o) => o.is_default)
+      : 1;
   const defaultOffer = offers[defaultIdx];
 
   useEffect(() => {
@@ -169,17 +154,17 @@ export default function ProductLanding() {
       eventName: "ViewContent",
       eventId,
       value: defaultOffer.price,
-      currency: "SAR",
+      currency: d.currency,
       contents: [
         {
-          id: STATIC_PRODUCT.slug,
+          id: d.product.slug,
           quantity: defaultOffer.pieces,
           item_price: defaultOffer.price,
         },
       ],
-      contentName: STATIC_PRODUCT.title_ar,
+      contentName: d.product.title_ar,
     });
-  }, [defaultOffer.pieces, defaultOffer.price]);
+  }, [marketSlug, defaultOffer.pieces, defaultOffer.price, d.currency, d.product.slug, d.product.title_ar]);
 
   function handleAddToCart() {
     const eventId = generateEventId("atc");
@@ -189,26 +174,27 @@ export default function ProductLanding() {
         quantity: selected.pieces,
         price_sar: selected.price,
         label_ar: selected.label,
+        currency: d.currency,
       },
       {
-        id: STATIC_PRODUCT.id,
-        slug: STATIC_PRODUCT.slug,
-        titleAr: STATIC_PRODUCT.title_ar,
+        id: d.product.id,
+        slug: d.product.slug,
+        titleAr: d.product.title_ar,
       }
     );
     trackCommerceEvent({
       eventName: "AddToCart",
       eventId,
       value: selected.price,
-      currency: "SAR",
+      currency: d.currency,
       contents: [
         {
-          id: STATIC_PRODUCT.slug,
+          id: d.product.slug,
           quantity: selected.pieces,
           item_price: selected.price,
         },
       ],
-      contentName: STATIC_PRODUCT.title_ar,
+      contentName: d.product.title_ar,
     });
   }
 
@@ -217,9 +203,7 @@ export default function ProductLanding() {
       <article className="pb-32 md:pb-0">
         {/* Top urgency — premium strip */}
         <div className="border-b border-[var(--color-brand-border)] bg-gradient-to-l from-[#1e3a5f] via-[#1a56db] to-[#2563eb] py-2.5 text-center text-white">
-          <p className="px-4 text-xs font-bold sm:text-sm">
-            الدفع عند الاستلام داخل السعودية · ما يحتاج كرت · توصيل لباب البيت من ٣–٥ أيام عمل
-          </p>
+          <p className="px-4 text-xs font-bold sm:text-sm">{d.topPromoStrip}</p>
         </div>
 
         {/* Hero */}
@@ -231,25 +215,25 @@ export default function ProductLanding() {
             <div className="md:sticky md:top-28 md:self-start">
               <div className="mb-3 flex flex-wrap items-center gap-2 md:hidden">
                 <span className="rounded-full bg-[var(--color-brand-success)]/15 px-2.5 py-1 text-[10px] font-bold text-[var(--color-brand-success)]">
-                  عميلات من كل المناطق
+                  {d.mobileBadgeRegions}
                 </span>
                 <span className="rounded-full border border-[var(--color-brand-border)] bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-[var(--color-brand-slate)]">
-                  مرخّص SFDA
+                  {d.mobileBadgeQuality}
                 </span>
               </div>
-              <ProductGallery images={PRODUCT_HERO_GALLERY} />
+              <ProductGallery images={d.productHeroGallery} />
             </div>
 
             <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-primary)] sm:text-xs">
-                  {PRODUCT_KICKER}
+                  {d.productKicker}
                 </p>
                 <h1 className="mt-2 text-balance text-2xl font-bold leading-snug text-[var(--color-brand-ink)] sm:text-3xl lg:text-[2.125rem]">
-                  {PRODUCT_HEADLINE}
+                  {d.productHeadline}
                 </h1>
                 <p className="mt-3 max-w-prose text-pretty text-sm font-medium leading-relaxed text-[var(--color-brand-slate)] sm:text-base">
-                  {PRODUCT_TAGLINE}
+                  {d.productTagline}
                 </p>
 
                 <blockquote className="relative mt-4 overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-gradient-to-bl from-white via-[var(--color-brand-mist)]/60 to-[var(--color-brand-mist)] px-5 py-4 shadow-sm ring-1 ring-black/[0.03] sm:px-6 sm:py-5">
@@ -258,7 +242,7 @@ export default function ProductLanding() {
                     aria-hidden
                   />
                   <p className="relative text-pretty text-sm font-medium leading-[1.7] text-[var(--color-brand-ink)] sm:text-base">
-                    {PRODUCT_HERO_QUOTE}
+                    {d.productHeroQuote}
                   </p>
                   <footer className="relative mt-3 flex items-center gap-2 border-t border-[var(--color-brand-border)]/80 pt-3">
                     <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
@@ -275,7 +259,7 @@ export default function ProductLanding() {
                 <div className="flex flex-wrap items-end justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2 space-x-reverse rtl:space-x-reverse">
-                      {PRODUCT_REVIEWS.slice(0, 3).map((r, i) => (
+                      {d.productReviews.slice(0, 3).map((r, i) => (
                         <div
                           key={r.name}
                           title={`${r.name} — ${r.city}`}
@@ -287,10 +271,10 @@ export default function ProductLanding() {
                     </div>
                     <div>
                       <p className="flex items-center gap-1 text-lg font-black text-[var(--color-brand-ink)]">
-                        <span>{SOCIAL_STRIP.stat}</span>
+                        <span>{d.socialStrip.stat}</span>
                         <TrendingUp className="h-4 w-4 text-[var(--color-brand-success)]" aria-hidden />
                       </p>
-                      <p className="text-xs font-semibold text-[var(--color-brand-slate)]">{SOCIAL_STRIP.statLabel}</p>
+                      <p className="text-xs font-semibold text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -300,10 +284,10 @@ export default function ProductLanding() {
                   </div>
                 </div>
                 <p className="mt-3 border-t border-[var(--color-brand-border)] pt-3 text-xs font-semibold text-[var(--color-brand-slate)]">
-                  {SOCIAL_STRIP.ratingLine}
+                  {d.socialStrip.ratingLine}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {SOCIAL_STRIP.cities.map((c) => (
+                  {d.socialStrip.cities.map((c) => (
                     <span
                       key={c}
                       className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-mist)] px-2 py-0.5 text-[11px] font-bold text-[var(--color-brand-ink)]"
@@ -319,7 +303,7 @@ export default function ProductLanding() {
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 px-3 py-2 text-[11px] font-medium text-[var(--color-brand-slate)] sm:justify-start sm:text-xs">
                 <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   <Truck className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                  توصيل داخل المملكة · ٣–٥ أيام عمل
+                  {d.valueStripDelivery}
                 </span>
                 <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
                   |
@@ -333,7 +317,7 @@ export default function ProductLanding() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   <Award className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                  منتج مرخّص SFDA
+                  {d.valueStripRegulatory}
                 </span>
               </div>
 
@@ -380,7 +364,7 @@ export default function ProductLanding() {
                           <span className="text-[11px] text-[var(--color-brand-slate)]">
                             متوسط{" "}
                             <span dir="ltr" className="sar-glyph tabular-nums">
-                              {formatSar(per)}
+                              {formatMoney(per, d.currency, d.numberLocale)}
                             </span>{" "}
                             للعبوة ضمن الخيار
                           </span>
@@ -388,7 +372,7 @@ export default function ProductLanding() {
                             <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
                               أقل من السعر المرجعي بمقدار{" "}
                               <span dir="ltr" className="sar-glyph tabular-nums">
-                                {formatSar(savings)}
+                                {formatMoney(savings, d.currency, d.numberLocale)}
                               </span>{" "}
                               لهذا العدد
                             </span>
@@ -399,14 +383,14 @@ export default function ProductLanding() {
                             dir="ltr"
                             className="sar-glyph text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl"
                           >
-                            {formatSar(offer.price)}
+                            {formatMoney(offer.price, d.currency, d.numberLocale)}
                           </span>
                           {offer.compare != null && (
                             <span
                               dir="ltr"
                               className="sar-glyph text-xs tabular-nums text-[var(--color-brand-slate)] line-through"
                             >
-                              {formatSar(offer.compare)}
+                              {formatMoney(offer.compare, d.currency, d.numberLocale)}
                             </span>
                           )}
                         </span>
@@ -456,15 +440,15 @@ export default function ProductLanding() {
             <div className="mx-auto max-w-3xl text-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-amber-400/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-amber-200">
                 <ShieldCheck className="h-3.5 w-3.5 text-amber-300" aria-hidden />
-                {AUTHENTICITY_SECTION.eyebrow}
+                {d.authenticity.eyebrow}
               </span>
               <h2
                 id="authenticity-heading"
                 className="mt-5 text-balance text-3xl font-black leading-tight sm:text-4xl md:text-[2.35rem]"
               >
-                {AUTHENTICITY_SECTION.title}
+                {d.authenticity.title}
               </h2>
-              <p className="mt-4 text-pretty text-sm leading-relaxed text-white/72 sm:text-base">{AUTHENTICITY_SECTION.lead}</p>
+              <p className="mt-4 text-pretty text-sm leading-relaxed text-white/72 sm:text-base">{d.authenticity.lead}</p>
             </div>
 
             <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:items-stretch lg:gap-8">
@@ -475,9 +459,9 @@ export default function ProductLanding() {
                       <ShieldCheck className="h-6 w-6" aria-hidden />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-white">{AUTHENTICITY_SECTION.real.label}</h3>
+                      <h3 className="text-lg font-black text-white">{d.authenticity.real.label}</h3>
                       <ul className="mt-4 flex flex-col gap-3">
-                        {AUTHENTICITY_SECTION.real.items.map((item) => (
+                        {d.authenticity.real.items.map((item) => (
                           <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-white/85">
                             <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
                             <span>{item}</span>
@@ -494,9 +478,9 @@ export default function ProductLanding() {
                       <AlertTriangle className="h-6 w-6" aria-hidden />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-red-100">{AUTHENTICITY_SECTION.fake.label}</h3>
+                      <h3 className="text-lg font-black text-red-100">{d.authenticity.fake.label}</h3>
                       <ul className="mt-4 flex flex-col gap-3">
-                        {AUTHENTICITY_SECTION.fake.items.map((item) => (
+                        {d.authenticity.fake.items.map((item) => (
                           <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-red-100/85">
                             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/90" aria-hidden />
                             <span>{item}</span>
@@ -512,20 +496,20 @@ export default function ProductLanding() {
                 <div className="flex h-full flex-col justify-between rounded-3xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-400/[0.12] via-white/[0.05] to-transparent p-6 shadow-[0_28px_80px_-28px_rgba(201,164,74,0.45)] ring-1 ring-amber-200/20 backdrop-blur-md sm:p-8">
                   <div>
                     <span className="inline-flex rounded-full bg-amber-400/20 px-3 py-1 text-[11px] font-black text-amber-100 ring-1 ring-amber-300/40">
-                      {AUTHENTICITY_SECTION.guarantee.kicker}
+                      {d.authenticity.guarantee.kicker}
                     </span>
-                    <h3 className="mt-4 text-2xl font-black text-white sm:text-[1.65rem]">{AUTHENTICITY_SECTION.guarantee.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-[0.95rem]">{AUTHENTICITY_SECTION.guarantee.body}</p>
+                    <h3 className="mt-4 text-2xl font-black text-white sm:text-[1.65rem]">{d.authenticity.guarantee.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-[0.95rem]">{d.authenticity.guarantee.body}</p>
                   </div>
                   <p className="mt-6 border-t border-amber-200/20 pt-4 text-xs leading-relaxed text-amber-100/75">
-                    {AUTHENTICITY_SECTION.guarantee.footBeforeLink}{" "}
+                    {d.authenticity.guarantee.footBeforeLink}{" "}
                     <Link
-                      href={AUTHENTICITY_SECTION.guarantee.returnsLink.href}
+                      href={d.authenticity.guarantee.returnsLink.href}
                       className="font-bold text-amber-200 underline underline-offset-2 transition hover:text-white"
                     >
-                      {AUTHENTICITY_SECTION.guarantee.returnsLink.label}
+                      {d.authenticity.guarantee.returnsLink.label}
                     </Link>{" "}
-                    {AUTHENTICITY_SECTION.guarantee.footAfterLink}
+                    {d.authenticity.guarantee.footAfterLink}
                   </p>
                 </div>
               </div>
@@ -569,7 +553,7 @@ export default function ProductLanding() {
               </p>
             </div>
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {PAIN_CHECKLIST.map((p) => (
+              {d.painChecklist.map((p) => (
                 <div
                   key={p.title}
                   className="rounded-3xl border-2 border-white bg-white p-6 shadow-md ring-1 ring-[var(--color-brand-border)]"
@@ -592,12 +576,12 @@ export default function ProductLanding() {
           <div className="mx-auto grid max-w-screen-xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
             <div className="text-right lg:max-w-xl lg:justify-self-end">
               <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-primary)]">
-                {PRODUCT_RESULT_VISUAL.eyebrow}
+                {d.productResultVisual.eyebrow}
               </span>
               <h2 className="mt-3 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">
-                {PRODUCT_RESULT_VISUAL.title}
+                {d.productResultVisual.title}
               </h2>
-              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{PRODUCT_RESULT_VISUAL.body}</p>
+              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{d.productResultVisual.body}</p>
               <p className="mt-4 text-xs leading-relaxed text-[var(--color-brand-slate)]/85">
                 الوصف تجميلي. النتائج فردية ولا تُعد تشخيصاً طبياً أو علاجاً لمرض.
               </p>
@@ -605,8 +589,8 @@ export default function ProductLanding() {
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] shadow-[0_24px_60px_-24px_rgba(26,86,219,0.45)] ring-1 ring-black/[0.04]">
                 <Image
-                  src={PRODUCT_RESULT_VISUAL.imageSrc}
-                  alt={PRODUCT_RESULT_VISUAL.imageAlt}
+                  src={d.productResultVisual.imageSrc}
+                  alt={d.productResultVisual.imageAlt}
                   fill
                   className="object-cover"
                   sizes="(max-width:1024px) 100vw, 480px"
@@ -631,7 +615,7 @@ export default function ProductLanding() {
                 نفس الرسالة بأقطار مختلفة… عشان تدخلينها من جميع الجوانب
               </h2>
             </div>
-            <div className="grid gap-6 lg:grid-cols-3">{STORY_FRAMES.map((f) => <StoryFrameCard key={f.headline} frame={f} />)}</div>
+            <div className="grid gap-6 lg:grid-cols-3">{d.storyFrames.map((f) => <StoryFrameCard key={f.headline} frame={f} />)}</div>
           </div>
         </section>
 
@@ -641,8 +625,8 @@ export default function ProductLanding() {
             <div className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:max-w-none">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-br from-[#e8f2ff] to-[#dbeafe] shadow-[0_24px_60px_-24px_rgba(15,28,46,0.35)] ring-1 ring-black/[0.04]">
                 <Image
-                  src={PRODUCT_LIFESTYLE_VISUAL.imageSrc}
-                  alt={PRODUCT_LIFESTYLE_VISUAL.imageAlt}
+                  src={d.productLifestyleVisual.imageSrc}
+                  alt={d.productLifestyleVisual.imageAlt}
                   fill
                   className="object-cover"
                   sizes="(max-width:1024px) 100vw, 480px"
@@ -651,12 +635,12 @@ export default function ProductLanding() {
             </div>
             <div className="order-1 text-right lg:order-2 lg:max-w-xl lg:justify-self-end">
               <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-accent)]">
-                {PRODUCT_LIFESTYLE_VISUAL.eyebrow}
+                {d.productLifestyleVisual.eyebrow}
               </span>
               <h2 className="mt-3 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">
-                {PRODUCT_LIFESTYLE_VISUAL.title}
+                {d.productLifestyleVisual.title}
               </h2>
-              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{PRODUCT_LIFESTYLE_VISUAL.body}</p>
+              <p className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">{d.productLifestyleVisual.body}</p>
             </div>
           </div>
         </section>
@@ -667,17 +651,17 @@ export default function ProductLanding() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-brand-primary)]/10 px-3 py-1 text-xs font-black text-[var(--color-brand-primary)]">
                 <Beaker className="h-3.5 w-3.5" aria-hidden />
-                {MECHANISM_BLOCK.eyebrow}
+                {d.mechanismBlock.eyebrow}
               </span>
-              <h2 className="mt-4 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">{MECHANISM_BLOCK.title}</h2>
-              {MECHANISM_BLOCK.paras.map((para) => (
+              <h2 className="mt-4 text-3xl font-black leading-snug text-[var(--color-brand-ink)] sm:text-4xl">{d.mechanismBlock.title}</h2>
+              {d.mechanismBlock.paras.map((para) => (
                 <p key={para.slice(0, 24)} className="mt-4 text-pretty leading-relaxed text-[var(--color-brand-slate)]">
                   {para}
                 </p>
               ))}
               <div className="mt-8 rounded-3xl border-2 border-[var(--color-brand-accent)]/35 bg-gradient-to-br from-white to-[#fffbeb] p-6 shadow-inner">
-                <p className="text-lg font-black text-[var(--color-brand-ink)]">{MECHANISM_BLOCK.calloutTitle}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{MECHANISM_BLOCK.calloutBody}</p>
+                <p className="text-lg font-black text-[var(--color-brand-ink)]">{d.mechanismBlock.calloutTitle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{d.mechanismBlock.calloutBody}</p>
               </div>
             </div>
             <div className="space-y-4">
@@ -687,7 +671,7 @@ export default function ProductLanding() {
                   نقاط «إثبات» سريعة (مو تطبيل)
                 </h3>
                 <ul className="mt-4 flex flex-col gap-3">
-                  {SCIENCE_PROOF_LIST.map((line) => (
+                  {d.scienceProofList.map((line) => (
                     <li key={line} className="flex gap-3 text-sm font-semibold text-[var(--color-brand-ink)]">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
                       {line}
@@ -698,8 +682,8 @@ export default function ProductLanding() {
               <div className="relative overflow-hidden rounded-3xl border border-[var(--color-brand-border)] shadow-md">
                 <div className="relative aspect-[4/3] w-full">
                   <Image
-                    src={PRODUCT_DESCRIPTION_GALLERY[2].src}
-                    alt={PRODUCT_DESCRIPTION_GALLERY[2].alt}
+                    src={d.productDescriptionGallery[2].src}
+                    alt={d.productDescriptionGallery[2].alt}
                     fill
                     className="object-cover"
                     sizes="(max-width:1024px) 100vw, 520px"
@@ -723,7 +707,7 @@ export default function ProductLanding() {
                 مو كلام فخم… كل نقطة تحسّين إحساس حقيقي لما الروتين يثبت.
               </p>
               <ul className="mt-8 flex flex-col gap-4">
-                {PRODUCT_BENEFITS.map((b) => (
+                {d.productBenefits.map((b) => (
                   <li key={b} className="flex gap-3 text-sm font-bold text-[var(--color-brand-ink)]">
                     <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-success)]/15">
                       <CheckCircle size={14} className="text-[var(--color-brand-success)]" />
@@ -736,8 +720,8 @@ export default function ProductLanding() {
             <div className="order-1 md:order-2">
               <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl ring-2 ring-[var(--color-brand-primary)]/20">
                 <Image
-                  src={PRODUCT_DESCRIPTION_GALLERY[1].src}
-                  alt={PRODUCT_DESCRIPTION_GALLERY[1].alt}
+                  src={d.productDescriptionGallery[1].src}
+                  alt={d.productDescriptionGallery[1].alt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 400px"
@@ -761,7 +745,7 @@ export default function ProductLanding() {
               <h2 className="mt-3 text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">تعرفين وش يدخل على بشرتج… ومو بس اسم لامع</h2>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {PRODUCT_INGREDIENTS.map((ing) => (
+              {d.productIngredients.map((ing) => (
                 <div
                   key={ing.name}
                   className="relative overflow-hidden rounded-3xl border border-[var(--color-brand-border)] bg-white p-6 shadow-lg"
@@ -781,9 +765,9 @@ export default function ProductLanding() {
         {/* Authority */}
         <section className="border-t border-[var(--color-brand-border)] bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
-            <h2 className="text-center text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">{AUTHORITY_BAND.title}</h2>
+            <h2 className="text-center text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">{d.authorityBand.title}</h2>
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {AUTHORITY_BAND.points.map((p) => (
+              {d.authorityBand.points.map((p) => (
                 <div key={p.t} className="rounded-3xl border-2 border-[var(--color-brand-border)] bg-gradient-to-b from-white to-[var(--color-brand-mist)]/30 p-6 text-center shadow-sm">
                   <p className="text-xl font-black text-[var(--color-brand-primary)]">{p.t}</p>
                   <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{p.d}</p>
@@ -801,7 +785,7 @@ export default function ProductLanding() {
               <h2 className="mt-3 text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">خلّي الروتين «خفيف» عشان يثبت</h2>
             </div>
             <div className="mt-12 flex flex-col gap-6 md:flex-row md:gap-4">
-              {PRODUCT_HOW_TO.map((step) => (
+              {d.productHowTo.map((step) => (
                 <div key={step.step} className="relative flex flex-1 flex-col rounded-3xl border border-[var(--color-brand-border)] bg-white p-6 shadow-md">
                   <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-brand-primary)] text-lg font-black text-white shadow-lg">
                     {step.step}
@@ -818,14 +802,14 @@ export default function ProductLanding() {
         <section className="border-t border-[var(--color-brand-border)] bg-white py-16 sm:py-24">
           <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
             <div className="mx-auto max-w-2xl text-center">
-              <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-accent)]">شهادات من السعودية</span>
+              <span className="text-xs font-black uppercase tracking-widest text-[var(--color-brand-accent)]">{d.reviewsEyebrow}</span>
               <h2 className="mt-3 text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">كلام بنات… مو إعلان مسجّل</h2>
               <p className="mt-3 text-sm text-[var(--color-brand-slate)]">
                 نخلي النبرة واقعية لأن المصداقية أغلى من أي فلتر.
               </p>
             </div>
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {PRODUCT_REVIEWS.map((r) => (
+              {d.productReviews.map((r) => (
                 <figure
                   key={r.name}
                   className="flex h-full flex-col rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-b from-white to-[var(--color-brand-mist)]/20 p-5 shadow-md"
@@ -862,9 +846,9 @@ export default function ProductLanding() {
         {/* Objection buster */}
         <section className="border-t border-[var(--color-brand-border)] bg-[#0f1c2e] py-16 text-white sm:py-20">
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-            <h2 className="text-2xl font-black sm:text-3xl">{OBJECTION_BUSTER.title}</h2>
+            <h2 className="text-2xl font-black sm:text-3xl">{d.objectionBuster.title}</h2>
             <ul className="mt-8 flex flex-col gap-4 text-right">
-              {OBJECTION_BUSTER.lines.map((line) => (
+              {d.objectionBuster.lines.map((line) => (
                 <li
                   key={line}
                   className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-semibold leading-relaxed text-white/95"
@@ -889,7 +873,7 @@ export default function ProductLanding() {
           <div className="mx-auto max-w-2xl px-4 sm:px-6">
             <h2 className="text-center text-3xl font-black text-[var(--color-brand-ink)]">أسئلة تكرّر… وإجاباتنا جاهزة</h2>
             <div className="mt-8 flex flex-col gap-3">
-              {faqItems.map((item) => (
+              {d.faq.map((item) => (
                 <details
                   key={item.question}
                   className="group rounded-2xl border border-[var(--color-brand-border)] bg-white p-5 shadow-sm open:ring-2 open:ring-[var(--color-brand-primary)]/15"
@@ -913,9 +897,10 @@ export default function ProductLanding() {
         <div className="min-w-0 flex-1">
           <p className={`text-[10px] font-black ${primaryTheme.stickyHint}`}>الدفع عند الاستلام</p>
           <p className="truncate text-lg font-black text-[var(--color-brand-ink)]">
-            <span dir="ltr" className="sar-glyph tabular-nums">
-              {formatSar(selected.price)}
-            </span>
+            <span dir="ltr" className="tabular-nums">
+              {formatMoney(selected.price, d.currency, d.numberLocale)}
+            </span>{" "}
+            <span className="text-base font-bold">{d.currencyLabelAr}</span>
           </p>
           <p className="truncate text-[10px] text-[var(--color-brand-slate)]">{selected.label}</p>
         </div>

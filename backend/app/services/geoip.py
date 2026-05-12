@@ -208,7 +208,7 @@ async def check_ip(ip_address: str | None) -> GeoIPResult:
     Perform geo lookup and apply configured block rules.
 
     Rules (all opt-in via env flags):
-      • MAXMIND_BLOCK_NON_SA=true  — block if country != SA
+      • MAXMIND_BLOCK_NON_SA=true  — block if country not in MAXMIND_ALLOWED_COUNTRIES (default SA,QA,KW)
       • MAXMIND_BLOCK_VPN=true     — block if VPN/proxy/Tor detected
       • MAXMIND_RISK_SCORE_THRESHOLD > 0 — block if Insights risk_score exceeds threshold
 
@@ -226,13 +226,18 @@ async def check_ip(ip_address: str | None) -> GeoIPResult:
         # Fail-open on lookup errors
         return GeoIPResult(allowed=True, geo=geo, reason=f"lookup_error:{geo.error}")
 
-    # Country block
-    if settings.MAXMIND_BLOCK_NON_SA and geo.country_iso and geo.country_iso.upper() != "SA":
-        logger.info("GeoIP: blocked non-SA order — country=%s ip=%s", geo.country_iso, ip_address)
-        return GeoIPResult(
-            allowed=False, geo=geo,
-            reason=f"country_blocked:{geo.country_iso}",
-        )
+    # Country allowlist (when MAXMIND_BLOCK_NON_SA is enabled)
+    if settings.MAXMIND_BLOCK_NON_SA and geo.country_iso:
+        allowed = settings.maxmind_allowed_iso_countries
+        if geo.country_iso.upper() not in allowed:
+            logger.info(
+                "GeoIP: blocked order — country=%s not in allowlist ip=%s",
+                geo.country_iso, ip_address,
+            )
+            return GeoIPResult(
+                allowed=False, geo=geo,
+                reason=f"country_blocked:{geo.country_iso}",
+            )
 
     # VPN / proxy / Tor block
     if settings.MAXMIND_BLOCK_VPN and (geo.is_vpn or geo.is_proxy or geo.is_tor):

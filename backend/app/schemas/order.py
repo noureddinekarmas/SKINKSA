@@ -36,6 +36,7 @@ class DraftOrderRequest(BaseModel):
     customer_phone: str
     customer_address: Optional[str] = None
     customer_province: Optional[str] = None
+    checkout_currency: Optional[str] = None
     cart_items: list[CartItemInput]
     attribution: Optional[AttributionInput] = None
     event_ids: Optional[EventIdsInput] = None
