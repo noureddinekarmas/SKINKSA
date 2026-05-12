@@ -4,6 +4,8 @@
  */
 import type { StaticImageData } from "next/image";
 
+import { productAsset } from "@/lib/content/product-assets";
+
 export type GalleryImage = {
   src: string | StaticImageData;
   alt: string;
@@ -18,7 +20,7 @@ export type GalleryImage = {
 
 export const PRODUCT_GALLERY: GalleryImage[] = [
   {
-    src: "/images/product/gallery-main-1.png",
+    src: productAsset("/images/product/gallery-main-1.png"),
     alt: "تركيبة عناية فاخرة بتركيز نظيف",
     thumbLabel: "العبوة",
     overlay: {
@@ -28,7 +30,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "/images/product/gallery-texture-2.png",
+    src: productAsset("/images/product/gallery-texture-2.png"),
     alt: "قوام سائل أنيق يُوزّع بلطف",
     thumbLabel: "القوام",
     overlay: {
@@ -38,7 +40,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "/images/product/gallery-usage-3.png",
+    src: productAsset("/images/product/gallery-usage-3.png"),
     alt: "لمسة يد ناعمة على الوجه",
     thumbLabel: "الاستخدام",
     overlay: {
@@ -48,7 +50,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
     },
   },
   {
-    src: "/images/product/gallery-quality-4.png",
+    src: productAsset("/images/product/gallery-quality-4.png"),
     alt: "مختبر وجودة ونظافة",
     thumbLabel: "الجودة",
     overlay: {
@@ -69,7 +71,7 @@ export const PRODUCT_RESULT_VISUAL = {
   title: "قبل وبعد… لما تهتمّين للمنطقة الحساسة حول العين",
   body:
     "لما يلتزم الروتين، كثير من العميلات يلاحظن بشرة تبين أهدأ وأوضح. الصورة توضيحية للاتجاه العام — مو نتيجة مضمونة للجميع، وتختلف حسب نوع البشرة والنوم والعوامل الخارجية.",
-  imageSrc: "/images/product/section-before-after.jpg",
+  imageSrc: productAsset("/images/product/section-before-after.jpg"),
   imageAlt: "مقارنة قبل وبعد لمنطقة تحت العين — مظهر أكثر إشراقاً ونعومة",
 } as const;
 
@@ -78,7 +80,7 @@ export const PRODUCT_LIFESTYLE_VISUAL = {
   title: "نفس العبوة اللي تشوفينها… بين إيديك بوضوح",
   body:
     "سيروم SKINKSA بلون أزرق نقي يمتص بسرعة — يناسبج إذا تبغين مظهر نضارة من غير طبقات تقيلة، وتمشين مع المكياج لما يسكن على البشرة.",
-  imageSrc: "/images/product/section-lifestyle-model.png",
+  imageSrc: productAsset("/images/product/section-lifestyle-model.png"),
   imageAlt: "لقطة ترويجية لعارضة تحمل عبوة سيروم SKINKSA ببتيد النحاس الأزرق بلون سائل أزرق واضح",
 } as const;
 
@@ -93,21 +95,21 @@ export type StoryFrame = {
 
 export const STORY_FRAMES: StoryFrame[] = [
   {
-    src: "/images/product/story-card-1.png",
+    src: productAsset("/images/product/story-card-1.png"),
     alt: "ترطيب لطيف",
     badge: "وجهج يقول تعب؟",
     headline: "التكييف والسهر يبانون… بس مو لازم يثبتون",
     body: "دايم تلاحظين بعد الظهر: ملمس مو حلو، وجه يبين متعبان، ومع المكياج يزيد الإحساس؟ هذا مو كسل منج… بشرتج تحتاج شي يدعم مظهر المرونة والنضارة مو بس يرطب لحظة ويخلص.",
   },
   {
-    src: "/images/product/story-card-2.png",
+    src: productAsset("/images/product/story-card-2.png"),
     alt: "مكوّنات وماء وزهور",
     badge: "ليش ذا المكوّن؟",
     headline: "ببتيد النحاس الأزرق: اسم يدور… والسبب علمي",
     body: "GHK-Cu من المكوّنات اللي تدرس في عالم العناية لدوره في دعم مظهر البشرة الأكثر تماسكاً و«مظهر شبابي» عند الالتزام. مو سِحْر — روتين ذكي يلاقي بشرتج في المنتصف: مركّز وما يثقل.",
   },
   {
-    src: "/images/product/story-card-3.png",
+    src: productAsset("/images/product/story-card-3.png"),
     alt: "عبوات عناية راقية",
     badge: "ثقة قبل الفلوس",
     headline: "تسوّقين أونلاين بس خايفة؟ عندج حق",

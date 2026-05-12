@@ -4,22 +4,29 @@ import Image from "next/image";
 import { useState } from "react";
 
 import type { GalleryImage } from "@/lib/content/product-page";
+import { cn } from "@/lib/utils";
 
 export default function ProductGallery({ images }: { images: GalleryImage[] }) {
   const [active, setActive] = useState(0);
   const current = images[active];
   const overlay = current.overlay;
+  const single = images.length <= 1;
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="group relative aspect-square w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-br from-[#e8f2ff] via-white to-[#fdf8ee] shadow-[0_28px_70px_-28px_rgba(26,86,219,0.55)] ring-1 ring-black/[0.04]">
+      <div
+        className={cn(
+          "group relative w-full overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-br from-[#e8f2ff] via-white to-[#fdf8ee] shadow-[0_28px_70px_-28px_rgba(26,86,219,0.55)] ring-1 ring-black/[0.04]",
+          single ? "aspect-[3/4] sm:aspect-[4/5] md:aspect-square" : "aspect-square"
+        )}
+      >
         <div className="pointer-events-none absolute inset-2 rounded-[1.35rem] border border-white/80" />
         <Image
           src={current.src}
           alt={current.alt}
           fill
-          className="object-cover transition duration-500 group-hover:scale-[1.02]"
-          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+          sizes={single ? "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px" : "(max-width: 768px) 100vw, 50vw"}
           priority
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f1c2e]/85 via-[#0f1c2e]/15 to-transparent" />
