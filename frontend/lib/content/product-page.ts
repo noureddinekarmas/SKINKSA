@@ -61,7 +61,7 @@ export const PRODUCT_GALLERY: GalleryImage[] = [
   },
 ];
 
-/** Hero shows only this image; secondary shots live under the description block */
+/** Single hero still used where one asset is required (e.g. legacy references). */
 export const PRODUCT_HERO_IMAGE: GalleryImage = PRODUCT_GALLERY[0];
 export const PRODUCT_DESCRIPTION_GALLERY: GalleryImage[] = PRODUCT_GALLERY.slice(1);
 
@@ -114,6 +114,44 @@ export const STORY_FRAMES: StoryFrame[] = [
     badge: "ثقة قبل الفلوس",
     headline: "تسوّقين أونلاين بس خايفة؟ عندج حق",
     body: "دفع عند الاستلام يعني ما تدفعين لين تشوفين الطرد بيدج. وضمان ٣٠ يوم يشيل عنج ضغط التجربة: إذا ما حسّيتي إن التجربة مو فايدة لج، ترجعين وفق سياسة الاسترجاع.",
+  },
+];
+
+/**
+ * Hero carousel: main pack shot first, then the three marketing assets synced from
+ * Desktop/skinksa (story-card-1, gallery-texture-2, section-before-after).
+ */
+export const PRODUCT_HERO_GALLERY: GalleryImage[] = [
+  PRODUCT_GALLERY[0],
+  {
+    src: productAsset("/images/product/story-card-1.png"),
+    alt: STORY_FRAMES[0].alt,
+    thumbLabel: "القصة",
+    overlay: {
+      kicker: STORY_FRAMES[0].badge,
+      title: STORY_FRAMES[0].headline,
+      subtitle:
+        STORY_FRAMES[0].body.length > 160 ? `${STORY_FRAMES[0].body.slice(0, 157).trim()}…` : STORY_FRAMES[0].body,
+    },
+  },
+  {
+    src: productAsset("/images/product/gallery-texture-2.png"),
+    alt: PRODUCT_GALLERY[1].alt,
+    thumbLabel: PRODUCT_GALLERY[1].thumbLabel ?? "القوام",
+    overlay: PRODUCT_GALLERY[1].overlay,
+  },
+  {
+    src: productAsset("/images/product/section-before-after.jpg"),
+    alt: PRODUCT_RESULT_VISUAL.imageAlt,
+    thumbLabel: "قبل وبعد",
+    overlay: {
+      kicker: PRODUCT_RESULT_VISUAL.eyebrow,
+      title: PRODUCT_RESULT_VISUAL.title,
+      subtitle:
+        PRODUCT_RESULT_VISUAL.body.length > 200
+          ? `${PRODUCT_RESULT_VISUAL.body.slice(0, 197).trim()}…`
+          : PRODUCT_RESULT_VISUAL.body,
+    },
   },
 ];
 

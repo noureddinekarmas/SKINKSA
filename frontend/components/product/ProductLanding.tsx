@@ -29,7 +29,7 @@ import {
   PRODUCT_BENEFITS,
   PRODUCT_DESCRIPTION_GALLERY,
   PRODUCT_HEADLINE,
-  PRODUCT_HERO_IMAGE,
+  PRODUCT_HERO_GALLERY,
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
@@ -236,7 +236,7 @@ export default function ProductLanding() {
                   مرخّص SFDA
                 </span>
               </div>
-              <ProductGallery images={[PRODUCT_HERO_IMAGE]} />
+              <ProductGallery images={PRODUCT_HERO_GALLERY} />
             </div>
 
             <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">
