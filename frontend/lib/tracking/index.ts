@@ -89,6 +89,29 @@ export function trackTikTokRoutePageView(): void {
   else fire();
 }
 
+/** Meta Pixel: snippet already fires PageView on first paint; call on App Router navigations only. */
+export function trackMetaRoutePageView(): void {
+  if (process.env.NEXT_PUBLIC_ENABLE_TRACKING !== "true") return;
+  if (!process.env.NEXT_PUBLIC_META_PIXEL_ID) return;
+  if (typeof window === "undefined") return;
+  if (typeof window.fbq === "function") window.fbq("track", "PageView");
+}
+
+/** Snap Pixel: matches initial `snaptr('track','PAGE_VIEW')` on client-side navigations. */
+export function trackSnapRoutePageView(): void {
+  if (process.env.NEXT_PUBLIC_ENABLE_TRACKING !== "true") return;
+  if (!process.env.NEXT_PUBLIC_SNAP_PIXEL_ID) return;
+  if (typeof window === "undefined") return;
+  if (typeof window.snaptr === "function") window.snaptr("track", "PAGE_VIEW");
+}
+
+/** Fire deferred pixels’ route PageView after the first pathname (full load handled by PixelScripts). */
+export function trackBrowserPixelsRoutePageView(): void {
+  trackMetaRoutePageView();
+  trackTikTokRoutePageView();
+  trackSnapRoutePageView();
+}
+
 export function trackCommerceEvent({
   eventName,
   eventId,
