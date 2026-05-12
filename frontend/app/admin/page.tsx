@@ -7,10 +7,12 @@ import {
   fetchAdminOrderDetail,
   fetchAdminOrders,
   fetchAdminProductSales,
+  fetchAdminTrafficAttribution,
   type AdminMetrics,
   type AdminOrderDetail,
   type AdminOrderRow,
   type AdminProductSalesRow,
+  type AdminTrafficAttribution,
 } from "@/lib/api/admin";
 
 function formatSar(n: string | number): string {
@@ -35,8 +37,9 @@ export default function AdminDashboardPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [connected, setConnected] = useState(false);
-  const [tab, setTab] = useState<"overview" | "orders" | "products">("overview");
+  const [tab, setTab] = useState<"overview" | "traffic" | "orders" | "products">("overview");
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+  const [trafficAttribution, setTrafficAttribution] = useState<AdminTrafficAttribution | null>(null);
   const [orders, setOrders] = useState<AdminOrderRow[]>([]);
   const [productSales, setProductSales] = useState<AdminProductSalesRow[]>([]);
   const [salesFinalizedOnly, setSalesFinalizedOnly] = useState(true);
@@ -50,16 +53,18 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const [m, list, sales] = await Promise.all([
+      const [m, list, sales, traffic] = await Promise.all([
         fetchAdminMetrics(creds.user, creds.password, from, to),
         fetchAdminOrders(creds.user, creds.password, { from, to, limit: 100 }),
         fetchAdminProductSales(creds.user, creds.password, from, to, {
           finalizedOnly: salesFinalizedOnly,
         }),
+        fetchAdminTrafficAttribution(creds.user, creds.password, from, to),
       ]);
       setMetrics(m);
       setOrders(list);
       setProductSales(sales);
+      setTrafficAttribution(traffic);
       setConnected(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
@@ -144,6 +149,7 @@ export default function AdminDashboardPage() {
             {(
               [
                 ["overview", "Overview"],
+                ["traffic", "Traffic & platforms"],
                 ["orders", "Orders"],
                 ["products", "Products & countries"],
               ] as const
@@ -196,6 +202,7 @@ export default function AdminDashboardPage() {
               onClick={() => {
                 setConnected(false);
                 setMetrics(null);
+                setTrafficAttribution(null);
                 setOrders([]);
                 setProductSales([]);
                 setDetail(null);
@@ -243,6 +250,69 @@ export default function AdminDashboardPage() {
                   title="Conversion (product view → order)"
                   value={formatPct(metrics.conversion_valid_product_views_to_order)}
                 />
+              </div>
+            </section>
+          ) : null}
+
+          {tab === "traffic" && loading && !trafficAttribution ? (
+            <p className="mt-8 text-sm text-[var(--color-brand-slate)]">Loading traffic…</p>
+          ) : null}
+
+          {tab === "traffic" && trafficAttribution ? (
+            <section className="mt-8 space-y-6">
+              <p className="text-sm text-[var(--color-brand-slate)]">
+                <strong>Valid store visits only</strong> (Saudi, non-VPN) from page-view beacons.{" "}
+                <strong>Platform</strong> is your ad / traffic type:{" "}
+                <code className="text-xs">utm_source</code> +{" "}
+                <code className="text-xs">utm_medium</code> (empty shows as{" "}
+                <strong>(direct)</strong> / <strong>(none)</strong>).{" "}
+                <strong>Conversion</strong> = finalized COD orders that pass the KPI geo check ÷ sessions in
+                the same UTM bucket (order UTMs captured at checkout should match the landing link).
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <MetricCard title="Sessions (valid)" value={trafficAttribution.total_valid_sessions} />
+                <MetricCard title="Page views (valid)" value={trafficAttribution.total_valid_page_views} />
+                <MetricCard title="Orders (KPI geo)" value={trafficAttribution.total_orders_kpi} />
+                <MetricCard
+                  title="Overall conversion"
+                  value={formatPct(trafficAttribution.overall_conversion_rate)}
+                />
+              </div>
+              <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
+                    <tr>
+                      <th className="px-4 py-3">Source (platform)</th>
+                      <th className="px-4 py-3">Medium</th>
+                      <th className="px-4 py-3 text-right">Sessions</th>
+                      <th className="px-4 py-3 text-right">Page views</th>
+                      <th className="px-4 py-3 text-right">Orders</th>
+                      <th className="px-4 py-3 text-right">Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {trafficAttribution.rows.map((row, idx) => (
+                      <tr
+                        key={`${row.utm_source}-${row.utm_medium}-${idx}`}
+                        className="border-b border-[var(--color-brand-border)] last:border-0"
+                      >
+                        <td className="px-4 py-3 font-mono text-xs">{row.utm_source}</td>
+                        <td className="px-4 py-3 font-mono text-xs">{row.utm_medium}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.sessions}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.page_views}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.orders_kpi}</td>
+                        <td className="px-4 py-3 text-right font-medium tabular-nums">
+                          {formatPct(row.conversion_rate)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {trafficAttribution.rows.length === 0 && !loading ? (
+                  <p className="p-6 text-center text-sm text-[var(--color-brand-slate)]">
+                    No traffic in this range (or beacons not yet received).
+                  </p>
+                ) : null}
               </div>
             </section>
           ) : null}

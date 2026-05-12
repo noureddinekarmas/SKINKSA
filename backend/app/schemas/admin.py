@@ -22,6 +22,27 @@ class AdminProductCountrySalesRow(BaseModel):
     revenue_sar: Decimal
 
 
+class AdminTrafficSourceRow(BaseModel):
+    """Valid-traffic sessions / page views grouped by UTM, plus KPI orders and conversion."""
+
+    utm_source: str  # normalized; "(direct)" when missing
+    utm_medium: str  # normalized; "(none)" when missing
+    sessions: int
+    page_views: int
+    orders_kpi: int
+    conversion_rate: float
+
+
+class AdminTrafficAttributionOut(BaseModel):
+    start: datetime
+    end_exclusive: datetime
+    rows: list[AdminTrafficSourceRow]
+    total_valid_sessions: int
+    total_valid_page_views: int
+    total_orders_kpi: int
+    overall_conversion_rate: float
+
+
 class AdminMetricsOut(BaseModel):
     start: datetime
     end_exclusive: datetime

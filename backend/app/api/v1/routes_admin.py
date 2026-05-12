@@ -3,8 +3,8 @@ from __future__ import annotations
 import uuid
 from datetime import date, datetime, time, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import and_, func, select
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, func, literal, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -22,6 +22,8 @@ from app.schemas.admin import (
     AdminOrderItemOut,
     AdminOrderListItem,
     AdminProductCountrySalesRow,
+    AdminTrafficAttributionOut,
+    AdminTrafficSourceRow,
 )
 from app.services.traffic_validity import order_geo_valid_for_kpi
 
@@ -147,6 +149,144 @@ async def admin_metrics(
         revenue_all_sar=revenue_all_sar,
         conversion_valid_sessions_to_order=round(conv_sess, 6),
         conversion_valid_product_views_to_order=round(conv_pv, 6),
+    )
+
+
+def _norm_utm_source_expr(col):
+    trimmed = func.trim(func.coalesce(col, ""))
+    lowered = func.lower(trimmed)
+    return func.coalesce(func.nullif(lowered, ""), literal("(direct)"))
+
+
+def _norm_utm_medium_expr(col):
+    trimmed = func.trim(func.coalesce(col, ""))
+    lowered = func.lower(trimmed)
+    return func.coalesce(func.nullif(lowered, ""), literal("(none)"))
+
+
+@router.get("/traffic-attribution", response_model=AdminTrafficAttributionOut)
+async def admin_traffic_attribution(
+    db: AsyncSession = Depends(get_db),
+    from_date: date = Query(..., alias="from"),
+    to_date: date = Query(..., alias="to"),
+):
+    """
+    Valid KSA / non-VPN traffic only (analytics is_valid_traffic).
+    Platform columns = utm_source + utm_medium (from page_view beacons).
+    Orders = finalized COD with KPI-valid Saudi geo, matched to the same UTM buckets
+    captured on checkout.
+    """
+    start, end_excl = _utc_day_range(from_date, to_date)
+
+    ae_page_valid = and_(
+        AnalyticsEvent.created_at >= start,
+        AnalyticsEvent.created_at < end_excl,
+        AnalyticsEvent.is_valid_traffic.is_(True),
+        AnalyticsEvent.event_type == "page_view",
+    )
+
+    src_a = _norm_utm_source_expr(AnalyticsEvent.utm_source)
+    med_a = _norm_utm_medium_expr(AnalyticsEvent.utm_medium)
+
+    stmt_traffic = (
+        select(
+            src_a.label("utm_source"),
+            med_a.label("utm_medium"),
+            func.count(func.distinct(AnalyticsEvent.session_id)).label("sessions"),
+            func.count().label("page_views"),
+        )
+        .where(
+            ae_page_valid,
+            AnalyticsEvent.session_id.isnot(None),
+            AnalyticsEvent.session_id != "",
+        )
+        .group_by(src_a, med_a)
+    )
+
+    ord_date = and_(Order.created_at >= start, Order.created_at < end_excl)
+    src_o = _norm_utm_source_expr(Order.utm_source)
+    med_o = _norm_utm_medium_expr(Order.utm_medium)
+
+    stmt_orders = (
+        select(
+            src_o.label("utm_source"),
+            med_o.label("utm_medium"),
+            func.count(Order.id).label("orders_kpi"),
+        )
+        .where(
+            ord_date,
+            _finalized_status_clause(),
+            _valid_geo_clause(),
+        )
+        .group_by(src_o, med_o)
+    )
+
+    traffic_map: dict[tuple[str, str], dict[str, int]] = {}
+    res_t = await db.execute(stmt_traffic)
+    for row in res_t.mappings():
+        key = (row["utm_source"], row["utm_medium"])
+        traffic_map[key] = {
+            "sessions": int(row["sessions"] or 0),
+            "page_views": int(row["page_views"] or 0),
+        }
+
+    orders_map: dict[tuple[str, str], int] = {}
+    res_o = await db.execute(stmt_orders)
+    for row in res_o.mappings():
+        key = (row["utm_source"], row["utm_medium"])
+        orders_map[key] = int(row["orders_kpi"] or 0)
+
+    all_keys = sorted(set(traffic_map) | set(orders_map), key=lambda k: (k[0], k[1]))
+    rows: list[AdminTrafficSourceRow] = []
+    for key in all_keys:
+        t = traffic_map.get(key, {"sessions": 0, "page_views": 0})
+        ocount = orders_map.get(key, 0)
+        sess = t["sessions"]
+        conv = round(ocount / sess, 6) if sess else 0.0
+        rows.append(
+            AdminTrafficSourceRow(
+                utm_source=key[0],
+                utm_medium=key[1],
+                sessions=sess,
+                page_views=t["page_views"],
+                orders_kpi=ocount,
+                conversion_rate=conv,
+            )
+        )
+
+    r_sg = await db.execute(
+        select(func.count(func.distinct(AnalyticsEvent.session_id))).where(
+            ae_page_valid,
+            AnalyticsEvent.session_id.isnot(None),
+            AnalyticsEvent.session_id != "",
+        )
+    )
+    total_valid_sessions = int(r_sg.scalar_one() or 0)
+
+    r_pvg = await db.execute(select(func.count()).select_from(AnalyticsEvent).where(ae_page_valid))
+    total_valid_page_views = int(r_pvg.scalar_one() or 0)
+
+    r_og = await db.execute(
+        select(func.count()).select_from(Order).where(
+            ord_date,
+            _finalized_status_clause(),
+            _valid_geo_clause(),
+        )
+    )
+    total_orders_kpi = int(r_og.scalar_one() or 0)
+
+    overall_conv = (
+        round(total_orders_kpi / total_valid_sessions, 6) if total_valid_sessions else 0.0
+    )
+
+    return AdminTrafficAttributionOut(
+        start=start,
+        end_exclusive=end_excl,
+        rows=rows,
+        total_valid_sessions=total_valid_sessions,
+        total_valid_page_views=total_valid_page_views,
+        total_orders_kpi=total_orders_kpi,
+        overall_conversion_rate=overall_conv,
     )
 
 
