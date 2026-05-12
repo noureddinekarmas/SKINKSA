@@ -363,34 +363,36 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                           <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
                           <span className="text-[11px] text-[var(--color-brand-slate)]">
                             متوسط{" "}
-                            <span dir="ltr" className="sar-glyph tabular-nums">
+                            <span dir="ltr" className="tabular-nums">
                               {formatMoney(per, d.currency, d.numberLocale)}
                             </span>{" "}
-                            للعبوة ضمن الخيار
+                            {d.currencyLabelAr} للعبوة ضمن الخيار
                           </span>
                           {savings > 0 && (
                             <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
                               أقل من السعر المرجعي بمقدار{" "}
-                              <span dir="ltr" className="sar-glyph tabular-nums">
+                              <span dir="ltr" className="tabular-nums">
                                 {formatMoney(savings, d.currency, d.numberLocale)}
                               </span>{" "}
-                              لهذا العدد
+                              {d.currencyLabelAr} لهذا العدد
                             </span>
                           )}
                         </span>
-                        <span className="flex shrink-0 flex-col items-end">
-                          <span
-                            dir="ltr"
-                            className="sar-glyph text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl"
-                          >
-                            {formatMoney(offer.price, d.currency, d.numberLocale)}
+                        <span className="flex shrink-0 flex-col items-end gap-0.5">
+                          <span className="flex items-baseline gap-1" dir="ltr">
+                            <span className="text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl">
+                              {formatMoney(offer.price, d.currency, d.numberLocale)}
+                            </span>
+                            <span className="text-sm font-bold text-[var(--color-brand-ink)]">{d.currencyLabelAr}</span>
                           </span>
                           {offer.compare != null && (
-                            <span
-                              dir="ltr"
-                              className="sar-glyph text-xs tabular-nums text-[var(--color-brand-slate)] line-through"
-                            >
-                              {formatMoney(offer.compare, d.currency, d.numberLocale)}
+                            <span className="flex items-baseline gap-1" dir="ltr">
+                              <span className="text-xs tabular-nums text-[var(--color-brand-slate)] line-through">
+                                {formatMoney(offer.compare, d.currency, d.numberLocale)}
+                              </span>
+                              <span className="text-[10px] font-semibold text-[var(--color-brand-slate)] line-through">
+                                {d.currencyLabelAr}
+                              </span>
                             </span>
                           )}
                         </span>

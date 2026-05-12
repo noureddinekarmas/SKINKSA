@@ -79,31 +79,34 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
                 <div>
                   <span className="font-bold text-[#0F172A]">{offer.label_ar}</span>
                   <p className="text-xs text-[#475569] mt-0.5">
-                    <span dir="ltr" className="sar-glyph tabular-nums">
+                    <span dir="ltr" className="tabular-nums">
                       {formatMoney(perPiece, "SAR", "en-SA")}
                     </span>{" "}
-                    / العبوة
+                    ر.س / العبوة
                   </p>
                   {saving && (
                     <p className="text-xs text-[#15803D] mt-0.5">
                       وفر{" "}
-                      <span dir="ltr" className="sar-glyph tabular-nums">
+                      <span dir="ltr" className="tabular-nums">
                         {formatMoney(saving, "SAR", "en-SA")}
-                      </span>
+                      </span>{" "}
+                      ر.س
                     </p>
                   )}
                 </div>
                 <div className="text-right">
                   <span className="text-xl font-bold text-[#312E81]">
-                    <span dir="ltr" className="sar-glyph tabular-nums">
+                    <span dir="ltr" className="tabular-nums">
                       {formatMoney(Number(offer.price_sar), "SAR", "en-SA")}
-                    </span>
+                    </span>{" "}
+                    <span className="text-base font-bold">ر.س</span>
                   </span>
                   {offer.compare_at_sar && (
                     <p className="text-xs text-[#475569] line-through">
-                      <span dir="ltr" className="sar-glyph tabular-nums">
+                      <span dir="ltr" className="tabular-nums">
                         {formatMoney(Number(offer.compare_at_sar), "SAR", "en-SA")}
-                      </span>
+                      </span>{" "}
+                      ر.س
                     </p>
                   )}
                 </div>

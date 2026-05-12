@@ -1,5 +1,15 @@
 import type { ShopCurrency } from "@/lib/content/product-landing-data";
 
+/**
+ * Build-time default for pages that are not tied to a market slug (e.g. home).
+ * `/products/qarskin` and `/kwtskin` use **QAR** / **KWD** from `product-landing-data.ts` — this env does not override those.
+ */
+export function getPublicDefaultCurrency(): ShopCurrency {
+  const raw = process.env.NEXT_PUBLIC_DEFAULT_CURRENCY?.trim().toUpperCase();
+  if (raw === "QAR" || raw === "KWD" || raw === "SAR") return raw;
+  return "SAR";
+}
+
 /** Plain number string for SAR displays; pair with «ر.س» in Arabic copy or `sar-glyph` styling where used. */
 export function formatSar(n: string | number): string {
   return formatMoney(n, "SAR", "en-SA");
