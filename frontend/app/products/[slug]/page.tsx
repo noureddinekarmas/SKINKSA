@@ -1,6 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 
 import ProductLanding from "@/components/product/ProductLanding";
+import { MAIN_PRODUCT_SLUG } from "@/lib/content/main-product";
 import { STATIC_PRODUCT } from "@/lib/content/products";
 
 /** Previous public URL — must redirect here as well as next.config (some hosts skip config redirects). */
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const canonical = STATIC_PRODUCT.slug;
+  const canonical = MAIN_PRODUCT_SLUG;
 
   if (slug.toLowerCase() === LEGACY_PRODUCT_SLUG.toLowerCase()) {
     permanentRedirect(`/products/${canonical}`);

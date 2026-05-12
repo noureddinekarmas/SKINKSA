@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/products/blue-copper-peptide-serum",
-        destination: "/products/blueKSA",
+        destination: "/products/blueKSA", // keep in sync with lib/content/main-product.ts MAIN_PRODUCT_SLUG
         permanent: true,
       },
     ];

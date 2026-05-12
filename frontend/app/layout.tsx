@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import CartDrawer from "@/components/layout/CartDrawer";
 import PixelScripts from "@/components/tracking/PixelScripts";
 import Providers from "@/components/Providers";
+import { getSiteUrl } from "@/lib/site";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
@@ -21,13 +22,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: "SKINKSA | سيروم العناية بالبشرة الفاخر",
   description:
     "سيروم ببتيد النحاس الأزرق من SKINKSA - عناية فاخرة للبشرة مع الدفع عند الاستلام داخل السعودية",
   openGraph: {
     title: "SKINKSA | سيروم العناية بالبشرة الفاخر",
     description: "سيروم ببتيد النحاس الأزرق - عناية علمية فاخرة مع دفع عند الاستلام",
-    url: "https://officialskinksa.store",
+    url: getSiteUrl(),
     siteName: "SKINKSA",
     locale: "ar_SA",
   },

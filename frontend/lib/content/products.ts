@@ -1,5 +1,6 @@
 import type { Offer, Product } from "@/lib/api/products";
 import { productAsset } from "@/lib/content/product-assets";
+import { MAIN_PRODUCT_SLUG } from "@/lib/content/main-product";
 
 /** Cart drawer & checkout thumbnails (same asset as gallery hero). */
 export const PRODUCT_CART_IMAGE = productAsset("/images/product/gallery-main-1.png");
@@ -42,7 +43,7 @@ export const STATIC_OFFERS: Offer[] = [
 
 export const STATIC_PRODUCT: Product = {
   id: "prod_blue_copper_serum",
-  slug: "blueKSA",
+  slug: MAIN_PRODUCT_SLUG,
   title_ar:
     "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل",
   title_en: "SKINKSA Blue Copper Peptide Serum — 30ml",
