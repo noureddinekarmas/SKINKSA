@@ -308,10 +308,10 @@ export const AUTHENTICITY_SECTION = {
   },
 };
 
-/** Visual bridge between «المصدر الرسمي» band and «شفتي نفسج في هالنقاط؟» */
+/** Visual bridge between «المصدر الرسمي» band and «شفتي نفسج في هالنقاط؟» — عبوة المنتج */
 export const AUTHENTICITY_TO_PAIN_VISUAL = {
-  imageSrc: productAsset("/images/product/gallery-quality-4.png"),
-  imageAlt: "جودة وتجربة SKINKSA الأصلية — عبوة وتركيبة بمعايير واضحة",
+  imageSrc: productAsset("/images/product/gallery-main-1.png"),
+  imageAlt: "عبوة سيروم SKINKSA الأصلية — ببتيد النحاس الأزرق، ٣٠ مل",
 } as const;
 
 export const AUTHORITY_BAND = {
