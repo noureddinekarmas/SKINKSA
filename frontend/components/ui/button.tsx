@@ -59,12 +59,12 @@ function Button({
 
   if (asChild) {
     const only = React.Children.only(children)
-    if (!React.isValidElement<{ className?: string }>(only)) {
+    if (!React.isValidElement(only)) {
       throw new Error("Button with asChild expects a single React element child.")
     }
-    return React.cloneElement(only, {
-      "data-slot": "button",
-      className: cn(mergedClassName, only.props.className),
+    const child = only as React.ReactElement<{ className?: string }>
+    return React.cloneElement(child, {
+      className: cn(mergedClassName, child.props.className),
     })
   }
 

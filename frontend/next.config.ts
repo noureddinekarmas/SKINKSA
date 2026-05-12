@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    /** Use plain `<img src="/images/...">` — avoids /_next/image edge cases in Docker/CDN. */
+    unoptimized: true,
     /** Avoid long-lived optimizer cache for the same URL (stale art after deploy). */
     minimumCacheTTL: 0,
     remotePatterns: [
