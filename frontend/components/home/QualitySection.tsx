@@ -26,25 +26,27 @@ const qualities = [
 export default function QualitySection() {
   return (
     <section className="py-20 bg-white">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="text-center mb-14">
-          <span className="text-sm font-bold uppercase tracking-widest text-[#1a56db] bg-blue-50 px-3 py-1 rounded-full">الجودة والثقة</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0f1c2e] mt-4">نحترم بشرتك ونقدر ثقتك</h2>
-          <p className="text-[#4b5e78] mt-4 text-lg">أعلى معايير الجودة العالمية لحمايتك ورعايتك</p>
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="mb-14 text-center">
+          <span className="inline-block rounded-full border border-[var(--color-brand-primary)]/20 bg-[var(--color-brand-mist)] px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[var(--color-brand-primary)]">
+            الجودة والثقة
+          </span>
+          <h2 className="mt-4 text-3xl font-black text-[var(--color-brand-ink)] md:text-4xl">نحترم بشرتك ونقدر ثقتك</h2>
+          <p className="mt-4 text-lg text-[var(--color-brand-slate)]">أعلى معايير الجودة لحمايتك ورعايتك</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           {qualities.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="flex gap-5 p-8 rounded-3xl border border-[#d5e3f0] hover:border-[#1a56db]/30 hover:shadow-xl transition-all bg-white group"
+              className="group flex gap-5 rounded-3xl border border-[var(--color-brand-border)] bg-white p-8 transition-all hover:border-[var(--color-brand-primary)]/35 hover:shadow-xl"
             >
-              <div className="w-14 h-14 rounded-2xl bg-[#f0f7ff] group-hover:bg-blue-50 flex items-center justify-center flex-shrink-0 transition-colors">
-                <Icon className="w-7 h-7 text-[#1a56db]" />
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand-mist)] transition-colors group-hover:bg-[var(--color-brand-light)]">
+                <Icon className="h-7 w-7 text-[var(--color-brand-primary)]" />
               </div>
               <div>
-                <h3 className="font-bold text-[#0f1c2e] text-xl mb-2">{title}</h3>
-                <p className="text-[#4b5e78] text-base leading-relaxed">{description}</p>
+                <h3 className="mb-2 text-xl font-black text-[var(--color-brand-ink)]">{title}</h3>
+                <p className="text-base leading-relaxed text-[var(--color-brand-slate)]">{description}</p>
               </div>
             </div>
           ))}

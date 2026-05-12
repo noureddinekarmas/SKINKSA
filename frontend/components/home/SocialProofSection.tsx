@@ -1,43 +1,66 @@
+import Image from "next/image";
 import { Star, CheckCircle } from "lucide-react";
 import { reviews } from "@/lib/content/reviews";
+import { HOME_IMAGES } from "@/lib/content/home-images";
 
 export default function SocialProofSection() {
   return (
-    <section className="py-20 bg-[#f0f7ff]">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-14">
-          <span className="text-sm font-bold uppercase tracking-widest text-[#c9a44a] bg-blue-100 px-3 py-1 rounded-full">آراء عميلاتنا</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0f1c2e] mt-5">قصص نجاح من بنات السعودية</h2>
-          <p className="text-[#4b5e78] mt-4 text-lg">تجارب حقيقية تثبت الفعالية.. انضمي إليهن الآن</p>
+    <section className="py-20 bg-[var(--color-brand-mist)]">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-12 text-center md:mb-14">
+          <span className="inline-block rounded-full border border-[var(--color-brand-primary)]/25 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[var(--color-brand-primary)]">
+            آراء عميلاتنا
+          </span>
+          <h2 className="mt-5 text-3xl font-black text-[var(--color-brand-ink)] md:text-4xl">قصص نجاح من بنات السعودية</h2>
+          <p className="mt-4 text-lg text-[var(--color-brand-slate)]">تجارب حقيقية تثبت الفعالية… انضمي إليهن الآن</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="relative mb-12 overflow-hidden rounded-3xl border-2 border-[var(--color-brand-border)] shadow-lg">
+          <div className="relative aspect-[21/9] min-h-[140px] w-full md:aspect-[24/9]">
+            <Image
+              src={HOME_IMAGES.storySocial}
+              alt="لمسة عناية ناعمة"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 1152px"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1c2e]/55 via-transparent to-transparent" aria-hidden />
+          <p className="absolute bottom-4 left-4 right-4 text-center text-sm font-bold text-white md:text-base">
+            دايم يسألون عن «الفرق»… والجواب يبان مع الالتزام والراحة من المصدر الرسمي
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {reviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-3xl p-8 shadow-md border border-[#d5e3f0] space-y-5 hover:shadow-lg transition-shadow">
-              <div className="flex justify-between items-start border-b border-[#d5e3f0] pb-4">
+            <div
+              key={review.id}
+              className="space-y-5 rounded-3xl border border-[var(--color-brand-border)] bg-white p-8 shadow-md transition-shadow hover:shadow-lg"
+            >
+              <div className="flex items-start justify-between border-b border-[var(--color-brand-border)] pb-4">
                 <div>
-                  <div className="flex mb-2">
+                  <div className="mb-2 flex">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-5 h-5 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`}
+                        className={`h-5 w-5 ${i < review.rating ? "fill-[var(--color-brand-accent)] text-[var(--color-brand-accent)]" : "text-gray-200"}`}
                       />
                     ))}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-[#0d9464] font-bold">
-                    <CheckCircle className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-brand-success)]">
+                    <CheckCircle className="h-4 w-4" />
                     مشتري موثق
                   </div>
                 </div>
               </div>
-              <p className="text-[#0f1c2e] font-medium text-base leading-relaxed">&quot;{review.text}&quot;</p>
+              <p className="text-base font-medium leading-relaxed text-[var(--color-brand-ink)]">&quot;{review.text}&quot;</p>
               <div className="flex items-center gap-3 pt-2">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1a56db] to-[#3b82f6] flex items-center justify-center shadow-sm">
-                  <span className="text-white font-bold text-lg">{review.name[0]}</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-blue)] shadow-sm">
+                  <span className="text-lg font-bold text-white">{review.name[0]}</span>
                 </div>
                 <div>
-                  <p className="font-bold text-[#0f1c2e] text-base">{review.name}</p>
-                  <p className="text-[#4b5e78] text-sm">من {review.city}</p>
+                  <p className="text-base font-bold text-[var(--color-brand-ink)]">{review.name}</p>
+                  <p className="text-sm text-[var(--color-brand-slate)]">من {review.city}</p>
                 </div>
               </div>
             </div>
@@ -45,16 +68,16 @@ export default function SocialProofSection() {
         </div>
 
         <div className="mt-14 text-center">
-          <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-4 bg-white px-8 py-5 rounded-3xl shadow-md border border-[#d5e3f0]">
+          <div className="inline-flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-[var(--color-brand-border)] bg-white px-8 py-5 shadow-md sm:flex-row">
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                <Star key={i} className="h-6 w-6 fill-[var(--color-brand-accent)] text-[var(--color-brand-accent)]" />
               ))}
             </div>
-            <div className="hidden sm:block w-px h-8 bg-[#d5e3f0]"></div>
+            <div className="hidden h-8 w-px bg-[var(--color-brand-border)] sm:block" />
             <div className="flex items-center gap-2">
-              <span className="text-[#0f1c2e] font-black text-xl">4.9/5</span>
-              <span className="text-[#4b5e78] text-base font-medium">التقييم العام من +1000 عميلة</span>
+              <span className="text-xl font-black text-[var(--color-brand-ink)]">4.9/5</span>
+              <span className="text-base font-semibold text-[var(--color-brand-slate)]">التقييم العام من +1000 عميلة</span>
             </div>
           </div>
         </div>

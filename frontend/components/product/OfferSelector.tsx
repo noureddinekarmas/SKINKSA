@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Offer } from "@/lib/api/products";
 import { useCartStore } from "@/lib/cart/store";
+import { formatSar } from "@/lib/currency";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
 
 interface Props {
@@ -43,6 +44,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
           item_price: Number(selectedOffer.price_sar),
         },
       ],
+      contentName: productTitleAr,
     });
   };
 
@@ -73,18 +75,32 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
               <div className="flex justify-between items-start">
                 <div>
                   <span className="font-bold text-[#0F172A]">{offer.label_ar}</span>
-                  <p className="text-xs text-[#475569] mt-0.5">{perPiece} ر.س / العبوة</p>
+                  <p className="text-xs text-[#475569] mt-0.5">
+                    <span dir="ltr" className="sar-glyph tabular-nums">
+                      {formatSar(perPiece)}
+                    </span>{" "}
+                    / العبوة
+                  </p>
                   {saving && (
-                    <p className="text-xs text-[#15803D] mt-0.5">وفر {saving} ر.س</p>
+                    <p className="text-xs text-[#15803D] mt-0.5">
+                      وفر{" "}
+                      <span dir="ltr" className="sar-glyph tabular-nums">
+                        {formatSar(saving)}
+                      </span>
+                    </p>
                   )}
                 </div>
                 <div className="text-right">
                   <span className="text-xl font-bold text-[#312E81]">
-                    {Number(offer.price_sar)} ر.س
+                    <span dir="ltr" className="sar-glyph tabular-nums">
+                      {formatSar(Number(offer.price_sar))}
+                    </span>
                   </span>
                   {offer.compare_at_sar && (
                     <p className="text-xs text-[#475569] line-through">
-                      {Number(offer.compare_at_sar)} ر.س
+                      <span dir="ltr" className="sar-glyph tabular-nums">
+                        {formatSar(Number(offer.compare_at_sar))}
+                      </span>
                     </p>
                   )}
                 </div>

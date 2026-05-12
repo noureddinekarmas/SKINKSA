@@ -16,7 +16,7 @@ import {
   TrendingUp,
   Truck,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
 import { faqItems } from "@/lib/content/faq";
@@ -156,6 +156,27 @@ export default function ProductLanding() {
   const selected = offers[selectedIdx];
   const primaryTheme = OFFER_THEME[selected.code];
 
+  const defaultIdx = defaultOfferIndex();
+  const defaultOffer = offers[defaultIdx];
+
+  useEffect(() => {
+    const eventId = generateEventId("vc");
+    trackCommerceEvent({
+      eventName: "ViewContent",
+      eventId,
+      value: defaultOffer.price,
+      currency: "SAR",
+      contents: [
+        {
+          id: STATIC_PRODUCT.slug,
+          quantity: defaultOffer.pieces,
+          item_price: defaultOffer.price,
+        },
+      ],
+      contentName: STATIC_PRODUCT.title_ar,
+    });
+  }, [defaultOffer.pieces, defaultOffer.price]);
+
   function handleAddToCart() {
     const eventId = generateEventId("atc");
     addOfferToCart(
@@ -183,6 +204,7 @@ export default function ProductLanding() {
           item_price: selected.price,
         },
       ],
+      contentName: STATIC_PRODUCT.title_ar,
     });
   }
 

@@ -1,7 +1,11 @@
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
-    ttq?: { track: (event: string, data?: unknown, opts?: unknown) => void };
+    ttq?: {
+      track: (event: string, data?: Record<string, unknown>, opts?: { event_id?: string }) => void;
+      page?: () => void;
+      ready?: (cb: () => void) => void;
+    };
     snaptr?: (action: string, event?: string, data?: unknown) => void;
   }
 }
@@ -18,9 +22,81 @@ interface TrackingEvent {
   currency?: string;
   contents?: Array<{ id: string; quantity: number; item_price?: number }>;
   userData?: { phone?: string };
+  /** Display name for product / bundle (TikTok content_name) */
+  contentName?: string;
 }
 
-export function trackCommerceEvent({ eventName, eventId, value, currency = "SAR", contents = [] }: TrackingEvent) {
+/** TikTok Pixel standard names (see TikTok Events Manager) */
+const tikTokStandardMap: Record<string, string> = {
+  ViewContent: "ViewContent",
+  AddToCart: "AddToCart",
+  InitiateCheckout: "InitiateCheckout",
+  SubmitCODForm: "SubmitForm",
+  Purchase: "CompletePayment",
+  UpsellView: "ViewContent",
+  UpsellAccept: "AddToCart",
+  UpsellSkip: "ClickButton",
+};
+
+type TikTokContent = {
+  content_id: string;
+  content_type: "product";
+  content_name?: string;
+  quantity?: number;
+  price?: number;
+};
+
+function toTikTokContents(contents: NonNullable<TrackingEvent["contents"]>, contentName?: string): TikTokContent[] {
+  return contents.map((c) => ({
+    content_id: c.id,
+    content_type: "product",
+    ...(contentName ? { content_name: contentName } : {}),
+    quantity: c.quantity,
+    ...(c.item_price != null && !Number.isNaN(c.item_price) ? { price: c.item_price } : {}),
+  }));
+}
+
+function buildTikTokPayload(
+  tikTokEvent: string,
+  value: number | undefined,
+  currency: string,
+  contents: NonNullable<TrackingEvent["contents"]>,
+  contentName?: string
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = { currency };
+  if (value != null && !Number.isNaN(value) && value > 0) {
+    payload.value = value;
+  }
+  let ttContents = toTikTokContents(contents, contentName);
+  if (tikTokEvent === "ClickButton" && ttContents.length === 0) {
+    ttContents = [{ content_id: "upsell_decline", content_type: "product" }];
+  }
+  if (ttContents.length) payload.contents = ttContents;
+  return payload;
+}
+
+/** Call on client-side route changes (App Router); initial load is covered by Pixel snippet `ttq.page()`. */
+export function trackTikTokRoutePageView(): void {
+  if (process.env.NEXT_PUBLIC_ENABLE_TRACKING !== "true") return;
+  if (!process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID) return;
+  if (typeof window === "undefined") return;
+  const ttq = window.ttq;
+  if (!ttq) return;
+  const fire = () => {
+    if (typeof ttq.page === "function") ttq.page();
+  };
+  if (typeof ttq.ready === "function") ttq.ready(fire);
+  else fire();
+}
+
+export function trackCommerceEvent({
+  eventName,
+  eventId,
+  value,
+  currency = "SAR",
+  contents = [],
+  contentName,
+}: TrackingEvent) {
   if (process.env.NEXT_PUBLIC_ENABLE_TRACKING !== "true") return;
 
   const metaEventMap: Record<string, string> = {
@@ -40,16 +116,24 @@ export function trackCommerceEvent({ eventName, eventId, value, currency = "SAR"
     if (isStandard) {
       window.fbq("track", metaEvent, { value, currency, contents }, { eventID: eventId });
     } else {
-      window.fbq("trackCustom", eventName, { value, currency }, { eventID: eventId });
+      window.fbq("trackCustom", eventName, { value, currency, contents }, { eventID: eventId });
     }
   }
 
   if (typeof window.ttq?.track === "function") {
-    window.ttq.track(eventName, { value, currency, contents }, { event_id: eventId });
+    const tikTokEvent = tikTokStandardMap[eventName];
+    if (tikTokEvent) {
+      const payload = buildTikTokPayload(tikTokEvent, value, currency, contents, contentName);
+      window.ttq.track(tikTokEvent, payload, { event_id: eventId });
+    }
   }
 
   if (typeof window.snaptr === "function") {
     window.snaptr("track", eventName, { price: value, currency, transaction_id: eventId });
+  }
+
+  if (process.env.NEXT_PUBLIC_DEBUG_TRACKING === "true") {
+    console.debug("[tracking]", eventName, { value, currency, contents, contentName, eventId });
   }
 }
 

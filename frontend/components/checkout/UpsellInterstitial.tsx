@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { applyUpsell, finalizeOrder } from "@/lib/api/orders";
+import { STATIC_PRODUCT } from "@/lib/content/products";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
+import { formatSar } from "@/lib/currency";
 
 interface Props {
   orderId: string;
@@ -18,7 +20,14 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
 
   useEffect(() => {
     const eventId = generateEventId("upsell_view");
-    trackCommerceEvent({ eventName: "UpsellView", eventId, value: 99, currency: "SAR" });
+    trackCommerceEvent({
+      eventName: "UpsellView",
+      eventId,
+      value: 99,
+      currency: "SAR",
+      contents: [{ id: "upsell_addon", quantity: 1, item_price: 99 }],
+      contentName: "عرض إضافي بعد الطلب",
+    });
   }, []);
 
   useEffect(() => {
@@ -43,13 +52,32 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
       eventId,
       value: accepted ? 99 : 0,
       currency: "SAR",
+      ...(accepted
+        ? {
+            contents: [{ id: "upsell_addon", quantity: 1, item_price: 99 }],
+            contentName: "عرض إضافي بعد الطلب",
+          }
+        : {}),
     });
     try {
       await applyUpsell(orderId, accepted);
       const finalEventId = generateEventId("purchase");
       await finalizeOrder(orderId, finalEventId);
       const finalTotal = accepted ? baseTotal + 99 : baseTotal;
-      trackCommerceEvent({ eventName: "Purchase", eventId: finalEventId, value: finalTotal, currency: "SAR" });
+      trackCommerceEvent({
+        eventName: "Purchase",
+        eventId: finalEventId,
+        value: finalTotal,
+        currency: "SAR",
+        contents: [
+          {
+            id: STATIC_PRODUCT.slug,
+            quantity: 1,
+            item_price: finalTotal,
+          },
+        ],
+        contentName: STATIC_PRODUCT.title_ar,
+      });
       onComplete(finalTotal);
     } catch (err) {
       console.error("Finalize error:", err);
@@ -66,8 +94,12 @@ export default function UpsellInterstitial({ orderId, baseTotal, onComplete }: P
         <h2 className="text-xl font-bold text-[#0f1c2e]">عرض خاص بعد الطلب</h2>
         <p className="text-[#4b5e78] text-sm">
           أضيفي منتج مكمل بسعر{" "}
-          <span className="font-bold text-[#1a56db]">99 ر.س</span> فقط قبل تثبيت الطلب النهائي.
-        </p>
+          <span className="font-bold text-[#1a56db]">
+            <span dir="ltr" className="sar-glyph tabular-nums">
+              {formatSar(99)}
+            </span>
+          </span>{" "}
+          فقط قبل تثبيت الطلب النهائي.
 
         {!expired ? (
           <div className="text-[#4b5e78] text-sm">

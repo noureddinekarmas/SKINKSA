@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { isValidSaudiMobile } from "@/lib/phone";
 import { createDraftOrder } from "@/lib/api/orders";
+import { formatSar } from "@/lib/currency";
 import { trackCommerceEvent, generateEventId, getAttributionFromStorage } from "@/lib/tracking";
 import { useState, useEffect } from "react";
 import UpsellInterstitial from "./UpsellInterstitial";
@@ -40,16 +41,22 @@ export default function CheckoutModal() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
-    if (isCheckoutOpen) {
-      const eventId = generateEventId("initiate_checkout");
-      trackCommerceEvent({
-        eventName: "InitiateCheckout",
-        eventId,
-        value: cartTotal(),
-        currency: "SAR",
-      });
-    }
-  }, [isCheckoutOpen, cartTotal]);
+    if (!isCheckoutOpen) return;
+    const eventId = generateEventId("initiate_checkout");
+    const state = useCartStore.getState();
+    trackCommerceEvent({
+      eventName: "InitiateCheckout",
+      eventId,
+      value: state.cartTotal(),
+      currency: "SAR",
+      contents: state.items.map((item) => ({
+        id: item.slug,
+        quantity: item.quantity,
+        item_price: item.unitPrice,
+      })),
+      contentName: state.items[0]?.titleAr,
+    });
+  }, [isCheckoutOpen]);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -73,7 +80,18 @@ export default function CheckoutModal() {
         attribution,
         event_ids: { initiate_checkout: eventId },
       });
-      trackCommerceEvent({ eventName: "SubmitCODForm", eventId, value: cartTotal(), currency: "SAR" });
+      trackCommerceEvent({
+        eventName: "SubmitCODForm",
+        eventId,
+        value: cartTotal(),
+        currency: "SAR",
+        contents: items.map((item) => ({
+          id: item.slug,
+          quantity: item.quantity,
+          item_price: item.unitPrice,
+        })),
+        contentName: items[0]?.titleAr,
+      });
       setOrderId(result.id);
       setOrderNumber(result.order_number);
       setOrderTotal(result.total_sar);
@@ -116,7 +134,11 @@ export default function CheckoutModal() {
           <div className="bg-white/10 rounded-xl p-3 flex items-center justify-between backdrop-blur-sm border border-white/20">
             <div className="flex flex-col">
               <span className="text-xs text-blue-200">الإجمالي المطلوب</span>
-              <span className="text-2xl font-black">{cartTotal()} ر.س</span>
+              <span className="text-2xl font-black">
+                <span dir="ltr" className="sar-glyph tabular-nums">
+                  {formatSar(cartTotal())}
+                </span>
+              </span>
             </div>
             <div className="flex items-center gap-1.5 bg-green-500/20 text-green-100 px-3 py-1.5 rounded-lg border border-green-500/30">
               <ShieldCheck className="w-4 h-4" />

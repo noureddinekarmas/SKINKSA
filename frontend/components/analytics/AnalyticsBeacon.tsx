@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { trackStoreEvent } from "@/lib/api/analytics";
 import { getOrCreateSessionId, readUtmFromLocation } from "@/lib/analytics/session";
+import { trackTikTokRoutePageView } from "@/lib/tracking";
 
 /**
  * Sends page_view / product_view with server-side MaxMind + optional IPQuality filtering.
@@ -11,6 +12,7 @@ import { getOrCreateSessionId, readUtmFromLocation } from "@/lib/analytics/sessi
 export default function AnalyticsBeacon() {
   const pathname = usePathname() || "/";
   const lastPath = useRef<string | null>(null);
+  const tikTokFirstLoad = useRef(true);
 
   useEffect(() => {
     if (lastPath.current === pathname) return;
@@ -33,6 +35,13 @@ export default function AnalyticsBeacon() {
       utm_medium: fromUrl.utm_medium,
       utm_campaign: fromUrl.utm_campaign,
     });
+
+    /* TikTok: snippet already calls ttq.page() on first paint; fire again on client navigations only */
+    if (tikTokFirstLoad.current) {
+      tikTokFirstLoad.current = false;
+    } else {
+      trackTikTokRoutePageView();
+    }
   }, [pathname]);
 
   return null;

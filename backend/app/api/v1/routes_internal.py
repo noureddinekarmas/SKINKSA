@@ -118,7 +118,7 @@ async def replay_tracking(order_id: str, db: AsyncSession = Depends(get_db)):
         (
             "tiktok",
             tiktok_capi.send_tiktok_capi_event(
-                event_name="Purchase",
+                event_name="CompletePayment",
                 event_id=event_id,
                 value=value,
                 currency=settings.DEFAULT_CURRENCY,

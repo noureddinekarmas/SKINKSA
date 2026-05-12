@@ -101,7 +101,7 @@ async def finalize_order(db: AsyncSession, order_id: str, payload: FinalizeReque
     await fire_and_record(
         "tiktok",
         tiktok_capi.send_tiktok_capi_event(
-            event_name="Purchase",
+            event_name="CompletePayment",
             event_id=event_id,
             value=value,
             currency=settings.DEFAULT_CURRENCY,
@@ -113,6 +113,7 @@ async def finalize_order(db: AsyncSession, order_id: str, payload: FinalizeReque
             contents=contents,
             order_id=str(order.id),
         ),
+        event_name="CompletePayment",
     )
 
     await fire_and_record(
