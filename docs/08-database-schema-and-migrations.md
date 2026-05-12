@@ -143,7 +143,7 @@ Use:
 
 Seed main product:
 
-- slug: `blueKSA`
+- slug: `blueskin`
 - active status
 - Arabic title from brief.
 

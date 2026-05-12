@@ -4,7 +4,7 @@
 
 - `/` - Home
 - `/collections` - Collection page
-- `/products/blueKSA` - Main product landing page
+- `/products/blueskin` - Main product landing page
 - `/about` - About SKINKSA
 - `/contact` - Contact
 - `/thank-you` - Order confirmation

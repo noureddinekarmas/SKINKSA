@@ -2,10 +2,9 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import ProductLanding from "@/components/product/ProductLanding";
 import { MAIN_PRODUCT_SLUG } from "@/lib/content/main-product";
-import { STATIC_PRODUCT } from "@/lib/content/products";
 
-/** Previous public URL — must redirect here as well as next.config (some hosts skip config redirects). */
-const LEGACY_PRODUCT_SLUG = "blue-copper-peptide-serum";
+/** Old paths → must redirect here if next.config redirects are skipped in production. */
+const LEGACY_PRODUCT_SLUGS = ["blue-copper-peptide-serum", "blueKSA"] as const;
 
 /** Served HTML must not stay stale at CDN after a deploy (marketing assets change often). */
 export const dynamic = "force-dynamic";
@@ -14,7 +13,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const canonical = MAIN_PRODUCT_SLUG;
 
-  if (slug.toLowerCase() === LEGACY_PRODUCT_SLUG.toLowerCase()) {
+  if (
+    LEGACY_PRODUCT_SLUGS.some((legacy) => legacy.toLowerCase() === slug.toLowerCase())
+  ) {
     permanentRedirect(`/products/${canonical}`);
   }
 

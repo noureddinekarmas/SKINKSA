@@ -52,7 +52,7 @@ The AI coder must create:
 - Country: `SA`
 - Language: Arabic-first, RTL.
 - Checkout model: COD only.
-- Main product slug: `blueKSA`
+- Main product slug: `blueskin`
 - Main product title: `سيروم ببتيد النحاس الأزرق لشد البشرة وتجديدها، مضاد للشيخوخة، 30 مل - تركيبة منشطة للبشرة مع خلاصة مُشرقة`
 - Offers:
   - 1 piece: `129 SAR`
