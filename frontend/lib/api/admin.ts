@@ -1,5 +1,17 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.officialskinksa.store";
 
+export interface AdminProductSalesRow {
+  product_id: string;
+  product_slug: string;
+  product_sku: string | null;
+  product_title_ar: string;
+  line_type: string;
+  geo_country: string | null;
+  order_count: number;
+  units_sold: number;
+  revenue_sar: string;
+}
+
 export interface AdminMetrics {
   start: string;
   end_exclusive: string;
@@ -79,6 +91,8 @@ export interface AdminOrderDetail {
     unit_price_sar: string;
     line_total_sar: string;
     is_upsell: boolean;
+    product_slug?: string | null;
+    sku?: string | null;
   }>;
   webhook_deliveries: Array<{
     id: string;
@@ -95,6 +109,27 @@ export interface AdminOrderDetail {
 function authHeader(user: string, password: string): HeadersInit {
   const token = btoa(`${user}:${password}`);
   return { Authorization: `Basic ${token}` };
+}
+
+export async function fetchAdminProductSales(
+  user: string,
+  password: string,
+  from: string,
+  to: string,
+  opts?: { finalizedOnly?: boolean }
+): Promise<AdminProductSalesRow[]> {
+  const q = new URLSearchParams({ from, to });
+  if (opts?.finalizedOnly === false) {
+    q.set("finalized_only", "false");
+  }
+  const res = await fetch(`${API_BASE}/v1/admin/sales-by-product?${q}`, {
+    headers: { ...authHeader(user, password) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
 export async function fetchAdminMetrics(

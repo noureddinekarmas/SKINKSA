@@ -6,9 +6,11 @@ import {
   fetchAdminMetrics,
   fetchAdminOrderDetail,
   fetchAdminOrders,
+  fetchAdminProductSales,
   type AdminMetrics,
   type AdminOrderDetail,
   type AdminOrderRow,
+  type AdminProductSalesRow,
 } from "@/lib/api/admin";
 
 function formatSar(n: string | number): string {
@@ -33,9 +35,11 @@ export default function AdminDashboardPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [connected, setConnected] = useState(false);
-  const [tab, setTab] = useState<"overview" | "orders">("overview");
+  const [tab, setTab] = useState<"overview" | "orders" | "products">("overview");
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [orders, setOrders] = useState<AdminOrderRow[]>([]);
+  const [productSales, setProductSales] = useState<AdminProductSalesRow[]>([]);
+  const [salesFinalizedOnly, setSalesFinalizedOnly] = useState(true);
   const [detail, setDetail] = useState<AdminOrderDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,12 +50,16 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const [m, list] = await Promise.all([
+      const [m, list, sales] = await Promise.all([
         fetchAdminMetrics(creds.user, creds.password, from, to),
         fetchAdminOrders(creds.user, creds.password, { from, to, limit: 100 }),
+        fetchAdminProductSales(creds.user, creds.password, from, to, {
+          finalizedOnly: salesFinalizedOnly,
+        }),
       ]);
       setMetrics(m);
       setOrders(list);
+      setProductSales(sales);
       setConnected(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load");
@@ -59,7 +67,7 @@ export default function AdminDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [creds.user, creds.password, from, to]);
+  }, [creds.user, creds.password, from, to, salesFinalizedOnly]);
 
   const openOrder = async (id: string) => {
     setLoading(true);
@@ -137,6 +145,7 @@ export default function AdminDashboardPage() {
               [
                 ["overview", "Overview"],
                 ["orders", "Orders"],
+                ["products", "Products & countries"],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -188,6 +197,7 @@ export default function AdminDashboardPage() {
                 setConnected(false);
                 setMetrics(null);
                 setOrders([]);
+                setProductSales([]);
                 setDetail(null);
               }}
             >
@@ -233,6 +243,98 @@ export default function AdminDashboardPage() {
                   title="Conversion (product view → order)"
                   value={formatPct(metrics.conversion_valid_product_views_to_order)}
                 />
+              </div>
+            </section>
+          ) : null}
+
+          {tab === "products" ? (
+            <section className="mt-8 space-y-4">
+              <p className="text-sm text-[var(--color-brand-slate)]">
+                Rows group <strong>catalog product</strong> (slug + SKU from your DB),{" "}
+                <strong>buyer country</strong> from MaxMind on the order, and whether the line is{" "}
+                <strong>primary</strong> or <strong>upsell</strong>. Set each product&apos;s{" "}
+                <code className="text-xs">sku</code> in the database so it shows here.
+              </p>
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-[var(--color-brand-ink)]">
+                <input
+                  type="checkbox"
+                  className="rounded border-[var(--color-brand-border)]"
+                  checked={salesFinalizedOnly}
+                  onChange={(e) => {
+                    const v = e.target.checked;
+                    setSalesFinalizedOnly(v);
+                    if (!connected) return;
+                    void (async () => {
+                      setLoading(true);
+                      setError(null);
+                      try {
+                        const sales = await fetchAdminProductSales(creds.user, creds.password, from, to, {
+                          finalizedOnly: v,
+                        });
+                        setProductSales(sales);
+                      } catch (err) {
+                        setError(err instanceof Error ? err.message : "Failed to refresh");
+                      } finally {
+                        setLoading(false);
+                      }
+                    })();
+                  }}
+                />
+                Finalized COD only (status = pending_confirmation)
+              </label>
+              <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
+                    <tr>
+                      <th className="px-4 py-3">SKU</th>
+                      <th className="px-4 py-3">Slug</th>
+                      <th className="px-4 py-3">Product</th>
+                      <th className="px-4 py-3">Country</th>
+                      <th className="px-4 py-3">Line</th>
+                      <th className="px-4 py-3 text-right">Orders</th>
+                      <th className="px-4 py-3 text-right">Units</th>
+                      <th className="px-4 py-3 text-right">Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productSales.map((row, idx) => (
+                      <tr
+                        key={`${row.product_id}-${row.geo_country ?? "null"}-${row.line_type}-${row.product_sku ?? ""}-${idx}`}
+                        className="border-b border-[var(--color-brand-border)] last:border-0"
+                      >
+                        <td className="px-4 py-3 font-mono text-xs">{row.product_sku || "—"}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-[var(--color-brand-primary)]">
+                          {row.product_slug}
+                        </td>
+                        <td className="max-w-[200px] px-4 py-3 text-xs leading-snug text-[var(--color-brand-ink)]">
+                          {row.product_title_ar}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">{row.geo_country || "—"}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                              row.line_type === "upsell"
+                                ? "bg-[var(--color-brand-accent)]/20 text-[var(--color-brand-deep)]"
+                                : "bg-slate-100 text-slate-800"
+                            }`}
+                          >
+                            {row.line_type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.order_count}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.units_sold}</td>
+                        <td className="px-4 py-3 text-right font-medium tabular-nums">
+                          {formatSar(row.revenue_sar)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {productSales.length === 0 && !loading ? (
+                  <p className="p-6 text-center text-sm text-[var(--color-brand-slate)]">
+                    No matching line items in this range.
+                  </p>
+                ) : null}
               </div>
             </section>
           ) : null}
@@ -379,6 +481,15 @@ function OrderPreview({ order, onClose }: { order: AdminOrderDetail; onClose: ()
                 <div>
                   <p className="text-sm font-medium text-[var(--color-brand-ink)]">{it.title_snapshot}</p>
                   <p className="text-xs text-[var(--color-brand-slate)]">
+                    {it.product_slug || it.sku ? (
+                      <>
+                        <span className="font-mono text-[var(--color-brand-primary)]">
+                          {it.product_slug ? `/${it.product_slug}` : ""}
+                          {it.sku ? ` · SKU ${it.sku}` : ""}
+                        </span>
+                        <span className="mx-1">·</span>
+                      </>
+                    ) : null}
                     ×{it.quantity}
                     {it.is_upsell ? (
                       <span className="ml-2 rounded bg-[var(--color-brand-accent)]/20 px-1.5 py-0.5 text-[var(--color-brand-deep)]">

@@ -8,6 +8,20 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class AdminProductCountrySalesRow(BaseModel):
+    """Aggregated finalized-order lines by catalog product, country, and line kind."""
+
+    product_id: UUID
+    product_slug: str
+    product_sku: Optional[str] = None
+    product_title_ar: str
+    line_type: str  # primary | upsell
+    geo_country: Optional[str] = None
+    order_count: int
+    units_sold: int
+    revenue_sar: Decimal
+
+
 class AdminMetricsOut(BaseModel):
     start: datetime
     end_exclusive: datetime
@@ -53,6 +67,8 @@ class AdminOrderItemOut(BaseModel):
     unit_price_sar: Decimal
     line_total_sar: Decimal
     is_upsell: bool
+    product_slug: Optional[str] = None
+    sku: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

@@ -11,8 +11,18 @@ from sqlalchemy.orm import selectinload
 from app.core.security import admin_basic_auth_required
 from app.db.session import get_db
 from app.models.analytics_event import AnalyticsEvent
+from app.models.offer import Offer
 from app.models.order import Order
-from app.schemas.admin import AdminMetricsOut, AdminOrderDetailOut, AdminOrderListItem
+from app.models.order_item import OrderItem
+from app.models.product import Product
+from app.models.upsell_offer import UpsellOffer
+from app.schemas.admin import (
+    AdminMetricsOut,
+    AdminOrderDetailOut,
+    AdminOrderItemOut,
+    AdminOrderListItem,
+    AdminProductCountrySalesRow,
+)
 from app.services.traffic_validity import order_geo_valid_for_kpi
 
 router = APIRouter(
@@ -140,6 +150,135 @@ async def admin_metrics(
     )
 
 
+@router.get("/sales-by-product", response_model=list[AdminProductCountrySalesRow])
+async def admin_sales_by_product(
+    db: AsyncSession = Depends(get_db),
+    from_date: date = Query(..., alias="from"),
+    to_date: date = Query(..., alias="to"),
+    finalized_only: bool = Query(
+        True,
+        description="When true, only orders with status pending_confirmation (COD completed).",
+    ),
+):
+    start, end_excl = _utc_day_range(from_date, to_date)
+
+    display_sku = func.coalesce(UpsellOffer.sku, Product.sku)
+    product_ref = func.coalesce(OrderItem.product_id, Offer.product_id, UpsellOffer.product_id)
+
+    stmt = (
+        select(
+            Product.id.label("product_id"),
+            Product.slug.label("product_slug"),
+            Product.title_ar.label("product_title_ar"),
+            display_sku.label("product_sku"),
+            OrderItem.is_upsell.label("is_upsell"),
+            Order.geo_country.label("geo_country"),
+            func.count(func.distinct(Order.id)).label("order_count"),
+            func.sum(OrderItem.quantity).label("units_sold"),
+            func.sum(OrderItem.line_total_sar).label("revenue_sar"),
+        )
+        .select_from(Order)
+        .join(OrderItem, OrderItem.order_id == Order.id)
+        .outerjoin(Offer, Offer.id == OrderItem.offer_id)
+        .outerjoin(UpsellOffer, UpsellOffer.id == OrderItem.upsell_offer_id)
+        .join(Product, Product.id == product_ref)
+        .where(
+            Order.created_at >= start,
+            Order.created_at < end_excl,
+        )
+        .group_by(
+            Product.id,
+            Product.slug,
+            Product.title_ar,
+            display_sku,
+            OrderItem.is_upsell,
+            Order.geo_country,
+        )
+        .order_by(Product.slug.asc(), Order.geo_country.asc().nulls_first(), OrderItem.is_upsell.asc())
+    )
+
+    if finalized_only:
+        stmt = stmt.where(_finalized_status_clause())
+
+    result = await db.execute(stmt)
+    rows = result.mappings().all()
+    return [
+        AdminProductCountrySalesRow(
+            product_id=r["product_id"],
+            product_slug=r["product_slug"],
+            product_sku=r["product_sku"],
+            product_title_ar=r["product_title_ar"],
+            line_type="upsell" if r["is_upsell"] else "primary",
+            geo_country=r["geo_country"],
+            order_count=int(r["order_count"] or 0),
+            units_sold=int(r["units_sold"] or 0),
+            revenue_sar=r["revenue_sar"],
+        )
+        for r in rows
+    ]
+
+
+async def _enrich_order_items(db: AsyncSession, items: list[OrderItem]) -> list[AdminOrderItemOut]:
+    if not items:
+        return []
+    offer_ids = {i.offer_id for i in items if i.offer_id}
+    uo_ids = {i.upsell_offer_id for i in items if i.upsell_offer_id}
+    offer_map: dict[uuid.UUID, Offer] = {}
+    if offer_ids:
+        res = await db.execute(select(Offer).where(Offer.id.in_(offer_ids)))
+        offer_map = {o.id: o for o in res.scalars()}
+    uo_map: dict[uuid.UUID, UpsellOffer] = {}
+    if uo_ids:
+        res = await db.execute(select(UpsellOffer).where(UpsellOffer.id.in_(uo_ids)))
+        uo_map = {u.id: u for u in res.scalars()}
+
+    product_ids: set[uuid.UUID] = set()
+    for it in items:
+        pid = it.product_id
+        if not pid and it.offer_id and it.offer_id in offer_map:
+            pid = offer_map[it.offer_id].product_id
+        if not pid and it.upsell_offer_id and it.upsell_offer_id in uo_map:
+            pid = uo_map[it.upsell_offer_id].product_id
+        if pid:
+            product_ids.add(pid)
+
+    prod_map: dict[uuid.UUID, Product] = {}
+    if product_ids:
+        res = await db.execute(select(Product).where(Product.id.in_(product_ids)))
+        prod_map = {p.id: p for p in res.scalars()}
+
+    out: list[AdminOrderItemOut] = []
+    for it in items:
+        slug_out: str | None = None
+        sku_out: str | None = None
+        pid = it.product_id
+        if not pid and it.offer_id and it.offer_id in offer_map:
+            pid = offer_map[it.offer_id].product_id
+        if not pid and it.upsell_offer_id and it.upsell_offer_id in uo_map:
+            pid = uo_map[it.upsell_offer_id].product_id
+        if pid and pid in prod_map:
+            pr = prod_map[pid]
+            slug_out = pr.slug
+            sku_out = pr.sku
+        if it.is_upsell and it.upsell_offer_id and it.upsell_offer_id in uo_map:
+            uo = uo_map[it.upsell_offer_id]
+            if uo.sku:
+                sku_out = uo.sku
+        out.append(
+            AdminOrderItemOut(
+                id=it.id,
+                title_snapshot=it.title_snapshot,
+                quantity=it.quantity,
+                unit_price_sar=it.unit_price_sar,
+                line_total_sar=it.line_total_sar,
+                is_upsell=it.is_upsell,
+                product_slug=slug_out,
+                sku=sku_out,
+            )
+        )
+    return out
+
+
 @router.get("/orders", response_model=list[AdminOrderListItem])
 async def admin_list_orders(
     db: AsyncSession = Depends(get_db),
@@ -217,6 +356,8 @@ async def admin_order_detail(order_id: str, db: AsyncSession = Depends(get_db)):
         o.geo_secondary_vpn,
     ) and o.status == "pending_confirmation"
 
+    enriched = await _enrich_order_items(db, list(o.items))
+
     return AdminOrderDetailOut(
         id=o.id,
         order_number=o.order_number,
@@ -253,7 +394,7 @@ async def admin_order_detail(order_id: str, db: AsyncSession = Depends(get_db)):
         geo_risk_score=o.geo_risk_score,
         geo_source=o.geo_source,
         webhook_sent=o.webhook_sent,
-        items=list(o.items),
+        items=enriched,
         webhook_deliveries=list(o.webhook_deliveries),
         counts_as_valid_kpi=counts,
     )
