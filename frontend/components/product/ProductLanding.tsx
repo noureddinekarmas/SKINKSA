@@ -22,6 +22,7 @@ import ProductGallery from "@/components/product/ProductGallery";
 import { faqItems } from "@/lib/content/faq";
 import {
   AUTHENTICITY_SECTION,
+  AUTHENTICITY_TO_PAIN_VISUAL,
   AUTHORITY_BAND,
   MECHANISM_BLOCK,
   OBJECTION_BUSTER,
@@ -528,6 +529,24 @@ export default function ProductLanding() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Bridge: trust band → pain checklist */}
+        <section
+          className="border-y border-[var(--color-brand-border)] bg-white py-10 sm:py-14"
+          aria-label={AUTHENTICITY_TO_PAIN_VISUAL.imageAlt}
+        >
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] shadow-[0_20px_56px_-24px_rgba(26,86,219,0.35)] ring-1 ring-black/[0.04] sm:aspect-[2.4/1]">
+              <Image
+                src={AUTHENTICITY_TO_PAIN_VISUAL.imageSrc}
+                alt={AUTHENTICITY_TO_PAIN_VISUAL.imageAlt}
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
             </div>
           </div>
         </section>

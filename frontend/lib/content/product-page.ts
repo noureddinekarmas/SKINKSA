@@ -308,6 +308,12 @@ export const AUTHENTICITY_SECTION = {
   },
 };
 
+/** Visual bridge between «المصدر الرسمي» band and «شفتي نفسج في هالنقاط؟» */
+export const AUTHENTICITY_TO_PAIN_VISUAL = {
+  imageSrc: productAsset("/images/product/gallery-quality-4.png"),
+  imageAlt: "جودة وتجربة SKINKSA الأصلية — عبوة وتركيبة بمعايير واضحة",
+} as const;
+
 export const AUTHORITY_BAND = {
   title: "ليش مصدرك يهم؟",
   points: [
