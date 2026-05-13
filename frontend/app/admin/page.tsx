@@ -18,6 +18,8 @@ import {
   type AdminProductSalesRow,
   type AdminTrafficAttribution,
 } from "@/lib/api/admin";
+import { formatMoney } from "@/lib/currency";
+import { getStorefrontCatalogRows } from "@/lib/content/storefront-catalog";
 
 function formatSar(n: string | number): string {
   const v = typeof n === "string" ? parseFloat(n) : n;
@@ -42,7 +44,13 @@ export default function AdminDashboardPage() {
   const [password, setPassword] = useState("");
   const [connected, setConnected] = useState(false);
   const [tab, setTab] = useState<
-    "overview" | "traffic" | "product-pages" | "activity" | "orders" | "products"
+    | "overview"
+    | "traffic"
+    | "product-pages"
+    | "storefronts"
+    | "activity"
+    | "orders"
+    | "products"
   >("overview");
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [trafficAttribution, setTrafficAttribution] = useState<AdminTrafficAttribution | null>(null);
@@ -58,6 +66,7 @@ export default function AdminDashboardPage() {
   const [activityError, setActivityError] = useState<string | null>(null);
 
   const creds = useMemo(() => ({ user, password }), [user, password]);
+  const storefrontCatalog = useMemo(() => getStorefrontCatalogRows(), []);
 
   const loadActivity = useCallback(async () => {
     if (!creds.user || !creds.password) return;
@@ -182,6 +191,7 @@ export default function AdminDashboardPage() {
                 ["overview", "Overview"],
                 ["traffic", "Traffic & platforms"],
                 ["product-pages", "Product pages"],
+                ["storefronts", "Storefronts (GCC)"],
                 ["activity", "Live activity"],
                 ["orders", "Orders"],
                 ["products", "Products & countries"],
@@ -522,6 +532,112 @@ export default function AdminDashboardPage() {
                     No product-page events in this range.
                   </p>
                 ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          {tab === "storefronts" ? (
+            <section className="mt-8 space-y-4">
+              <p className="text-sm text-[var(--color-brand-slate)]">
+                All live market PDPs (same catalog product, different <strong>slug</strong>,{" "}
+                <strong>currency</strong>, and checkout). Public links use{" "}
+                <code className="text-xs">NEXT_PUBLIC_SITE_URL</code> when set at build time; otherwise{" "}
+                <code className="text-xs">https://officialskinksa.store</code>.
+              </p>
+              <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
+                    <tr>
+                      <th className="px-4 py-3">Region</th>
+                      <th className="px-4 py-3">Country</th>
+                      <th className="px-4 py-3">Currency</th>
+                      <th className="px-4 py-3">Slug</th>
+                      <th className="px-4 py-3">Storefront link</th>
+                      <th className="px-4 py-3">Default offer</th>
+                      <th className="px-4 py-3 text-right">Price</th>
+                      <th className="max-w-[min(28rem,50vw)] px-4 py-3">Product title</th>
+                      <th className="max-w-[min(20rem,40vw)] px-4 py-3">Delivery / promo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {storefrontCatalog.map((row) => (
+                      <tr
+                        key={row.slug}
+                        className="border-b border-[var(--color-brand-border)] last:border-0 align-top"
+                      >
+                        <td className="px-4 py-3 font-semibold text-[var(--color-brand-deep)]">
+                          {row.regionCode}
+                        </td>
+                        <td className="px-4 py-3 text-xs leading-snug">
+                          <span className="text-[var(--color-brand-ink)]">{row.countryEn}</span>
+                          <br />
+                          <span className="text-[var(--color-brand-slate)]">{row.countryAr}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="font-mono text-xs font-medium">{row.currency}</span>
+                          <br />
+                          <span className="text-xs text-[var(--color-brand-slate)]">{row.currencyLabelAr}</span>
+                          <br />
+                          <span className="text-[10px] text-[var(--color-brand-slate)]">Locale {row.numberLocale}</span>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">{row.slug}</td>
+                        <td className="px-4 py-3">
+                          <Link
+                            href={row.path}
+                            className="font-mono text-xs text-[var(--color-brand-primary)] underline-offset-2 hover:underline"
+                          >
+                            {row.path}
+                          </Link>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            <a
+                              href={row.absoluteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-[var(--color-brand-primary)] underline-offset-2 hover:underline"
+                            >
+                              Open live
+                            </a>
+                            <button
+                              type="button"
+                              className="text-xs text-[var(--color-brand-slate)] underline decoration-dotted"
+                              onClick={() => void navigator.clipboard.writeText(row.absoluteUrl)}
+                            >
+                              Copy URL
+                            </button>
+                          </div>
+                          <p className="mt-1 break-all font-mono text-[10px] text-[var(--color-brand-slate)]">
+                            {row.absoluteUrl}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">
+                          {row.defaultOfferCode || "—"}
+                          {row.defaultOfferLabelAr ? (
+                            <p className="mt-1 font-sans text-[11px] leading-snug text-[var(--color-brand-slate)]">
+                              {row.defaultOfferLabelAr}
+                            </p>
+                          ) : null}
+                          <p className="mt-1 text-[10px] text-[var(--color-brand-slate)]">
+                            {row.offerCount} offer{row.offerCount === 1 ? "" : "s"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums font-medium">
+                          {row.defaultOfferPrice != null
+                            ? `${formatMoney(row.defaultOfferPrice, row.currency)} ${row.currency}`
+                            : "—"}
+                        </td>
+                        <td className="max-w-[min(28rem,50vw)] px-4 py-3 text-xs leading-snug text-[var(--color-brand-ink)]">
+                          {row.titleAr}
+                          <p className="mt-1 font-mono text-[10px] text-[var(--color-brand-slate)]">{row.productId}</p>
+                        </td>
+                        <td className="max-w-[min(20rem,40vw)] px-4 py-3 text-xs leading-snug text-[var(--color-brand-slate)]">
+                          <span className="text-[var(--color-brand-ink)]">{row.topPromoStrip}</span>
+                          <br />
+                          <span className="mt-1 inline-block text-[11px]">{row.valueStripDelivery}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </section>
           ) : null}
