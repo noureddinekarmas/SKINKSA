@@ -77,3 +77,27 @@ def normalize_gcc_mobile(phone: str, currency: str) -> dict:
     if c == "KWD":
         return normalize_kuwait_mobile(phone)
     raise ValueError(f"unsupported_currency:{c}")
+
+
+# International: GCC national formats first, else E.164-style digit string (7–15 digits).
+_MIN_INTL = 7
+_MAX_INTL = 15
+
+
+def _digits_only(phone: str) -> str:
+    return re.sub(r"\D", "", phone or "")
+
+
+def is_valid_order_phone(phone: str, currency: str) -> bool:
+    """GCC mobile for storefront currency, or any 7–15 digit international number."""
+    if is_valid_gcc_mobile(phone, currency):
+        return True
+    d = _digits_only(phone)
+    return _MIN_INTL <= len(d) <= _MAX_INTL
+
+
+def normalize_order_phone(phone: str, currency: str) -> dict:
+    if is_valid_gcc_mobile(phone, currency):
+        return normalize_gcc_mobile(phone, currency)
+    d = _digits_only(phone)
+    return {"e164": f"+{d}", "digits": d}

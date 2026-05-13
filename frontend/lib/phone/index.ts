@@ -27,6 +27,13 @@ export function isValidPhoneForCurrency(phone: string, currency: ShopCurrency): 
   return isValidKuwaitMobile(phone);
 }
 
+/** GCC national format for the storefront currency, or 7–15 digit international (include country code). */
+export function isValidOrderPhone(phone: string, currency: ShopCurrency): boolean {
+  if (isValidPhoneForCurrency(phone, currency)) return true;
+  const d = phone.replace(/\D/g, "");
+  return d.length >= 7 && d.length <= 15;
+}
+
 export function normalizeSaudiMobile(phone: string): { e164: string; digits: string } {
   let cleaned = phone.replace(/[\s\-()]/g, "");
   if (cleaned.startsWith("+")) cleaned = cleaned.slice(1);
@@ -58,4 +65,14 @@ export function normalizeKuwaitMobile(phone: string): { e164: string; digits: st
   const national = cleaned;
   const digits = `965${national}`;
   return { e164: `+${digits}`, digits };
+}
+
+export function normalizeOrderPhone(phone: string, currency: ShopCurrency): { e164: string; digits: string } {
+  if (isValidPhoneForCurrency(phone, currency)) {
+    if (currency === "SAR") return normalizeSaudiMobile(phone);
+    if (currency === "QAR") return normalizeQatarMobile(phone);
+    return normalizeKuwaitMobile(phone);
+  }
+  const d = phone.replace(/\D/g, "");
+  return { e164: `+${d}`, digits: d };
 }

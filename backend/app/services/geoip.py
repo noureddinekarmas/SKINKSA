@@ -10,10 +10,9 @@ Supports two modes (configure one or the other via env vars):
 
 Provides:
   1. lookup(ip) → GeoData  — full geo + fraud enrichment for CAPI and order storage
-  2. check_ip(ip) → GeoIPResult  — backward-compat wrapper with allowed/blocked decision
+  2. check_ip(ip) → GeoIPResult  — runs lookup; always allowed (no order blocking)
 
-Both functions are fail-open: any MaxMind error returns safe defaults so orders are never
-silently dropped due to a geo lookup failure.
+lookups are fail-open: MaxMind errors return empty GeoData — callers should not block checkout.
 """
 
 from __future__ import annotations
@@ -72,7 +71,7 @@ class GeoData:
 
 @dataclass
 class GeoIPResult:
-    """Backward-compatible result used by draft.py for allow/block decision."""
+    """Result of check_ip — always allowed; carries geo payload for persistence."""
     allowed: bool
     geo: GeoData = field(default_factory=GeoData)
     reason: str | None = None
@@ -205,63 +204,22 @@ async def lookup(ip_address: str | None) -> GeoData:
 
 async def check_ip(ip_address: str | None) -> GeoIPResult:
     """
-    Perform geo lookup and apply configured block rules.
+    Geo enrichment for orders — always allows checkout.
 
-    Rules (all opt-in via env flags):
-      • MAXMIND_BLOCK_NON_SA=true  — block if country not in MAXMIND_ALLOWED_COUNTRIES (default SA,QA,KW)
-      • MAXMIND_BLOCK_VPN=true     — block if VPN/proxy/Tor detected
-      • MAXMIND_RISK_SCORE_THRESHOLD > 0 — block if Insights risk_score exceeds threshold
-
-    Fail-open: lookup errors never block orders.
+    MaxMind flags (VPN, country, risk) are stored on the order for analytics only;
+    they do not block visitors. Use lookup() via this wrapper for a stable GeoIPResult shape.
     """
     if not settings.MAXMIND_ENABLED:
         return GeoIPResult(allowed=True, geo=GeoData(source="disabled"), reason="geoip_disabled")
 
     geo = await lookup(ip_address)
-
-    if geo.source in ("disabled", "private_ip"):
-        return GeoIPResult(allowed=True, geo=geo, reason=geo.source)
-
     if geo.source == "error":
-        # Fail-open on lookup errors
         return GeoIPResult(allowed=True, geo=geo, reason=f"lookup_error:{geo.error}")
-
-    # Country allowlist (when MAXMIND_BLOCK_NON_SA is enabled)
-    if settings.MAXMIND_BLOCK_NON_SA and geo.country_iso:
-        allowed = settings.maxmind_allowed_iso_countries
-        if geo.country_iso.upper() not in allowed:
-            logger.info(
-                "GeoIP: blocked order — country=%s not in allowlist ip=%s",
-                geo.country_iso, ip_address,
-            )
-            return GeoIPResult(
-                allowed=False, geo=geo,
-                reason=f"country_blocked:{geo.country_iso}",
-            )
-
-    # VPN / proxy / Tor block
-    if settings.MAXMIND_BLOCK_VPN and (geo.is_vpn or geo.is_proxy or geo.is_tor):
-        flags = [f for f, v in [("vpn", geo.is_vpn), ("proxy", geo.is_proxy), ("tor", geo.is_tor)] if v]
-        logger.info("GeoIP: blocked suspicious IP=%s flags=%s", ip_address, flags)
-        return GeoIPResult(
-            allowed=False, geo=geo,
-            reason=f"suspicious:{','.join(flags)}",
-        )
-
-    # Risk score block (Insights only)
-    threshold = settings.MAXMIND_RISK_SCORE_THRESHOLD
-    if threshold > 0 and geo.risk_score is not None and geo.risk_score > threshold:
-        logger.info("GeoIP: blocked high-risk IP=%s score=%.1f", ip_address, geo.risk_score)
-        return GeoIPResult(
-            allowed=False, geo=geo,
-            reason=f"high_risk:{geo.risk_score:.1f}",
-        )
-
-    return GeoIPResult(allowed=True, geo=geo, reason="allowed")
+    return GeoIPResult(allowed=True, geo=geo, reason="enrichment_only")
 
 
 def is_phone_whitelisted(phone: str) -> bool:
-    """Check if a phone number is in the whitelist (bypasses GeoIP checks)."""
+    """Legacy list; order flow no longer uses GeoIP blocking."""
     normalized = phone.strip().replace(" ", "").replace("-", "")
     for wl_phone in settings.geoip_whitelisted_phones:
         wl = wl_phone.strip().replace(" ", "").replace("-", "")

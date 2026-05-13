@@ -17,6 +17,7 @@ import {
   PRODUCT_RESULT_VISUAL,
   PRODUCT_TAGLINE,
   AUTHENTICITY_SECTION,
+  PRODUCT_VS_COMPARISON,
   PRODUCT_REVIEWS as REVIEWS_KSA,
   SCIENCE_PROOF_LIST as SCIENCE_KSA,
   SOCIAL_STRIP as SOCIAL_KSA,
@@ -41,6 +42,9 @@ export type UpsellBundleConfig = {
   bottleLabelAr: string;
 };
 
+/** Hero stats row (NAMBeauty-style trust micro-grid). */
+export type HeroStatItem = { value: string; label: string };
+
 export type ProductLandingData = {
   product: Product;
   currency: ShopCurrency;
@@ -52,6 +56,16 @@ export type ProductLandingData = {
   upsellCompareAtPrice: number;
   upsellBundle: UpsellBundleConfig;
   topPromoStrip: string;
+  /** Warm strip under regulatory line — urgency / promo (conversion). */
+  heroUrgencyLine: string;
+  /** 3–5 compact stats under kicker (e.g. ٣٠ مل، SFDA، يومي). */
+  heroStats: readonly HeroStatItem[];
+  /** Aggregate rating shown in hero (e.g. 4.9). */
+  heroRatingScore: string;
+  /** Short line next to rating (e.g. verified purchase context). */
+  heroRatingCaption: string;
+  /** Comparison block (vs alternatives). */
+  vsComparison: typeof PRODUCT_VS_COMPARISON;
   mobileBadgeRegions: string;
   mobileBadgeQuality: string;
   valueStripDelivery: string;
@@ -530,6 +544,17 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
       topPromoStrip: "الدفع عند الاستلام داخل السعودية · ما يحتاج كرت · توصيل لباب البيت من ٣–٥ أيام عمل",
+      heroUrgencyLine:
+        "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة هذا الأسبوع — لا تفوّتي العرض 🔥",
+      heroStats: [
+        { value: "30", label: "مل في العبوة" },
+        { value: "~شهر", label: "روتين تقريبي" },
+        { value: "SFDA", label: "مرخّص رسمياً" },
+        { value: "يومي", label: "امتصاص سريع" },
+      ],
+      heroRatingScore: "4.9",
+      heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من المملكة",
+      vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من كل المناطق",
       mobileBadgeQuality: "مرخّص SFDA",
       valueStripDelivery: "توصيل داخل المملكة · ٣–٥ أيام عمل",
@@ -538,8 +563,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       cartTrustLine: "الدفع عند الاستلام داخل السعودية",
       checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل.",
       checkoutFooterDelivery: "توصيل سريع",
-      phonePlaceholder: "رقم الجوال (05XXXXXXXX)",
-      phoneSchemaMessage: "اكتبي رقم جوال سعودي صحيح مثل 05XXXXXXXX",
+      phonePlaceholder: "رقم الهاتف (مع رمز الدولة، 7–15 رقماً)",
+      phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
       regionSelectPlaceholder: "المنطقة / المحافظة",
       regionLabelMinMessage: "اختاري المنطقة",
       addressPlaceholder: "المدينة والحي (أو العنوان الوطني) لتسهيل وصول المندوب",
@@ -597,6 +622,17 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
       topPromoStrip: "الدفع عند الاستلام داخل قطر · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
+      heroUrgencyLine:
+        "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة — الدوحة والمناطق الرئيسية 🔥",
+      heroStats: [
+        { value: "30", label: "مل في العبوة" },
+        { value: "~شهر", label: "روتين تقريبي" },
+        { value: "SFDA", label: "ترخيص مطابق" },
+        { value: "قطر", label: "توصيل لباب البيت" },
+      ],
+      heroRatingScore: "4.9",
+      heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من قطر",
+      vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من قطر",
       mobileBadgeQuality: "منتج أصلي",
       valueStripDelivery: "توصيل داخل قطر · ٢–٤ أيام عمل",
@@ -605,8 +641,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       cartTrustLine: "الدفع عند الاستلام داخل قطر",
       checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل داخل قطر.",
       checkoutFooterDelivery: "توصيل داخل قطر",
-      phonePlaceholder: "رقم الجوال (مثال: 3XXXXXXX أو +974)",
-      phoneSchemaMessage: "اكتبي رقم قطري صحيح مثل 3XXXXXXX أو +974XXXXXXXX",
+      phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
+      phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
       regionSelectPlaceholder: "البلدية / المنطقة",
       regionLabelMinMessage: "اختاري المنطقة",
       addressPlaceholder: "المنطقة، الشارع، رقم المبنى — وأي علامة قريبة تساعد المندوب",
@@ -649,6 +685,17 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
     },
     topPromoStrip: "الدفع عند الاستلام داخل الكويت · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
+    heroUrgencyLine:
+      "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة داخل الكويت 🔥",
+    heroStats: [
+      { value: "30", label: "مل في العبوة" },
+      { value: "~شهر", label: "روتين تقريبي" },
+      { value: "SFDA", label: "ترخيص مطابق" },
+      { value: "الكويت", label: "توصيل لباب البيت" },
+    ],
+    heroRatingScore: "4.9",
+    heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من الكويت",
+    vsComparison: PRODUCT_VS_COMPARISON,
     mobileBadgeRegions: "عميلات من الكويت",
     mobileBadgeQuality: "منتج أصلي",
     valueStripDelivery: "توصيل داخل الكويت · ٢–٤ أيام عمل",
@@ -657,8 +704,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     cartTrustLine: "الدفع عند الاستلام داخل الكويت",
     checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل داخل الكويت.",
     checkoutFooterDelivery: "توصيل داخل الكويت",
-    phonePlaceholder: "رقم الجوال (مثال: 5XXXXXXX أو +965)",
-    phoneSchemaMessage: "اكتبي رقم كويتي صحيح مثل 5XXXXXXX أو +965XXXXXXXX",
+    phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
+    phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
     regionSelectPlaceholder: "المحافظة",
     regionLabelMinMessage: "اختاري المحافظة",
     addressPlaceholder: "المنطقة، القطعة، الشارع — وأي تفاصيل تسهّل التوصيل",
@@ -700,6 +747,8 @@ export function checkoutMetaForCurrency(currency: ShopCurrency): Pick<
   | "currencyLabelAr"
   | "numberLocale"
   | "upsellAddonPrice"
+  | "upsellCompareAtPrice"
+  | "upsellBundle"
 > {
   const slug: ProductMarketSlug =
     currency === "SAR" ? "blueskin" : currency === "QAR" ? "qarskin" : "kwtskin";

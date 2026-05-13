@@ -13,7 +13,7 @@ import { checkoutMetaForCurrency } from "@/lib/content/product-landing-data";
 import type { ShopCurrency } from "@/lib/content/product-landing-data";
 import { createDraftOrder } from "@/lib/api/orders";
 import { formatMoney } from "@/lib/currency";
-import { isValidPhoneForCurrency } from "@/lib/phone";
+import { isValidOrderPhone } from "@/lib/phone";
 import { trackCommerceEvent, generateEventId, getAttributionFromStorage } from "@/lib/tracking";
 
 import UpsellInterstitial from "./UpsellInterstitial";
@@ -22,7 +22,7 @@ function buildSchema(meta: ReturnType<typeof checkoutMetaForCurrency>) {
   return z.object({
     customer_name: z.string().min(2, "اكتبي الاسم الكامل"),
     customer_phone: z.string().refine(
-      (p) => isValidPhoneForCurrency(p, meta.currency),
+      (p) => isValidOrderPhone(p, meta.currency),
       meta.phoneSchemaMessage
     ),
   });

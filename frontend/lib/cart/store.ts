@@ -59,6 +59,10 @@ interface CartState {
   openCheckout: () => void;
   closeCheckout: () => void;
   setSelectedOffer: (offer: CartOffer) => void;
+  replaceCartWithOffer: (
+    offer: CartOffer,
+    product: { id: string; slug: string; titleAr: string; imageUrl?: string | null }
+  ) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -97,6 +101,21 @@ export const useCartStore = create<CartState>()(
       },
       closeCheckout: () => set({ isCheckoutOpen: false }),
       setSelectedOffer: (offer) => set({ selectedOffer: offer }),
+      replaceCartWithOffer: (offer, product) => {
+        const item: CartItem = {
+          id: `offer-${offer.code}-${Date.now()}`,
+          productId: product.id,
+          slug: product.slug,
+          titleAr: product.titleAr,
+          offerCode: offer.code,
+          quantity: offer.quantity,
+          unitPrice: offer.price_sar / offer.quantity,
+          totalPrice: offer.price_sar,
+          currency: offer.currency,
+          image: product.imageUrl || PRODUCT_CART_IMAGE,
+        };
+        set({ items: [item], selectedOffer: offer, isDrawerOpen: false });
+      },
     }),
     { name: "skinksa-cart-v2", partialize: (state) => ({ items: state.items, selectedOffer: state.selectedOffer }) }
   )

@@ -3,18 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Award,
   Beaker,
   AlertTriangle,
   CheckCircle,
   ChevronLeft,
+  CreditCard,
   MapPin,
   Quote,
+  RotateCcw,
   ShieldCheck,
   Sparkles,
   Star,
-  TrendingUp,
   Truck,
+  TrendingUp,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -148,6 +150,14 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
       : 1;
   const defaultOffer = offers[defaultIdx];
 
+  const minPerBottle = Math.min(...offers.map((o) => o.price / o.pieces));
+
+  function offerRoutineSubtitle(pieces: number): string {
+    if (pieces <= 1) return "٣٠ مل · تجربة البداية";
+    if (pieces === 2) return "٦٠ مل · ثبّتي النتيجة";
+    return "٩٠ مل · روتين أطول — أفضل سعر للعبوة";
+  }
+
   useEffect(() => {
     const eventId = generateEventId("vc");
     trackCommerceEvent({
@@ -201,17 +211,23 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
   return (
     <>
       <article className="pb-32 md:pb-0">
-        {/* Top urgency — premium strip */}
-        <div className="border-b border-[var(--color-brand-border)] bg-gradient-to-l from-[#1e3a5f] via-[#1a56db] to-[#2563eb] py-2.5 text-center text-white">
-          <p className="px-4 text-xs font-bold sm:text-sm">{d.topPromoStrip}</p>
+        {/* NAMBeauty-style: regulatory + urgency strips */}
+        <div className="border-b border-white/10 bg-[var(--color-brand-ink)] py-2.5 text-center">
+          <p className="px-3 text-[11px] font-bold text-white sm:text-xs">{d.productKicker}</p>
+        </div>
+        <div className="border-b border-orange-700/20 bg-gradient-to-l from-orange-600 via-amber-500 to-orange-500 px-3 py-2.5 text-center shadow-sm">
+          <p className="text-xs font-black text-white sm:text-sm">{d.heroUrgencyLine}</p>
+        </div>
+        <div className="border-b border-[var(--color-brand-border)] bg-gradient-to-l from-[#1e3a5f] via-[#1a56db] to-[#2563eb] py-2 text-center text-white/95">
+          <p className="px-4 text-[10px] font-semibold sm:text-xs">{d.topPromoStrip}</p>
         </div>
 
-        {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute -start-40 -top-20 h-96 w-96 rounded-full bg-[var(--color-brand-primary)]/12 blur-3xl" />
-          <div className="pointer-events-none absolute -end-32 top-40 h-80 w-80 rounded-full bg-[#c9a44a]/20 blur-3xl" />
+        {/* Hero — NAMBeauty-style conversion layout */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-white via-[var(--color-brand-mist)]/40 to-white">
+          <div className="pointer-events-none absolute -start-40 -top-20 h-96 w-96 rounded-full bg-[var(--color-brand-primary)]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -end-32 top-40 h-80 w-80 rounded-full bg-orange-400/15 blur-3xl" />
 
-          <div className="relative mx-auto grid max-w-screen-xl grid-cols-1 gap-10 px-4 py-8 sm:gap-14 sm:px-6 md:grid-cols-2 md:py-12 lg:gap-16">
+          <div className="relative mx-auto grid max-w-screen-xl grid-cols-1 gap-10 px-4 py-8 sm:gap-12 sm:px-6 md:grid-cols-2 md:py-12 lg:gap-16">
             <div className="md:sticky md:top-28 md:self-start">
               <div className="mb-3 flex flex-wrap items-center gap-2 md:hidden">
                 <span className="rounded-full bg-[var(--color-brand-success)]/15 px-2.5 py-1 text-[10px] font-bold text-[var(--color-brand-success)]">
@@ -224,73 +240,80 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
               <ProductGallery images={d.productHeroGallery} />
             </div>
 
-            <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start md:gap-6">
+            <div className="flex flex-col gap-4 md:sticky md:top-28 md:self-start md:gap-5">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {d.heroStats.map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-xl border border-[var(--color-brand-border)] bg-white px-2 py-3 text-center shadow-sm"
+                  >
+                    <p className="text-lg font-black tabular-nums text-[var(--color-brand-ink)] sm:text-xl">{s.value}</p>
+                    <p className="mt-0.5 text-[10px] font-bold leading-tight text-[var(--color-brand-slate)] sm:text-[11px]">
+                      {s.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-primary)] sm:text-xs">
-                  {d.productKicker}
-                </p>
-                <h1 className="mt-2 text-balance text-2xl font-bold leading-snug text-[var(--color-brand-ink)] sm:text-3xl lg:text-[2.125rem]">
+                <h1 className="text-balance text-3xl font-black leading-[1.15] text-[var(--color-brand-ink)] sm:text-4xl lg:text-[2.35rem]">
                   {d.productHeadline}
                 </h1>
-                <p className="mt-3 max-w-prose text-pretty text-sm font-medium leading-relaxed text-[var(--color-brand-slate)] sm:text-base">
+                <p className="mt-3 max-w-prose text-pretty text-base font-semibold leading-relaxed text-[var(--color-brand-slate)]">
                   {d.productTagline}
                 </p>
 
-                <blockquote className="relative mt-4 overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-gradient-to-bl from-white via-[var(--color-brand-mist)]/60 to-[var(--color-brand-mist)] px-5 py-4 shadow-sm ring-1 ring-black/[0.03] sm:px-6 sm:py-5">
-                  <Quote
-                    className="pointer-events-none absolute right-2 top-2 h-14 w-14 text-[var(--color-brand-primary)]/[0.12] sm:right-3 sm:top-3 sm:h-[4.5rem] sm:w-[4.5rem]"
+                <div className="relative mt-4 rounded-2xl border border-[var(--color-brand-border)] bg-white py-3 ps-4 pe-4 shadow-sm ring-1 ring-black/[0.03]">
+                  <span
+                    className="absolute end-0 top-0 h-full w-1 rounded-s-2xl bg-gradient-to-b from-[#c9a44a] to-amber-600"
                     aria-hidden
                   />
-                  <p className="relative text-pretty text-sm font-medium leading-[1.7] text-[var(--color-brand-ink)] sm:text-base">
-                    {d.productHeroQuote}
-                  </p>
-                  <footer className="relative mt-3 flex items-center gap-2 border-t border-[var(--color-brand-border)]/80 pt-3">
-                    <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
-                    <span className="shrink-0 text-[11px] font-semibold tracking-wide text-[#c9a44a]">
-                      جمالك الآن
-                    </span>
-                    <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/25 to-transparent" aria-hidden />
-                  </footer>
-                </blockquote>
+                  <p className="text-sm font-bold leading-relaxed text-[var(--color-brand-ink)]">{d.productHeroQuote}</p>
+                </div>
               </div>
 
-              {/* Social proof bar */}
-              <div className="rounded-2xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm backdrop-blur-sm">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex -space-x-2 space-x-reverse rtl:space-x-reverse">
-                      {d.productReviews.slice(0, 3).map((r, i) => (
-                        <div
-                          key={r.name}
-                          title={`${r.name} — ${r.city}`}
-                          className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br ${HERO_AVATAR_GRADIENTS[i]} text-xs font-bold text-white shadow`}
-                        >
-                          {r.name.charAt(0)}
-                        </div>
-                      ))}
-                    </div>
-                    <div>
-                      <p className="flex items-center gap-1 text-lg font-black text-[var(--color-brand-ink)]">
-                        <span>{d.socialStrip.stat}</span>
-                        <TrendingUp className="h-4 w-4 text-[var(--color-brand-success)]" aria-hidden />
-                      </p>
-                      <p className="text-xs font-semibold text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
-                    </div>
-                  </div>
+              <div className="flex flex-col gap-2 rounded-2xl border border-[var(--color-brand-border)] bg-white p-4 shadow-sm">
+                <div className="flex flex-wrap items-center gap-2">
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={14} fill="var(--color-brand-accent)" className="text-[var(--color-brand-accent)]" />
+                      <Star key={s} size={16} fill="var(--color-brand-accent)" className="text-[var(--color-brand-accent)]" />
                     ))}
                   </div>
+                  <span className="text-lg font-black text-[var(--color-brand-ink)]" dir="ltr">
+                    {d.heroRatingScore}
+                  </span>
+                  <span className="text-[var(--color-brand-border)]">·</span>
+                  <span className="text-xs font-bold text-[var(--color-brand-slate)]">{d.heroRatingCaption}</span>
                 </div>
-                <p className="mt-3 border-t border-[var(--color-brand-border)] pt-3 text-xs font-semibold text-[var(--color-brand-slate)]">
-                  {d.socialStrip.ratingLine}
+                <p className="text-sm font-black text-[var(--color-brand-ink)]">
+                  من{" "}
+                  <span dir="ltr" className="tabular-nums text-[var(--color-brand-primary)]">
+                    {formatMoney(minPerBottle, d.currency, d.numberLocale)}
+                  </span>{" "}
+                  {d.currencyLabelAr} / عبوة ضمن الباقات
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {d.socialStrip.cities.map((c) => (
+                <div className="flex flex-wrap items-center gap-3 border-t border-[var(--color-brand-border)] pt-3">
+                  <div className="flex -space-x-2 space-x-reverse rtl:space-x-reverse">
+                    {d.productReviews.slice(0, 3).map((r, i) => (
+                      <div
+                        key={r.name}
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br ${HERO_AVATAR_GRADIENTS[i]} text-[10px] font-bold text-white shadow`}
+                      >
+                        {r.name.charAt(0)}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1 text-sm font-black text-[var(--color-brand-ink)]">
+                    <span>{d.socialStrip.stat}</span>
+                    <TrendingUp className="h-4 w-4 text-[var(--color-brand-success)]" aria-hidden />
+                    <span className="text-xs font-semibold text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {d.socialStrip.cities.slice(0, 5).map((c) => (
                     <span
                       key={c}
-                      className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-mist)] px-2 py-0.5 text-[11px] font-bold text-[var(--color-brand-ink)]"
+                      className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-mist)] px-2 py-0.5 text-[10px] font-bold text-[var(--color-brand-ink)]"
                     >
                       <MapPin className="h-3 w-3 text-[var(--color-brand-primary)]" aria-hidden />
                       {c}
@@ -299,35 +322,14 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                 </div>
               </div>
 
-              {/* Value props — compact strip */}
-              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 px-3 py-2 text-[11px] font-medium text-[var(--color-brand-slate)] sm:justify-start sm:text-xs">
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                  <Truck className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                  {d.valueStripDelivery}
-                </span>
-                <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
-                  |
-                </span>
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                  ضمان ٣٠ يوماً
-                </span>
-                <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
-                  |
-                </span>
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                  <Award className="h-3.5 w-3.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                  {d.valueStripRegulatory}
-                </span>
-              </div>
+              <p className="text-center text-xs font-bold text-orange-700">{d.heroUrgencyLine}</p>
 
-              {/* Offers */}
               <div>
-                <p className="text-sm font-semibold text-[var(--color-brand-ink)]">اختيار الكمية</p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--color-brand-slate)] sm:text-xs">
-                  مفعول أي روتين عناية يتوقف كثيراً على الاستمرار لعدة أسابيع. عبوتان فأكثر تقلّل فرصة توقّفك قبل أن تتكوّن النتيجة — والاختيار يظل لكِ.
+                <p className="text-base font-black text-[var(--color-brand-ink)]">اختاري العرض:</p>
+                <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">
+                  كل ما زاد الالتزام، صار متوسط سعر العبوة أوضح — والدفع عند الاستلام يبقى بدون أونلاين.
                 </p>
-                <div className="mt-3 flex flex-col gap-2">
+                <div className="mt-3 flex flex-col gap-3">
                   {offers.map((offer, idx) => {
                     const savings = offer.compare ? offer.compare - offer.price : 0;
                     const per = (offer.price / offer.pieces).toFixed(0);
@@ -338,7 +340,7 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`relative flex items-center justify-between overflow-hidden rounded-2xl border-2 px-4 py-3 text-right transition duration-200 ${
+                        className={`relative w-full overflow-hidden rounded-2xl border-2 px-4 pb-4 pt-5 text-right shadow-sm transition duration-200 ${
                           isOn ? t.selected : `${t.idle} ${t.hover}`
                         }`}
                       >
@@ -350,52 +352,49 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                         />
                         {offer.badge && (
                           <span
-                            className={`absolute -top-2 right-4 max-w-[calc(100%-2rem)] rounded-md border px-2 py-0.5 text-[10px] font-semibold shadow-sm ${
+                            className={`absolute -top-0 right-4 rounded-full border px-2.5 py-0.5 text-[10px] font-black shadow-md ${
                               isOn
                                 ? t.badgeOn
-                                : "border-[var(--color-brand-border)] bg-white text-[var(--color-brand-ink)]"
+                                : "border-[var(--color-brand-border)] bg-amber-50 text-amber-950"
                             }`}
                           >
                             {offer.badge}
                           </span>
                         )}
-                        <span className="flex flex-col gap-0.5 pe-6">
-                          <span className="text-sm font-semibold text-[var(--color-brand-ink)]">{offer.label}</span>
-                          <span className="text-[11px] text-[var(--color-brand-slate)]">
-                            متوسط{" "}
-                            <span dir="ltr" className="tabular-nums">
-                              {formatMoney(per, d.currency, d.numberLocale)}
-                            </span>{" "}
-                            {d.currencyLabelAr} للعبوة ضمن الخيار
-                          </span>
-                          {savings > 0 && (
-                            <span className={`text-[11px] font-semibold ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
-                              أقل من السعر المرجعي بمقدار{" "}
+                        <div className="flex flex-col gap-3 pe-5 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-black text-[var(--color-brand-ink)] sm:text-base">{offer.label}</p>
+                            <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">
+                              {offerRoutineSubtitle(offer.pieces)} · متوسط{" "}
                               <span dir="ltr" className="tabular-nums">
-                                {formatMoney(savings, d.currency, d.numberLocale)}
+                                {formatMoney(per, d.currency, d.numberLocale)}
                               </span>{" "}
-                              {d.currencyLabelAr} لهذا العدد
-                            </span>
-                          )}
-                        </span>
-                        <span className="flex shrink-0 flex-col items-end gap-0.5">
-                          <span className="flex items-baseline gap-1" dir="ltr">
-                            <span className="text-xl font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-2xl">
-                              {formatMoney(offer.price, d.currency, d.numberLocale)}
-                            </span>
-                            <span className="text-sm font-bold text-[var(--color-brand-ink)]">{d.currencyLabelAr}</span>
-                          </span>
-                          {offer.compare != null && (
-                            <span className="flex items-baseline gap-1" dir="ltr">
-                              <span className="text-xs tabular-nums text-[var(--color-brand-slate)] line-through">
-                                {formatMoney(offer.compare, d.currency, d.numberLocale)}
-                              </span>
-                              <span className="text-[10px] font-semibold text-[var(--color-brand-slate)] line-through">
+                              {d.currencyLabelAr} / عبوة
+                            </p>
+                            {savings > 0 && (
+                              <p className={`mt-2 text-xs font-black ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
+                                وفّري{" "}
+                                <span dir="ltr" className="tabular-nums">
+                                  {formatMoney(savings, d.currency, d.numberLocale)}
+                                </span>{" "}
                                 {d.currencyLabelAr}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-0.5 sm:items-start sm:text-left">
+                            <span className="flex items-baseline gap-1" dir="ltr">
+                              <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)] sm:text-3xl">
+                                {formatMoney(offer.price, d.currency, d.numberLocale)}
                               </span>
+                              <span className="text-sm font-bold text-[var(--color-brand-ink)]">{d.currencyLabelAr}</span>
                             </span>
-                          )}
-                        </span>
+                            {offer.compare != null && (
+                              <span className="text-xs font-bold tabular-nums text-[var(--color-brand-slate)] line-through" dir="ltr">
+                                {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </button>
                     );
                   })}
@@ -405,11 +404,38 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className={`flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l py-4 text-lg font-black text-white transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 ${primaryTheme.cta} ${primaryTheme.ctaShadow} ${primaryTheme.ctaHover}`}
+                className={`flex w-full flex-col items-center justify-center gap-0.5 rounded-2xl bg-gradient-to-l py-4 text-lg font-black text-white transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 sm:flex-row sm:gap-2 ${primaryTheme.cta} ${primaryTheme.ctaShadow} ${primaryTheme.ctaHover}`}
               >
-                أضيفي للسلة — الدفع عند الاستلام
-                <ChevronLeft size={22} aria-hidden />
+                <span className="flex items-center gap-2">
+                  ابدئي روتين النضارة الآن
+                  <ChevronLeft size={22} aria-hidden />
+                </span>
+                <span className="text-sm font-bold opacity-95" dir="ltr">
+                  · {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                </span>
               </button>
+
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                {[
+                  { icon: CreditCard, t: "الدفع عند الاستلام", s: "بدون دفع أونلاين" },
+                  { icon: Truck, t: "توصيل سريع", s: d.valueStripDelivery },
+                  { icon: RotateCcw, t: "ضمان 30 يوم", s: "استرجاع وفق السياسة" },
+                  { icon: ShieldCheck, t: "مرخّص SFDA", s: d.mobileBadgeQuality },
+                ].map(({ icon: Icon, t, s }) => (
+                  <div
+                    key={t}
+                    className="flex gap-2 rounded-xl border border-[var(--color-brand-border)] bg-white p-3 shadow-sm"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/10">
+                      <Icon className="h-4 w-4 text-[var(--color-brand-primary)]" aria-hidden />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-black leading-tight text-[var(--color-brand-ink)] sm:text-xs">{t}</p>
+                      <p className="mt-0.5 text-[10px] font-semibold text-[var(--color-brand-slate)]">{s}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               <p className="text-center text-[11px] leading-relaxed text-[var(--color-brand-slate)]">
                 بإضافة المنتج للسلة أنتِ توافقين على{" "}
@@ -760,6 +786,48 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* قارني — NAMBeauty-style comparison */}
+        <section className="border-t border-[var(--color-brand-border)] bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="text-xs font-black uppercase tracking-widest text-orange-600">{d.vsComparison.eyebrow}</span>
+              <h2 className="mt-3 text-3xl font-black text-[var(--color-brand-ink)] sm:text-4xl">{d.vsComparison.title}</h2>
+              <p className="mt-3 text-sm font-semibold text-[var(--color-brand-slate)]">{d.vsComparison.subtitle}</p>
+            </div>
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {d.vsComparison.alternatives.map((alt) => (
+                <div
+                  key={alt.name}
+                  className="flex flex-col rounded-2xl border-2 border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/30 p-5"
+                >
+                  <h3 className="text-lg font-black text-[var(--color-brand-ink)]">{alt.name}</h3>
+                  <p className="mt-1 text-xs font-bold text-[var(--color-brand-slate)]">{alt.priceHint}</p>
+                  <ul className="mt-4 flex flex-col gap-2">
+                    {alt.cons.map((line) => (
+                      <li key={line} className="flex gap-2 text-sm text-[var(--color-brand-slate)]">
+                        <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" aria-hidden />
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <div className="flex flex-col rounded-2xl border-2 border-[var(--color-brand-primary)] bg-gradient-to-b from-[var(--color-brand-light)]/80 to-white p-5 shadow-lg ring-2 ring-[var(--color-brand-primary)]/20">
+                <h3 className="text-lg font-black text-[var(--color-brand-primary)]">{d.vsComparison.ours.name}</h3>
+                <p className="mt-1 text-xs font-bold text-[var(--color-brand-ink)]">{d.vsComparison.ours.priceHint}</p>
+                <ul className="mt-4 flex flex-col gap-2">
+                  {d.vsComparison.ours.pros.map((line) => (
+                    <li key={line} className="flex gap-2 text-sm font-semibold text-[var(--color-brand-ink)]">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>

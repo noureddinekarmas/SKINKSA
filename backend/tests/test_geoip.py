@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import patch, AsyncMock
 
-from app.services.geoip import GeoData, GeoIPResult, lookup, check_ip
+from app.services.geoip import GeoData, lookup, check_ip
 
 
 # ── lookup() ──────────────────────────────────────────────────────────────────
@@ -64,75 +64,16 @@ async def test_check_ip_disabled_always_allows():
 
 
 @pytest.mark.asyncio
-async def test_check_ip_blocks_non_sa():
-    geo = GeoData(country_iso="US", source="webservice")
+async def test_check_ip_always_allows_with_geo():
+    geo = GeoData(country_iso="US", is_vpn=True, risk_score=99.0, source="webservice")
     with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), patch(
         "app.services.geoip.settings"
     ) as mock:
         mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = True
-        mock.MAXMIND_BLOCK_VPN = False
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 0.0
-        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
-        result = await check_ip("1.2.3.4")
-    assert result.allowed is False
-    assert "country_blocked" in result.reason
-
-
-@pytest.mark.asyncio
-async def test_check_ip_allows_sa():
-    geo = GeoData(country_iso="SA", source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), patch(
-        "app.services.geoip.settings"
-    ) as mock:
-        mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = True
-        mock.MAXMIND_BLOCK_VPN = False
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 0.0
-        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
         result = await check_ip("1.2.3.4")
     assert result.allowed is True
-
-
-@pytest.mark.asyncio
-async def test_check_ip_blocks_vpn():
-    geo = GeoData(country_iso="SA", is_vpn=True, source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
-         patch("app.services.geoip.settings") as mock:
-        mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = False
-        mock.MAXMIND_BLOCK_VPN = True
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 0.0
-        result = await check_ip("1.2.3.4")
-    assert result.allowed is False
-    assert "vpn" in result.reason
-
-
-@pytest.mark.asyncio
-async def test_check_ip_blocks_high_risk_score():
-    geo = GeoData(country_iso="SA", risk_score=85.0, source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
-         patch("app.services.geoip.settings") as mock:
-        mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = False
-        mock.MAXMIND_BLOCK_VPN = False
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 75.0
-        result = await check_ip("1.2.3.4")
-    assert result.allowed is False
-    assert "high_risk" in result.reason
-
-
-@pytest.mark.asyncio
-async def test_check_ip_allows_below_risk_threshold():
-    geo = GeoData(country_iso="SA", risk_score=50.0, source="webservice")
-    with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
-         patch("app.services.geoip.settings") as mock:
-        mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = False
-        mock.MAXMIND_BLOCK_VPN = False
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 75.0
-        result = await check_ip("1.2.3.4")
-    assert result.allowed is True
+    assert result.geo.country_iso == "US"
+    assert result.reason == "enrichment_only"
 
 
 @pytest.mark.asyncio
@@ -142,9 +83,6 @@ async def test_check_ip_fail_open_on_error():
     with patch("app.services.geoip.lookup", new=AsyncMock(return_value=geo)), \
          patch("app.services.geoip.settings") as mock:
         mock.MAXMIND_ENABLED = True
-        mock.MAXMIND_BLOCK_NON_SA = True
-        mock.MAXMIND_BLOCK_VPN = True
-        mock.MAXMIND_RISK_SCORE_THRESHOLD = 75.0
-        mock.maxmind_allowed_iso_countries = {"SA", "QA", "KW"}
         result = await check_ip("1.2.3.4")
-    assert result.allowed is True  # fail-open
+    assert result.allowed is True
+    assert "lookup_error" in (result.reason or "")

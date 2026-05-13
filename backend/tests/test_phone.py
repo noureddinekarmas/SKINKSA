@@ -3,10 +3,12 @@ import pytest
 from app.services.phone import (
     is_valid_gcc_mobile,
     is_valid_kuwait_mobile,
+    is_valid_order_phone,
     is_valid_qatar_mobile,
     is_valid_saudi_mobile,
     normalize_gcc_mobile,
     normalize_kuwait_mobile,
+    normalize_order_phone,
     normalize_qatar_mobile,
     normalize_saudi_mobile,
 )
@@ -94,3 +96,22 @@ def test_normalize_gcc_mobile():
     assert normalize_gcc_mobile("0512345678", "SAR")["digits"].startswith("966")
     assert normalize_gcc_mobile("33123456", "QAR")["digits"].startswith("974")
     assert normalize_gcc_mobile("51234567", "KWD")["digits"].startswith("965")
+
+
+@pytest.mark.parametrize(
+    "phone,currency,ok",
+    [
+        ("+1 555 123 4567", "SAR", True),
+        ("447911123456", "SAR", True),
+        ("12345", "SAR", False),
+        ("+1234567890123456", "SAR", False),
+    ],
+)
+def test_is_valid_order_phone_international(phone, currency, ok):
+    assert is_valid_order_phone(phone, currency) is ok
+
+
+def test_normalize_order_phone_international():
+    r = normalize_order_phone("+44 7911 123456", "SAR")
+    assert r["e164"] == "+447911123456"
+    assert r["digits"] == "447911123456"

@@ -1,4 +1,4 @@
-"""Rules for counting store analytics and dashboard metrics (KSA, non-VPN)."""
+"""Dashboard / analytics inclusion — all real visitors count (no VPN or country exclusions)."""
 
 from __future__ import annotations
 
@@ -11,18 +11,8 @@ def is_valid_ksa_non_vpn_traffic(
     secondary_vpn: bool = False,
 ) -> bool:
     """
-    True when traffic should count toward dashboard metrics.
-
-    Requires Saudi Arabia by MaxMind country ISO and no VPN/proxy/Tor signals
-    from MaxMind, plus no positive VPN signal from the secondary provider.
+    Always True — geo/VPN flags are stored for reporting only, not to filter traffic.
     """
-    if secondary_vpn:
-        return False
-    country = (geo.country_iso or "").upper()
-    if country != "SA":
-        return False
-    if geo.is_vpn or geo.is_proxy or geo.is_tor:
-        return False
     return True
 
 
@@ -33,13 +23,6 @@ def order_geo_valid_for_kpi(
     geo_is_tor: bool,
     geo_secondary_vpn: bool,
 ) -> bool:
-    """Same rules as analytics, using persisted order geo columns."""
-    if geo_secondary_vpn:
-        return False
-    country = (geo_country or "").upper()
-    if country != "SA":
-        return False
-    if geo_is_vpn or geo_is_proxy or geo_is_tor:
-        return False
+    """All finalized orders count toward KPI geo slice (same as analytics)."""
     return True
 

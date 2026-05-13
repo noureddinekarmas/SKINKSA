@@ -1,14 +1,16 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  fetchAdminAnalyticsStream,
   fetchAdminMetrics,
   fetchAdminOrderDetail,
   fetchAdminOrders,
   fetchAdminProductPages,
   fetchAdminProductSales,
   fetchAdminTrafficAttribution,
+  type AdminAnalyticsStreamRow,
   type AdminMetrics,
   type AdminOrderDetail,
   type AdminOrderRow,
@@ -39,9 +41,9 @@ export default function AdminDashboardPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [connected, setConnected] = useState(false);
-  const [tab, setTab] = useState<"overview" | "traffic" | "product-pages" | "orders" | "products">(
-    "overview"
-  );
+  const [tab, setTab] = useState<
+    "overview" | "traffic" | "product-pages" | "activity" | "orders" | "products"
+  >("overview");
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [trafficAttribution, setTrafficAttribution] = useState<AdminTrafficAttribution | null>(null);
   const [productPages, setProductPages] = useState<AdminProductPageRow[]>([]);
@@ -51,8 +53,30 @@ export default function AdminDashboardPage() {
   const [detail, setDetail] = useState<AdminOrderDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activityRows, setActivityRows] = useState<AdminAnalyticsStreamRow[]>([]);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState<string | null>(null);
 
   const creds = useMemo(() => ({ user, password }), [user, password]);
+
+  const loadActivity = useCallback(async () => {
+    if (!creds.user || !creds.password) return;
+    setActivityError(null);
+    setActivityLoading(true);
+    try {
+      const rows = await fetchAdminAnalyticsStream(creds.user, creds.password, from, to, 300);
+      setActivityRows(rows);
+    } catch (e) {
+      setActivityError(e instanceof Error ? e.message : "Failed to load activity");
+    } finally {
+      setActivityLoading(false);
+    }
+  }, [creds.user, creds.password, from, to]);
+
+  useEffect(() => {
+    if (!connected || tab !== "activity") return;
+    void loadActivity();
+  }, [connected, tab, loadActivity]);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -158,6 +182,7 @@ export default function AdminDashboardPage() {
                 ["overview", "Overview"],
                 ["traffic", "Traffic & platforms"],
                 ["product-pages", "Product pages"],
+                ["activity", "Live activity"],
                 ["orders", "Orders"],
                 ["products", "Products & countries"],
               ] as const
@@ -214,6 +239,7 @@ export default function AdminDashboardPage() {
                 setOrders([]);
                 setProductSales([]);
                 setProductPages([]);
+                setActivityRows([]);
                 setDetail(null);
               }}
             >
@@ -228,37 +254,60 @@ export default function AdminDashboardPage() {
           ) : null}
 
           {tab === "overview" && metrics ? (
-            <section className="mt-8 space-y-6">
-              <p className="text-sm text-[var(--color-brand-slate)]">
-                Figures below include only{" "}
-                <strong className="text-[var(--color-brand-ink)]">Saudi (SA) IPs</strong> with{" "}
-                <strong className="text-[var(--color-brand-ink)]">no VPN / proxy / Tor</strong> from
-                MaxMind and, when configured, IPQualityScore.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <MetricCard title="Valid page views" value={metrics.valid_page_views} />
-                <MetricCard title="Valid product views" value={metrics.valid_product_views} />
-                <MetricCard title="Valid add to cart" value={metrics.valid_add_to_cart} />
-                <MetricCard title="Valid begin checkout" value={metrics.valid_begin_checkout} />
-                <MetricCard title="Valid sessions" value={metrics.valid_sessions} />
-                <MetricCard
-                  title="Orders (KPI geo)"
-                  value={metrics.finalized_orders_valid_geo}
-                  hint={`All finalized: ${metrics.finalized_orders_all}`}
-                />
-                <MetricCard
-                  title="Revenue (KPI geo)"
-                  value={formatSar(metrics.revenue_valid_sar)}
-                  hint={`All: ${formatSar(metrics.revenue_all_sar)}`}
-                />
-                <MetricCard
-                  title="Conversion (session → order)"
-                  value={formatPct(metrics.conversion_valid_sessions_to_order)}
-                />
-                <MetricCard
-                  title="Conversion (product view → order)"
-                  value={formatPct(metrics.conversion_valid_product_views_to_order)}
-                />
+            <section className="mt-8 space-y-8">
+              <div className="space-y-3">
+                <p className="text-sm text-[var(--color-brand-slate)]">
+                  The storefront accepts orders from <strong className="text-[var(--color-brand-ink)]">any country</strong> and does <strong className="text-[var(--color-brand-ink)]">not</strong> block VPNs. Geo flags below are for visibility only.
+                </p>
+                <p className="text-sm text-[var(--color-brand-slate)]">
+                  <strong className="text-[var(--color-brand-ink)]">Counted</strong> metrics use analytics rows where <code className="text-xs">is_valid_traffic</code> is true — new traffic is all counted. Older data may still show a gap versus raw totals. Use <strong>Live activity</strong> to inspect each beacon.
+                </p>
+              </div>
+              <div>
+                <h2 className="font-[family-name:var(--font-inter)] text-sm font-semibold text-[var(--color-brand-deep)]">
+                  Counted sessions (dashboard funnel)
+                </h2>
+                <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <MetricCard title="Counted page views" value={metrics.valid_page_views} />
+                  <MetricCard title="Counted product views" value={metrics.valid_product_views} />
+                  <MetricCard title="Counted add to cart" value={metrics.valid_add_to_cart} />
+                  <MetricCard title="Counted begin checkout" value={metrics.valid_begin_checkout} />
+                  <MetricCard title="Counted sessions" value={metrics.valid_sessions} />
+                  <MetricCard
+                    title="Finalized orders"
+                    value={metrics.finalized_orders_valid_geo}
+                    hint={`Same as all finalized in range: ${metrics.finalized_orders_all}`}
+                  />
+                  <MetricCard
+                    title="Revenue (finalized)"
+                    value={formatSar(metrics.revenue_valid_sar)}
+                    hint={`All: ${formatSar(metrics.revenue_all_sar)}`}
+                  />
+                  <MetricCard
+                    title="Conversion (session → order)"
+                    value={formatPct(metrics.conversion_valid_sessions_to_order)}
+                  />
+                  <MetricCard
+                    title="Conversion (product view → order)"
+                    value={formatPct(metrics.conversion_valid_product_views_to_order)}
+                  />
+                </div>
+              </div>
+              <div>
+                <h2 className="font-[family-name:var(--font-inter)] text-sm font-semibold text-[var(--color-brand-deep)]">
+                  All beacons (unfiltered count)
+                </h2>
+                <p className="mt-1 text-xs text-[var(--color-brand-slate)]">
+                  Every stored event in range. Should match &quot;counted&quot; for new traffic.
+                </p>
+                <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <MetricCard title="All page views" value={metrics.all_page_views ?? 0} />
+                  <MetricCard title="All product views" value={metrics.all_product_views ?? 0} />
+                  <MetricCard title="All add to cart" value={metrics.all_add_to_cart ?? 0} />
+                  <MetricCard title="All begin checkout" value={metrics.all_begin_checkout ?? 0} />
+                  <MetricCard title="All sessions (distinct)" value={metrics.all_sessions ?? 0} />
+                  <MetricCard title="All events (any type)" value={metrics.all_events_total ?? 0} />
+                </div>
               </div>
             </section>
           ) : null}
@@ -270,16 +319,16 @@ export default function AdminDashboardPage() {
           {tab === "traffic" && trafficAttribution ? (
             <section className="mt-8 space-y-6">
               <p className="text-sm text-[var(--color-brand-slate)]">
-                <strong>Valid store visits only</strong> (Saudi, non-VPN) from page-view beacons.{" "}
+                Page-view sessions by UTM and inferred ad platform (worldwide; no VPN blocking).{" "}
                 <strong>Ad platform</strong> is inferred from your UTMs (e.g. TikTok Ads, Snapchat Ads, Meta).
                 Raw <code className="text-xs">utm_source</code> / <code className="text-xs">utm_medium</code>{" "}
                 are still shown. Use consistent UTMs on ad links so checkout attribution matches.{" "}
-                <strong>Conversion</strong> = KPI-ready finalized orders ÷ sessions in that UTM bucket.
+                <strong>Conversion</strong> = finalized orders ÷ sessions in that UTM bucket.
               </p>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <MetricCard title="Sessions (valid)" value={trafficAttribution.total_valid_sessions} />
-                <MetricCard title="Page views (valid)" value={trafficAttribution.total_valid_page_views} />
-                <MetricCard title="Orders (KPI geo)" value={trafficAttribution.total_orders_kpi} />
+                <MetricCard title="Sessions" value={trafficAttribution.total_valid_sessions} />
+                <MetricCard title="Page views" value={trafficAttribution.total_valid_page_views} />
+                <MetricCard title="Orders" value={trafficAttribution.total_orders_kpi} />
                 <MetricCard
                   title="Overall conversion"
                   value={formatPct(trafficAttribution.overall_conversion_rate)}
@@ -328,13 +377,103 @@ export default function AdminDashboardPage() {
             </section>
           ) : null}
 
+          {tab === "activity" ? (
+            <section className="mt-8 space-y-4">
+              <p className="text-sm text-[var(--color-brand-slate)]">
+                Most recent storefront analytics beacons in the selected range (newest first).{" "}
+                <strong>Counted</strong> means the row is included in funnel metrics (true for all new events).{" "}
+                <strong>Legacy excluded</strong> is older data from when filters were stricter.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className="rounded-lg border border-[var(--color-brand-border)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-brand-deep)]"
+                  onClick={() => void loadActivity()}
+                  disabled={activityLoading}
+                >
+                  Refresh feed
+                </button>
+                {activityLoading ? (
+                  <span className="text-sm text-[var(--color-brand-slate)]">Loading…</span>
+                ) : null}
+              </div>
+              {activityError ? (
+                <p className="text-sm text-[var(--color-brand-error)]">{activityError}</p>
+              ) : null}
+              <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="border-b border-[var(--color-brand-border)] bg-[var(--color-brand-mist)] font-[family-name:var(--font-inter)] text-xs uppercase tracking-wide text-[var(--color-brand-slate)]">
+                    <tr>
+                      <th className="px-3 py-3">When (UTC)</th>
+                      <th className="px-3 py-3">Event</th>
+                      <th className="px-3 py-3">Path</th>
+                      <th className="px-3 py-3">Slug</th>
+                      <th className="px-3 py-3">Country</th>
+                      <th className="px-3 py-3">Counted</th>
+                      <th className="px-3 py-3">Risk</th>
+                      <th className="px-3 py-3">UTM</th>
+                      <th className="px-3 py-3">Session</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activityRows.map((row) => (
+                      <tr
+                        key={row.id}
+                        className="border-b border-[var(--color-brand-border)] last:border-0"
+                      >
+                        <td className="whitespace-nowrap px-3 py-2 text-xs text-[var(--color-brand-slate)]">
+                          {new Date(row.created_at).toISOString().replace("T", " ").slice(0, 19)}
+                        </td>
+                        <td className="px-3 py-2 font-mono text-xs">{row.event_type}</td>
+                        <td className="max-w-[140px] truncate px-3 py-2 font-mono text-xs">
+                          {row.path || "—"}
+                        </td>
+                        <td className="max-w-[100px] truncate px-3 py-2 font-mono text-xs">
+                          {row.product_slug || "—"}
+                        </td>
+                        <td className="px-3 py-2 font-mono text-xs">{row.geo_country || "—"}</td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                              row.is_valid_traffic
+                                ? "bg-emerald-50 text-emerald-800"
+                                : "bg-amber-50 text-amber-900"
+                            }`}
+                          >
+                            {row.is_valid_traffic ? "Counted" : "Legacy excluded"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-xs text-[var(--color-brand-slate)]">
+                          VPN {row.geo_is_vpn ? "y" : "n"} · Pr {row.geo_is_proxy ? "y" : "n"} · Tor{" "}
+                          {row.geo_is_tor ? "y" : "n"}
+                          <br />2nd {row.secondary_vpn_detected ? "y" : "n"} · IP {row.ip_masked || "—"}
+                        </td>
+                        <td className="max-w-[120px] px-3 py-2 text-xs">
+                          <span className="break-all">
+                            {row.utm_source || "—"} / {row.utm_medium || "—"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 font-mono text-xs">{row.session_short || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {activityRows.length === 0 && !activityLoading ? (
+                  <p className="p-6 text-center text-sm text-[var(--color-brand-slate)]">
+                    No events in this range (or backend not deployed with /v1/admin/analytics-stream).
+                  </p>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
           {tab === "product-pages" ? (
             <section className="mt-8 space-y-4">
               <p className="text-sm text-[var(--color-brand-slate)]">
                 Each row is a <strong>product PDP</strong> (<code className="text-xs">/products/&lt;slug&gt;</code>
-                ). Metrics use only <strong>valid</strong> (KSA, non-VPN) analytics events that include{" "}
-                <code className="text-xs">product_slug</code> (product views, add to cart, checkout open from the
-                storefront). <strong>Orders</strong> = finalized COD with KPI geo that include that product.
+                ). Metrics use analytics events that include <code className="text-xs">product_slug</code>{" "}
+                (product views, add to cart, checkout from the storefront). <strong>Orders</strong> = finalized
+                COD that include that product.
               </p>
               <div className="overflow-x-auto rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
                 <table className="min-w-full text-left text-sm">
@@ -488,7 +627,7 @@ export default function AdminDashboardPage() {
                     <th className="px-4 py-3">When</th>
                     <th className="px-4 py-3">Customer</th>
                     <th className="px-4 py-3">Total</th>
-                    <th className="px-4 py-3">KPI</th>
+                    <th className="px-4 py-3">In funnel</th>
                     <th className="px-4 py-3">UTM</th>
                   </tr>
                 </thead>
@@ -516,7 +655,7 @@ export default function AdminDashboardPage() {
                               : "bg-amber-50 text-amber-900"
                           }`}
                         >
-                          {o.counts_as_valid_kpi ? "Counts" : "Excluded"}
+                          {o.counts_as_valid_kpi ? "Yes" : "Legacy"}
                         </span>
                       </td>
                       <td className="max-w-[140px] truncate px-4 py-3 text-xs text-[var(--color-brand-slate)]">
@@ -593,7 +732,7 @@ function OrderPreview({ order, onClose }: { order: AdminOrderDetail; onClose: ()
               order.counts_as_valid_kpi ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"
             }`}
           >
-            {order.counts_as_valid_kpi ? "Counts for KPI" : "Excluded from KPI"}
+            {order.counts_as_valid_kpi ? "Included in funnel totals" : "Legacy row"}
           </span>
         </div>
       </div>

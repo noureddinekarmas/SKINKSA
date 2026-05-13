@@ -1,6 +1,4 @@
-import logging
-
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -15,9 +13,6 @@ from app.services.orders import draft as draft_svc
 from app.services.orders import upsell as upsell_svc
 from app.services.orders import finalize as finalize_svc
 from app.services.orders import summary as summary_svc
-from app.services.geoip import check_ip, is_phone_whitelisted
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -50,29 +45,7 @@ async def create_draft_order(
     if not payload.attribution.user_agent:
         payload.attribution.user_agent = request.headers.get("user-agent")
 
-    if not is_phone_whitelisted(payload.customer_phone):
-        ip_to_check = payload.attribution.ip_address or client_ip
-        geo_result = await check_ip(ip_to_check)
-
-        if not geo_result.allowed:
-            logger.warning(
-                "Order blocked by GeoIP — phone=%s ip=%s reason=%s",
-                payload.customer_phone,
-                ip_to_check,
-                geo_result.reason,
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="عذراً، الطلبات متاحة فقط من داخل المملكة العربية السعودية",
-            )
-    else:
-        logger.info("Phone %s is whitelisted — skipping GeoIP check", payload.customer_phone)
-
-    order = await draft_svc.create_draft_order(
-        db,
-        payload,
-        skip_geoip=is_phone_whitelisted(payload.customer_phone),
-    )
+    order = await draft_svc.create_draft_order(db, payload)
     return order
 
 

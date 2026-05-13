@@ -23,7 +23,7 @@ class AdminProductCountrySalesRow(BaseModel):
 
 
 class AdminTrafficSourceRow(BaseModel):
-    """Valid-traffic sessions / page views grouped by UTM, plus KPI orders and conversion."""
+    """Sessions / page views grouped by UTM, plus finalized orders and conversion."""
 
     ad_platform: str  # inferred: TikTok Ads, Snapchat Ads, Meta, etc.
     utm_source: str  # normalized; "(direct)" when missing
@@ -35,7 +35,7 @@ class AdminTrafficSourceRow(BaseModel):
 
 
 class AdminProductPageStatsRow(BaseModel):
-    """Per product landing page (/products/{slug}): funnel + KPI orders (valid geo, finalized)."""
+    """Per product PDP (/products/{slug}): funnel + finalized orders containing that product."""
 
     product_slug: str
     page_path: str
@@ -62,18 +62,46 @@ class AdminTrafficAttributionOut(BaseModel):
 class AdminMetricsOut(BaseModel):
     start: datetime
     end_exclusive: datetime
+    # Saudi + non-VPN only (dashboard KPI definition)
     valid_page_views: int
     valid_product_views: int
     valid_add_to_cart: int
     valid_begin_checkout: int
     valid_events_total: int
     valid_sessions: int
+    # Everyone who hit the beacon (before Saudi/VPN filter) — use to compare vs ads
+    all_page_views: int
+    all_product_views: int
+    all_add_to_cart: int
+    all_begin_checkout: int
+    all_events_total: int
+    all_sessions: int
     finalized_orders_valid_geo: int
     finalized_orders_all: int
     revenue_valid_sar: Decimal
     revenue_all_sar: Decimal
     conversion_valid_sessions_to_order: float
     conversion_valid_product_views_to_order: float
+
+
+class AdminAnalyticsStreamRow(BaseModel):
+    """Recent storefront beacons (debug funnel vs ad platforms)."""
+
+    id: UUID
+    created_at: datetime
+    event_type: str
+    path: Optional[str] = None
+    product_slug: Optional[str] = None
+    session_short: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    geo_country: Optional[str] = None
+    is_valid_traffic: bool
+    geo_is_vpn: bool
+    geo_is_proxy: bool
+    geo_is_tor: bool
+    secondary_vpn_detected: bool
+    ip_masked: Optional[str] = None
 
 
 class AdminOrderListItem(BaseModel):

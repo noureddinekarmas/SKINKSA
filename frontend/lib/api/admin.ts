@@ -54,12 +54,37 @@ export interface AdminMetrics {
   valid_begin_checkout: number;
   valid_events_total: number;
   valid_sessions: number;
+  /** Every beacon hit (any geo / VPN flags) — compare to ad dashboards */
+  all_page_views?: number;
+  all_product_views?: number;
+  all_add_to_cart?: number;
+  all_begin_checkout?: number;
+  all_events_total?: number;
+  all_sessions?: number;
   finalized_orders_valid_geo: number;
   finalized_orders_all: number;
   revenue_valid_sar: string;
   revenue_all_sar: string;
   conversion_valid_sessions_to_order: number;
   conversion_valid_product_views_to_order: number;
+}
+
+export interface AdminAnalyticsStreamRow {
+  id: string;
+  created_at: string;
+  event_type: string;
+  path: string | null;
+  product_slug: string | null;
+  session_short: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  geo_country: string | null;
+  is_valid_traffic: boolean;
+  geo_is_vpn: boolean;
+  geo_is_proxy: boolean;
+  geo_is_tor: boolean;
+  secondary_vpn_detected: boolean;
+  ip_masked: string | null;
 }
 
 export interface AdminOrderRow {
@@ -207,6 +232,24 @@ export async function fetchAdminMetrics(
 ): Promise<AdminMetrics> {
   const q = new URLSearchParams({ from, to });
   const res = await fetch(`${API_BASE}/v1/admin/metrics?${q}`, {
+    headers: { ...authHeader(user, password) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { detail?: string }).detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchAdminAnalyticsStream(
+  user: string,
+  password: string,
+  from: string,
+  to: string,
+  limit = 200
+): Promise<AdminAnalyticsStreamRow[]> {
+  const q = new URLSearchParams({ from, to, limit: String(limit) });
+  const res = await fetch(`${API_BASE}/v1/admin/analytics-stream?${q}`, {
     headers: { ...authHeader(user, password) },
   });
   if (!res.ok) {

@@ -8,14 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.config import settings
-from app.core.logging import logger
 from app.models.offer import Offer
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.schemas.order import DraftOrderRequest
-from app.services.geoip import GeoData, check_ip
+from app.services.geoip import lookup
 from app.services.ip_intel_secondary import lookup_secondary_vpn
-from app.services.phone import is_valid_gcc_mobile, normalize_gcc_mobile
+from app.services.phone import is_valid_order_phone, normalize_order_phone
 
 
 async def _next_order_number(db: AsyncSession) -> str:
@@ -38,8 +37,6 @@ async def _next_order_number(db: AsyncSession) -> str:
 async def create_draft_order(
     db: AsyncSession,
     payload: DraftOrderRequest,
-    *,
-    skip_geoip: bool = False,
 ) -> Order:
     checkout_currency = (payload.checkout_currency or settings.DEFAULT_CURRENCY).upper()
     if checkout_currency not in ("SAR", "QAR", "KWD"):
@@ -48,13 +45,13 @@ async def create_draft_order(
             detail="Invalid checkout currency",
         )
 
-    # ── Phone validation ──────────────────────────────────────────────────────
-    if not is_valid_gcc_mobile(payload.customer_phone, checkout_currency):
+    # ── Phone validation (GCC patterns or international 7–15 digits) ────────
+    if not is_valid_order_phone(payload.customer_phone, checkout_currency):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid mobile number for selected storefront",
+            detail="Invalid phone number — use a valid number with country code if outside GCC",
         )
-    phone_data = normalize_gcc_mobile(payload.customer_phone, checkout_currency)
+    phone_data = normalize_order_phone(payload.customer_phone, checkout_currency)
 
     if not payload.cart_items:
         raise HTTPException(
@@ -62,27 +59,12 @@ async def create_draft_order(
             detail="Cart must contain at least one item",
         )
 
-    # ── MaxMind GeoIP check ───────────────────────────────────────────────────
+    # ── Geo enrichment (never blocks checkout) ──────────────────────────────
     attribution = payload.attribution
     ip_address = attribution.ip_address if attribution else None
 
-    if skip_geoip:
-        geo = GeoData(source="whitelist_bypass")
-        secondary_vpn = False
-    else:
-        geo_result = await check_ip(ip_address)
-
-        if not geo_result.allowed:
-            logger.warning(
-                "Order blocked by GeoIP: ip=%s reason=%s", ip_address, geo_result.reason
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Order not accepted from this location.",
-            )
-
-        geo = geo_result.geo
-        secondary_vpn = await lookup_secondary_vpn(ip_address)
+    geo = await lookup(ip_address)
+    secondary_vpn = await lookup_secondary_vpn(ip_address)
 
     # ── Offer lookup ──────────────────────────────────────────────────────────
     primary_item = payload.cart_items[0]

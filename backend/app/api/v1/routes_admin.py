@@ -4,7 +4,7 @@ import uuid
 from datetime import date, datetime, time, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import and_, func, literal, select
+from sqlalchemy import and_, func, literal, select, true as sql_true
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -17,6 +17,7 @@ from app.models.order_item import OrderItem
 from app.models.product import Product
 from app.models.upsell_offer import UpsellOffer
 from app.schemas.admin import (
+    AdminAnalyticsStreamRow,
     AdminMetricsOut,
     AdminOrderDetailOut,
     AdminOrderItemOut,
@@ -49,13 +50,22 @@ def _finalized_status_clause():
 
 
 def _valid_geo_clause():
-    return and_(
-        func.upper(func.coalesce(Order.geo_country, "")) == "SA",
-        Order.geo_is_vpn.is_(False),
-        Order.geo_is_proxy.is_(False),
-        Order.geo_is_tor.is_(False),
-        Order.geo_secondary_vpn.is_(False),
-    )
+    """Orders KPI — all countries (no geo/VPN exclusion)."""
+    return sql_true()
+
+
+def _mask_ip(ip: str | None) -> str | None:
+    """Privacy-preserving snippet for admin debug (full IP kept in DB)."""
+    if not ip:
+        return None
+    parts = ip.split(".")
+    if len(parts) == 4 and all(parts):
+        return f"{parts[0]}.{parts[1]}.{parts[2]}.*"
+    if ":" in ip:
+        segs = [s for s in ip.split(":") if s]
+        if len(segs) >= 4:
+            return ":".join(segs[:4]) + ":…"
+    return (ip[:24] + "…") if len(ip) > 24 else ip
 
 
 @router.get("/metrics", response_model=AdminMetricsOut)
@@ -71,9 +81,19 @@ async def admin_metrics(
         AnalyticsEvent.created_at < end_excl,
         AnalyticsEvent.is_valid_traffic.is_(True),
     )
+    base_all = and_(
+        AnalyticsEvent.created_at >= start,
+        AnalyticsEvent.created_at < end_excl,
+    )
 
     async def _count_event(etype: str) -> int:
         r = await db.execute(select(func.count()).select_from(AnalyticsEvent).where(base_ae, AnalyticsEvent.event_type == etype))
+        return int(r.scalar_one() or 0)
+
+    async def _count_event_all(etype: str) -> int:
+        r = await db.execute(
+            select(func.count()).select_from(AnalyticsEvent).where(base_all, AnalyticsEvent.event_type == etype)
+        )
         return int(r.scalar_one() or 0)
 
     valid_page_views = await _count_event("page_view")
@@ -100,6 +120,25 @@ async def admin_metrics(
         )
     )
     valid_sessions = int(r_sess.scalar_one() or 0)
+
+    all_page_views = await _count_event_all("page_view")
+    all_product_views = await _count_event_all("product_view")
+    all_add_to_cart = await _count_event_all("add_to_cart")
+    all_begin_checkout = await _count_event_all("begin_checkout")
+
+    r_all_events = await db.execute(select(func.count()).select_from(AnalyticsEvent).where(base_all))
+    all_events_total = int(r_all_events.scalar_one() or 0)
+
+    r_sess_all = await db.execute(
+        select(func.count(func.distinct(AnalyticsEvent.session_id)))
+        .select_from(AnalyticsEvent)
+        .where(
+            base_all,
+            AnalyticsEvent.session_id.isnot(None),
+            AnalyticsEvent.session_id != "",
+        )
+    )
+    all_sessions = int(r_sess_all.scalar_one() or 0)
 
     finalized = and_(
         Order.created_at >= start,
@@ -145,6 +184,12 @@ async def admin_metrics(
         valid_begin_checkout=valid_begin_checkout,
         valid_events_total=valid_events_total,
         valid_sessions=valid_sessions,
+        all_page_views=all_page_views,
+        all_product_views=all_product_views,
+        all_add_to_cart=all_add_to_cart,
+        all_begin_checkout=all_begin_checkout,
+        all_events_total=all_events_total,
+        all_sessions=all_sessions,
         finalized_orders_valid_geo=finalized_orders_valid_geo,
         finalized_orders_all=finalized_orders_all,
         revenue_valid_sar=revenue_valid_sar,
@@ -152,6 +197,52 @@ async def admin_metrics(
         conversion_valid_sessions_to_order=round(conv_sess, 6),
         conversion_valid_product_views_to_order=round(conv_pv, 6),
     )
+
+
+@router.get("/analytics-stream", response_model=list[AdminAnalyticsStreamRow])
+async def admin_analytics_stream(
+    db: AsyncSession = Depends(get_db),
+    from_date: date = Query(..., alias="from"),
+    to_date: date = Query(..., alias="to"),
+    limit: int = Query(200, ge=1, le=500),
+):
+    """Latest beacon events in range (all traffic). Use to confirm store hits vs ad dashboards."""
+    start, end_excl = _utc_day_range(from_date, to_date)
+    stmt = (
+        select(AnalyticsEvent)
+        .where(
+            AnalyticsEvent.created_at >= start,
+            AnalyticsEvent.created_at < end_excl,
+        )
+        .order_by(AnalyticsEvent.created_at.desc())
+        .limit(limit)
+    )
+    res = await db.execute(stmt)
+    rows = res.scalars().all()
+    out: list[AdminAnalyticsStreamRow] = []
+    for e in rows:
+        sid = (e.session_id or "").strip()
+        session_short = sid[:8] if sid else None
+        out.append(
+            AdminAnalyticsStreamRow(
+                id=e.id,
+                created_at=e.created_at,
+                event_type=e.event_type,
+                path=e.path,
+                product_slug=e.product_slug,
+                session_short=session_short,
+                utm_source=e.utm_source,
+                utm_medium=e.utm_medium,
+                geo_country=e.geo_country,
+                is_valid_traffic=bool(e.is_valid_traffic),
+                geo_is_vpn=bool(e.geo_is_vpn),
+                geo_is_proxy=bool(e.geo_is_proxy),
+                geo_is_tor=bool(e.geo_is_tor),
+                secondary_vpn_detected=bool(e.secondary_vpn_detected),
+                ip_masked=_mask_ip(e.ip_address),
+            )
+        )
+    return out
 
 
 def _norm_utm_source_expr(col):
@@ -173,10 +264,8 @@ async def admin_traffic_attribution(
     to_date: date = Query(..., alias="to"),
 ):
     """
-    Valid KSA / non-VPN traffic only (analytics is_valid_traffic).
-    Platform columns = utm_source + utm_medium (from page_view beacons).
-    Orders = finalized COD with KPI-valid Saudi geo, matched to the same UTM buckets
-    captured on checkout.
+    Page-view sessions grouped by UTM + inferred ad platform; orders = all finalized COD (any country).
+    Still filters analytics rows with is_valid_traffic (now always set true for real beacons).
     """
     start, end_excl = _utc_day_range(from_date, to_date)
 

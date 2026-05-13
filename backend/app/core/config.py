@@ -62,11 +62,11 @@ class Settings(BaseSettings):
     MAXMIND_ACCOUNT_ID: int = 0
     MAXMIND_LICENSE_KEY: str = ""
     MAXMIND_DB_PATH: str = ""          # e.g. /data/GeoLite2-City.mmdb
-    MAXMIND_BLOCK_NON_SA: bool = False  # with True, only ISO codes in MAXMIND_ALLOWED_COUNTRIES may order
+    MAXMIND_BLOCK_NON_SA: bool = False  # legacy — order blocking removed; geo is enrichment only
     MAXMIND_ALLOWED_COUNTRIES: str = "SA,QA,KW"
-    MAXMIND_BLOCK_VPN: bool = False    # block VPN/proxy/Tor IPs
-    MAXMIND_RISK_SCORE_THRESHOLD: float = 75.0  # block if insights risk_score > this (0=off)
-    # Comma-separated phone numbers that bypass GeoIP checks.
+    MAXMIND_BLOCK_VPN: bool = False  # legacy — order blocking removed
+    MAXMIND_RISK_SCORE_THRESHOLD: float = 0.0  # legacy — not used to block orders (0 = off)
+    # Comma-separated phones — legacy setting; order flow no longer uses GeoIP blocking.
     GEOIP_WHITELISTED_PHONES: str = "+212671147298"
 
     @property
