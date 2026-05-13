@@ -12,7 +12,6 @@ import {
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
-  PRODUCT_KICKER,
   PRODUCT_LIFESTYLE_VISUAL,
   PRODUCT_RESULT_VISUAL,
   PRODUCT_TAGLINE,
@@ -56,15 +55,12 @@ export type ProductLandingData = {
   upsellCompareAtPrice: number;
   upsellBundle: UpsellBundleConfig;
   topPromoStrip: string;
-  /** Warm strip under regulatory line — urgency / promo (conversion). */
-  heroUrgencyLine: string;
-  /** 3–5 compact stats under kicker (e.g. ٣٠ مل، SFDA، يومي). */
+  /** 3–5 compact stats under hero (e.g. ٣٠ مل، SFDA). */
   heroStats: readonly HeroStatItem[];
   /** Aggregate rating shown in hero (e.g. 4.9). */
   heroRatingScore: string;
   /** Short line next to rating (e.g. verified purchase context). */
   heroRatingCaption: string;
-  /** Comparison block (vs alternatives). */
   vsComparison: typeof PRODUCT_VS_COMPARISON;
   mobileBadgeRegions: string;
   mobileBadgeQuality: string;
@@ -92,7 +88,6 @@ export type ProductLandingData = {
   productHeroQuote: typeof PRODUCT_HERO_QUOTE;
   productHowTo: typeof PRODUCT_HOW_TO;
   productIngredients: typeof PRODUCT_INGREDIENTS;
-  productKicker: string;
   productLifestyleVisual: typeof PRODUCT_LIFESTYLE_VISUAL;
   productResultVisual: typeof PRODUCT_RESULT_VISUAL;
   productTagline: string;
@@ -544,8 +539,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
       topPromoStrip: "الدفع عند الاستلام داخل السعودية · ما يحتاج كرت · توصيل لباب البيت من ٣–٥ أيام عمل",
-      heroUrgencyLine:
-        "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة هذا الأسبوع — لا تفوّتي العرض 🔥",
       heroStats: [
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
@@ -595,7 +588,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
-      productKicker: PRODUCT_KICKER,
       productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
       productResultVisual: PRODUCT_RESULT_VISUAL,
       productTagline: PRODUCT_TAGLINE,
@@ -622,8 +614,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
       topPromoStrip: "الدفع عند الاستلام داخل قطر · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
-      heroUrgencyLine:
-        "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة — الدوحة والمناطق الرئيسية 🔥",
       heroStats: [
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
@@ -659,7 +649,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
-      productKicker: "منتج واحد · ٣٠ مل · SKINKSA قطر",
       productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
       productResultVisual: PRODUCT_RESULT_VISUAL,
       productTagline: TAGLINE_QA,
@@ -685,8 +674,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
     },
     topPromoStrip: "الدفع عند الاستلام داخل الكويت · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
-    heroUrgencyLine:
-      "⏰ آخر ٤٨ ساعة على الشحن المجاني للطلبات المؤهّلة داخل الكويت 🔥",
     heroStats: [
       { value: "30", label: "مل في العبوة" },
       { value: "~شهر", label: "روتين تقريبي" },
@@ -722,7 +709,6 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     productHeroQuote: PRODUCT_HERO_QUOTE,
     productHowTo: PRODUCT_HOW_TO,
     productIngredients: PRODUCT_INGREDIENTS,
-    productKicker: "منتج واحد · ٣٠ مل · SKINKSA الكويت",
     productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
     productResultVisual: PRODUCT_RESULT_VISUAL,
     productTagline: TAGLINE_KW,

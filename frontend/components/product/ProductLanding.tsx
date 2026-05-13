@@ -21,6 +21,7 @@ import {
 import { useEffect, useState } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
+import { CheckoutFormFlow } from "@/components/checkout/CheckoutFormFlow";
 import {
   AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES,
 } from "@/lib/content/product-page";
@@ -134,7 +135,7 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
   }));
 
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const addOfferToCart = useCartStore((s) => s.addOfferToCart);
+  const replaceCartWithOffer = useCartStore((s) => s.replaceCartWithOffer);
   const selected = offers[selectedIdx];
   const primaryTheme = OFFER_THEME[selected.code];
 
@@ -151,12 +152,6 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
   const defaultOffer = offers[defaultIdx];
 
   const minPerBottle = Math.min(...offers.map((o) => o.price / o.pieces));
-
-  function offerRoutineSubtitle(pieces: number): string {
-    if (pieces <= 1) return "٣٠ مل · تجربة البداية";
-    if (pieces === 2) return "٦٠ مل · ثبّتي النتيجة";
-    return "٩٠ مل · روتين أطول — أفضل سعر للعبوة";
-  }
 
   useEffect(() => {
     const eventId = generateEventId("vc");
@@ -176,9 +171,8 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
     });
   }, [marketSlug, defaultOffer.pieces, defaultOffer.price, d.currency, d.product.slug, d.product.title_ar]);
 
-  function handleAddToCart() {
-    const eventId = generateEventId("atc");
-    addOfferToCart(
+  useEffect(() => {
+    replaceCartWithOffer(
       {
         code: selected.code,
         quantity: selected.pieces,
@@ -192,6 +186,20 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
         titleAr: d.product.title_ar,
       }
     );
+  }, [
+    d.currency,
+    d.product.id,
+    d.product.slug,
+    d.product.title_ar,
+    replaceCartWithOffer,
+    selected.code,
+    selected.label,
+    selected.pieces,
+    selected.price,
+  ]);
+
+  function scrollToCheckoutAndTrack() {
+    const eventId = generateEventId("atc");
     trackCommerceEvent({
       eventName: "AddToCart",
       eventId,
@@ -206,18 +214,13 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
       ],
       contentName: d.product.title_ar,
     });
+    document.getElementById("product-checkout")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
     <>
       <article className="pb-32 md:pb-0">
-        {/* NAMBeauty-style: regulatory + urgency strips */}
-        <div className="border-b border-white/10 bg-[var(--color-brand-ink)] py-2.5 text-center">
-          <p className="px-3 text-[11px] font-bold text-white sm:text-xs">{d.productKicker}</p>
-        </div>
-        <div className="border-b border-orange-700/20 bg-gradient-to-l from-orange-600 via-amber-500 to-orange-500 px-3 py-2.5 text-center shadow-sm">
-          <p className="text-xs font-black text-white sm:text-sm">{d.heroUrgencyLine}</p>
-        </div>
+        {/* Top: shipping / COD strip */}
         <div className="border-b border-[var(--color-brand-border)] bg-gradient-to-l from-[#1e3a5f] via-[#1a56db] to-[#2563eb] py-2 text-center text-white/95">
           <p className="px-4 text-[10px] font-semibold sm:text-xs">{d.topPromoStrip}</p>
         </div>
@@ -322,37 +325,33 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                 </div>
               </div>
 
-              <p className="text-center text-xs font-bold text-orange-700">{d.heroUrgencyLine}</p>
-
               <div>
-                <p className="text-base font-black text-[var(--color-brand-ink)]">اختاري العرض:</p>
-                <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">
-                  كل ما زاد الالتزام، صار متوسط سعر العبوة أوضح — والدفع عند الاستلام يبقى بدون أونلاين.
-                </p>
-                <div className="mt-3 flex flex-col gap-3">
+                <p className="text-base font-black text-[var(--color-brand-ink)]">اختاري العرض</p>
+                <div className="mt-2.5 flex flex-col gap-2.5">
                   {offers.map((offer, idx) => {
                     const savings = offer.compare ? offer.compare - offer.price : 0;
-                    const per = (offer.price / offer.pieces).toFixed(0);
+                    const per = offer.price / offer.pieces;
                     const t = OFFER_THEME[offer.code];
                     const isOn = idx === selectedIdx;
+                    const showPerBottle = offer.pieces > 1;
                     return (
                       <button
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`relative w-full overflow-hidden rounded-2xl border-2 px-4 pb-4 pt-5 text-right shadow-sm transition duration-200 ${
+                        className={`relative w-full overflow-hidden rounded-2xl border-2 px-3 pb-3 pt-3.5 text-right shadow-sm transition duration-200 sm:px-4 sm:pb-3.5 sm:pt-4 ${
                           isOn ? t.selected : `${t.idle} ${t.hover}`
                         }`}
                       >
                         <span
-                          className={`pointer-events-none absolute top-3 bottom-3 right-3 w-1.5 rounded-full transition ${
+                          className={`pointer-events-none absolute top-2.5 bottom-2.5 right-2.5 w-1 rounded-full transition sm:right-3 ${
                             isOn ? `${t.accentBar} opacity-100` : "bg-[var(--color-brand-border)] opacity-25"
                           }`}
                           aria-hidden
                         />
                         {offer.badge && (
                           <span
-                            className={`absolute -top-0 right-4 rounded-full border px-2.5 py-0.5 text-[10px] font-black shadow-md ${
+                            className={`absolute -top-px right-3 rounded-full border px-2 py-0.5 text-[10px] font-black shadow-sm sm:right-4 ${
                               isOn
                                 ? t.badgeOn
                                 : "border-[var(--color-brand-border)] bg-amber-50 text-amber-950"
@@ -361,35 +360,48 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                             {offer.badge}
                           </span>
                         )}
-                        <div className="flex flex-col gap-3 pe-5 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-black text-[var(--color-brand-ink)] sm:text-base">{offer.label}</p>
-                            <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">
-                              {offerRoutineSubtitle(offer.pieces)} · متوسط{" "}
-                              <span dir="ltr" className="tabular-nums">
-                                {formatMoney(per, d.currency, d.numberLocale)}
-                              </span>{" "}
-                              {d.currencyLabelAr} / عبوة
+                        <div className="flex flex-col gap-2 pe-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pe-5">
+                          <div className="min-w-0 flex-1 space-y-1">
+                            <p className="text-sm font-black leading-snug text-[var(--color-brand-ink)] sm:text-base">
+                              {offer.label}
                             </p>
-                            {savings > 0 && (
-                              <p className={`mt-2 text-xs font-black ${isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}`}>
-                                وفّري{" "}
-                                <span dir="ltr" className="tabular-nums">
-                                  {formatMoney(savings, d.currency, d.numberLocale)}
-                                </span>{" "}
-                                {d.currencyLabelAr}
+                            {(savings > 0 || showPerBottle) && (
+                              <p className="text-[11px] font-bold leading-tight sm:text-xs">
+                                {savings > 0 && (
+                                  <span className={isOn ? t.savingsOn : "text-[var(--color-brand-success)]"}>
+                                    وفّري{" "}
+                                    <span dir="ltr" className="tabular-nums">
+                                      {formatMoney(savings, d.currency, d.numberLocale)}
+                                    </span>{" "}
+                                    {d.currencyLabelAr}
+                                  </span>
+                                )}
+                                {savings > 0 && showPerBottle && (
+                                  <span className="text-[var(--color-brand-border)]"> · </span>
+                                )}
+                                {showPerBottle && (
+                                  <span className="text-[var(--color-brand-slate)]">
+                                    <span dir="ltr" className="tabular-nums text-[var(--color-brand-ink)]">
+                                      {formatMoney(per, d.currency, d.numberLocale)}
+                                    </span>{" "}
+                                    {d.currencyLabelAr} / عبوة
+                                  </span>
+                                )}
                               </p>
                             )}
                           </div>
-                          <div className="flex shrink-0 flex-col items-end gap-0.5 sm:items-start sm:text-left">
+                          <div className="flex shrink-0 flex-col items-end gap-0.5">
                             <span className="flex items-baseline gap-1" dir="ltr">
-                              <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)] sm:text-3xl">
+                              <span className="text-xl font-black tabular-nums text-[var(--color-brand-ink)] sm:text-2xl">
                                 {formatMoney(offer.price, d.currency, d.numberLocale)}
                               </span>
-                              <span className="text-sm font-bold text-[var(--color-brand-ink)]">{d.currencyLabelAr}</span>
+                              <span className="text-xs font-bold text-[var(--color-brand-ink)] sm:text-sm">{d.currencyLabelAr}</span>
                             </span>
                             {offer.compare != null && (
-                              <span className="text-xs font-bold tabular-nums text-[var(--color-brand-slate)] line-through" dir="ltr">
+                              <span
+                                className="text-[10px] font-bold tabular-nums text-[var(--color-brand-slate)] line-through sm:text-xs"
+                                dir="ltr"
+                              >
                                 {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
                               </span>
                             )}
@@ -401,19 +413,9 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className={`flex w-full flex-col items-center justify-center gap-0.5 rounded-2xl bg-gradient-to-l py-4 text-lg font-black text-white transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 sm:flex-row sm:gap-2 ${primaryTheme.cta} ${primaryTheme.ctaShadow} ${primaryTheme.ctaHover}`}
-              >
-                <span className="flex items-center gap-2">
-                  ابدئي روتين النضارة الآن
-                  <ChevronLeft size={22} aria-hidden />
-                </span>
-                <span className="text-sm font-bold opacity-95" dir="ltr">
-                  · {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                </span>
-              </button>
+              <div className="mt-2 scroll-mt-28">
+                <CheckoutFormFlow mode="inline" />
+              </div>
 
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {[
@@ -436,17 +438,6 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                   </div>
                 ))}
               </div>
-
-              <p className="text-center text-[11px] leading-relaxed text-[var(--color-brand-slate)]">
-                بإضافة المنتج للسلة أنتِ توافقين على{" "}
-                <a
-                  href="/terms-and-conditions"
-                  className="font-bold text-[var(--color-brand-primary)] underline underline-offset-2"
-                >
-                  الشروط
-                </a>
-                . إذا عندج حمل أو علاج جلدي قوي، استشيري طبيبتج.
-              </p>
             </div>
           </div>
         </section>
@@ -929,10 +920,10 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
             </ul>
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={scrollToCheckoutAndTrack}
               className="mt-10 inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-black text-[#0f1c2e] shadow-xl transition hover:bg-[var(--color-brand-mist)]"
             >
-              جرّبي بدون ضغط — اطلبي بالسلة
+              جرّبي بدون ضغط — أكملي طلبج هنا
               <ChevronLeft className="h-5 w-5" aria-hidden />
             </button>
           </div>
@@ -976,10 +967,10 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
         </div>
         <button
           type="button"
-          onClick={handleAddToCart}
+          onClick={scrollToCheckoutAndTrack}
           className={`shrink-0 rounded-xl px-5 py-3.5 text-sm font-black text-white ${primaryTheme.stickyBtn}`}
         >
-          إضافة للسلة
+          أكملي الطلب
         </button>
       </div>
     </>
