@@ -11,10 +11,10 @@ def compute_order_total(offer_price: Decimal, upsell_price: Decimal | None = Non
 
 
 def test_offer2_with_upsell():
-    result = compute_order_total(Decimal("159"), Decimal("99"))
+    result = compute_order_total(Decimal("159"), Decimal("79"))
     assert result["subtotal"] == Decimal("159")
-    assert result["upsell"] == Decimal("99")
-    assert result["total"] == Decimal("258")
+    assert result["upsell"] == Decimal("79")
+    assert result["total"] == Decimal("238")
 
 
 def test_offer1_no_upsell():
@@ -25,8 +25,8 @@ def test_offer1_no_upsell():
 
 
 def test_offer3_with_upsell():
-    result = compute_order_total(Decimal("199"), Decimal("99"))
-    assert result["total"] == Decimal("298")
+    result = compute_order_total(Decimal("199"), Decimal("79"))
+    assert result["total"] == Decimal("278")
 
 
 def test_offer2_no_upsell():

@@ -132,6 +132,9 @@ export default function CheckoutModal() {
         currencyLabelAr={meta.currencyLabelAr}
         numberLocale={meta.numberLocale}
         upsellAddonPrice={meta.upsellAddonPrice}
+        upsellCompareAtPrice={meta.upsellCompareAtPrice}
+        upsellBundle={meta.upsellBundle}
+        primaryOrderQuantity={first?.quantity ?? 1}
         productSlug={first?.slug ?? "blueskin"}
         productTitleAr={first?.titleAr ?? "SKINKSA"}
         onComplete={() => {

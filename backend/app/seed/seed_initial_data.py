@@ -102,9 +102,9 @@ async def run_seed(db: AsyncSession | None = None) -> None:
             upsell = UpsellOffer(
                 id=uuid.uuid4(),
                 product_id=product.id,
-                title_ar="الببتيد — إضافة مكمّلة لنفس المنتج",
+                title_ar="عبوة سيروم إضافية SKINKSA (٣٠ مل) — باقة ما بعد الطلب",
                 sku="SKINKSA-PEP-ADDON",
-                price_sar=Decimal("99"),
+                price_sar=Decimal("79"),
                 active=False,
                 sort_order=1,
             )

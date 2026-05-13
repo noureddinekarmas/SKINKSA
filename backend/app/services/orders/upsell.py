@@ -12,16 +12,16 @@ from app.models.upsell_offer import UpsellOffer
 from app.schemas.order import UpsellRequest
 
 UPSELL_PRICE_BY_CURRENCY = {
-    "SAR": Decimal("99"),
-    "QAR": Decimal("99"),
-    "KWD": Decimal("8"),
+    "SAR": Decimal("79"),
+    "QAR": Decimal("79"),
+    "KWD": Decimal("7.25"),
 }
-UPSELL_TITLE = "منتج مكمل مميز"
+UPSELL_TITLE = "عبوة سيروم إضافية (٣٠ مل) — باقة ما بعد الطلب"
 
 
 def _default_upsell_price(order: Order) -> Decimal:
     c = (order.currency or "SAR").upper()
-    return UPSELL_PRICE_BY_CURRENCY.get(c, Decimal("99"))
+    return UPSELL_PRICE_BY_CURRENCY.get(c, Decimal("79"))
 
 
 async def process_upsell(db: AsyncSession, order_id: str, payload: UpsellRequest) -> Order:

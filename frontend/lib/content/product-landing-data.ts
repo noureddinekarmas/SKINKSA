@@ -30,6 +30,17 @@ export type ProductFaqItem = { question: string; answer: string };
 
 export type CheckoutRegionOption = { value: string; label: string };
 
+export type UpsellBundleConfig = {
+  /** Main title; include emojis for the interstitial */
+  headlineAr: string;
+  /** Short persuasive line under the title */
+  hookLineAr: string;
+  /** Extra full-size bottles in the upsell line (matches backend line quantity) */
+  addonBottleQty: number;
+  /** Unit description, e.g. عبوة سيروم ٣٠ مل */
+  bottleLabelAr: string;
+};
+
 export type ProductLandingData = {
   product: Product;
   currency: ShopCurrency;
@@ -37,6 +48,9 @@ export type ProductLandingData = {
   numberLocale: string;
   faq: ProductFaqItem[];
   upsellAddonPrice: number;
+  /** Shown struck-through next to the offer price */
+  upsellCompareAtPrice: number;
+  upsellBundle: UpsellBundleConfig;
   topPromoStrip: string;
   mobileBadgeRegions: string;
   mobileBadgeQuality: string;
@@ -507,7 +521,14 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       currencyLabelAr: "ر.س",
       numberLocale: "en-SA",
       faq: FAQ_KSA,
-      upsellAddonPrice: 99,
+      upsellAddonPrice: 79,
+      upsellCompareAtPrice: 129,
+      upsellBundle: {
+        headlineAr: "✨🎁 باقة لحظة أخيرة — كمية إضافية بسعر ينافس!",
+        hookLineAr: "💎 عبوتك الإضافية بنفس التركيبة — أوفر من شرائها لوحدها 🔥",
+        addonBottleQty: 1,
+        bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
+      },
       topPromoStrip: "الدفع عند الاستلام داخل السعودية · ما يحتاج كرت · توصيل لباب البيت من ٣–٥ أيام عمل",
       mobileBadgeRegions: "عميلات من كل المناطق",
       mobileBadgeQuality: "مرخّص SFDA",
@@ -567,7 +588,14 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       currencyLabelAr: "ر.ق",
       numberLocale: "en-QA",
       faq: FAQ_QATAR,
-      upsellAddonPrice: 99,
+      upsellAddonPrice: 79,
+      upsellCompareAtPrice: 129,
+      upsellBundle: {
+        headlineAr: "✨🎁 عرض ما بعد الطلب — زيدي كميتك بأحسن سعر!",
+        hookLineAr: "💎 نفس السيروم · عبوة إضافية جاهزة للتوصيل داخل قطر 📦",
+        addonBottleQty: 1,
+        bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
+      },
       topPromoStrip: "الدفع عند الاستلام داخل قطر · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
       mobileBadgeRegions: "عميلات من قطر",
       mobileBadgeQuality: "منتج أصلي",
@@ -612,7 +640,14 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     currencyLabelAr: "د.ك",
     numberLocale: "en-KW",
     faq: FAQ_KUWAIT,
-    upsellAddonPrice: 8,
+    upsellAddonPrice: 7.25,
+    upsellCompareAtPrice: 11.5,
+    upsellBundle: {
+      headlineAr: "✨🎁 باقة مكملة — عبوة زيادة بتسعيرة محروقة!",
+      hookLineAr: "💎 روتين أطول بدون ما تفوتك العبوة الثانية — توصيل الكويت 📦",
+      addonBottleQty: 1,
+      bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
+    },
     topPromoStrip: "الدفع عند الاستلام داخل الكويت · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
     mobileBadgeRegions: "عميلات من الكويت",
     mobileBadgeQuality: "منتج أصلي",
@@ -682,5 +717,7 @@ export function checkoutMetaForCurrency(currency: ShopCurrency): Pick<
     currencyLabelAr: d.currencyLabelAr,
     numberLocale: d.numberLocale,
     upsellAddonPrice: d.upsellAddonPrice,
+    upsellCompareAtPrice: d.upsellCompareAtPrice,
+    upsellBundle: d.upsellBundle,
   };
 }
