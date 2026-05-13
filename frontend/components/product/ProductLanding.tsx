@@ -26,13 +26,10 @@ import {
   AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES,
 } from "@/lib/content/product-page";
 import type { StoryFrame } from "@/lib/content/product-page";
-import type { ProductMarketSlug } from "@/lib/content/main-product";
-import { getProductLandingData } from "@/lib/content/product-landing-data";
+import type { ProductLandingData } from "@/lib/content/product-landing-data";
 import { formatMoney } from "@/lib/currency";
 import { useCartStore } from "@/lib/cart/store";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
-
-type OfferCode = "OFFER_1" | "OFFER_2" | "OFFER_3";
 
 /** ألوان مختلفة قليلاً حتى تبدو الدائرة أو كـ «عملاء» وليس شعاراً مكرراً */
 const HERO_AVATAR_GRADIENTS = [
@@ -42,22 +39,7 @@ const HERO_AVATAR_GRADIENTS = [
 ] as const;
 
 /** كل باقة لها لون «منتَقى» عند التحديد — يتمدّد لزر الشراء (تقوية تحويل بصرية) */
-const OFFER_THEME: Record<
-  OfferCode,
-  {
-    selected: string;
-    idle: string;
-    hover: string;
-    badgeOn: string;
-    savingsOn: string;
-    accentBar: string;
-    cta: string;
-    ctaHover: string;
-    ctaShadow: string;
-    stickyHint: string;
-    stickyBtn: string;
-  }
-> = {
+const OFFER_THEME = {
   OFFER_1: {
     selected:
       "border-emerald-500 bg-gradient-to-l from-emerald-50 via-white to-white shadow-[0_12px_36px_-10px_rgba(13,148,100,0.45)] ring-2 ring-emerald-500/20",
@@ -101,7 +83,16 @@ const OFFER_THEME: Record<
     stickyHint: "text-amber-800",
     stickyBtn: "bg-gradient-to-l from-amber-600 to-amber-900 shadow-[0_10px_30px_-8px_rgba(180,83,9,0.45)]",
   },
-};
+} as const;
+
+type OfferCode = keyof typeof OFFER_THEME;
+
+function themeForOfferCode(code: string): (typeof OFFER_THEME)[OfferCode] {
+  if (code === "OFFER_1" || code === "OFFER_2" || code === "OFFER_3") {
+    return OFFER_THEME[code];
+  }
+  return OFFER_THEME.OFFER_2;
+}
 
 function StoryFrameCard({ frame }: { frame: StoryFrame }) {
   return (
@@ -123,10 +114,10 @@ function StoryFrameCard({ frame }: { frame: StoryFrame }) {
   );
 }
 
-export default function ProductLanding({ marketSlug }: { marketSlug: ProductMarketSlug }) {
-  const d = getProductLandingData(marketSlug);
+export default function ProductLanding({ data }: { data: ProductLandingData }) {
+  const d = data;
   const offers = d.product.offers.map((o) => ({
-    code: o.code as OfferCode,
+    code: o.code,
     pieces: o.quantity,
     price: Number(o.price_sar),
     compare: o.compare_at_sar != null ? Number(o.compare_at_sar) : null,
@@ -137,13 +128,12 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
   const [selectedIdx, setSelectedIdx] = useState(0);
   const replaceCartWithOffer = useCartStore((s) => s.replaceCartWithOffer);
   const selected = offers[selectedIdx];
-  const primaryTheme = OFFER_THEME[selected.code];
+  const primaryTheme = themeForOfferCode(selected.code);
 
   useEffect(() => {
-    const dd = getProductLandingData(marketSlug);
-    const i = dd.product.offers.findIndex((o) => o.is_default);
+    const i = d.product.offers.findIndex((o) => o.is_default);
     setSelectedIdx(i >= 0 ? i : 1);
-  }, [marketSlug]);
+  }, [d.product.slug, d.product.offers]);
 
   const defaultIdx =
     d.product.offers.findIndex((o) => o.is_default) >= 0
@@ -169,7 +159,7 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
       ],
       contentName: d.product.title_ar,
     });
-  }, [marketSlug, defaultOffer.pieces, defaultOffer.price, d.currency, d.product.slug, d.product.title_ar]);
+  }, [defaultOffer.pieces, defaultOffer.price, d.currency, d.product.slug, d.product.title_ar]);
 
   useEffect(() => {
     replaceCartWithOffer(
@@ -331,7 +321,7 @@ export default function ProductLanding({ marketSlug }: { marketSlug: ProductMark
                   {offers.map((offer, idx) => {
                     const savings = offer.compare ? offer.compare - offer.price : 0;
                     const per = offer.price / offer.pieces;
-                    const t = OFFER_THEME[offer.code];
+                    const t = themeForOfferCode(offer.code);
                     const isOn = idx === selectedIdx;
                     const showPerBottle = offer.pieces > 1;
                     return (

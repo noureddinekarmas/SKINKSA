@@ -159,8 +159,8 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
     }
   };
 
-  if (showUpsell && orderId) {
-    const first = items[0];
+  if (showUpsell && orderId && items[0]) {
+    const line = items[0];
     return (
       <UpsellInterstitial
         orderId={orderId}
@@ -171,9 +171,9 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
         upsellAddonPrice={meta.upsellAddonPrice}
         upsellCompareAtPrice={meta.upsellCompareAtPrice}
         upsellBundle={meta.upsellBundle}
-        primaryOrderQuantity={first?.quantity ?? 1}
-        productSlug={first?.slug ?? "blueskin"}
-        productTitleAr={first?.titleAr ?? "SKINKSA"}
+        primaryOrderQuantity={line.quantity}
+        productSlug={line.slug}
+        productTitleAr={line.titleAr}
         onComplete={() => {
           finishFlow();
           window.location.href = `/thank-you?order=${orderId}`;

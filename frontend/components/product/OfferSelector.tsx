@@ -27,7 +27,7 @@ export default function OfferSelector({ offers, productId, productTitleAr, produ
     const eventId = generateEventId("atc");
     addOfferToCart(
       {
-        code: selectedOffer.code as "OFFER_1" | "OFFER_2" | "OFFER_3",
+        code: selectedOffer.code,
         quantity: selectedOffer.quantity,
         price_sar: Number(selectedOffer.price_sar),
         label_ar: selectedOffer.label_ar,

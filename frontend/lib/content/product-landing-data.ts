@@ -22,7 +22,7 @@ import {
   SOCIAL_STRIP as SOCIAL_KSA,
   STORY_FRAMES as STORY_KSA,
 } from "@/lib/content/product-page";
-import type { StoryFrame } from "@/lib/content/product-page";
+import type { GalleryImage, StoryFrame } from "@/lib/content/product-page";
 
 export type ShopCurrency = "SAR" | "QAR" | "KWD";
 
@@ -83,8 +83,8 @@ export type ProductLandingData = {
   painChecklist: typeof PAIN_CHECKLIST;
   productBenefits: typeof PRODUCT_BENEFITS;
   productDescriptionGallery: typeof PRODUCT_DESCRIPTION_GALLERY;
-  productHeadline: typeof PRODUCT_HEADLINE;
-  productHeroGallery: typeof PRODUCT_HERO_GALLERY;
+  productHeadline: string;
+  productHeroGallery: GalleryImage[];
   productHeroQuote: typeof PRODUCT_HERO_QUOTE;
   productHowTo: typeof PRODUCT_HOW_TO;
   productIngredients: typeof PRODUCT_INGREDIENTS;
@@ -505,6 +505,21 @@ const SOCIAL_KUWAIT = {
 
 const TAGLINE_QA = "ببتيد نحاس أزرق مع هيالورونيك: يمتص بسرعة ويناسب الجو الدافئ.";
 const TAGLINE_KW = "ببتيد نحاس أزرق مع هيالورونيك: خفيف على البشرة ومناسب للاستخدام اليومي داخل الكويت.";
+
+/** Merge live catalog product (prices, titles, hero image) into a regional landing template. */
+export function mergeApiProductLandingData(base: ProductLandingData, apiProduct: Product): ProductLandingData {
+  const heroGallery: GalleryImage[] = apiProduct.base_image_url
+    ? [{ src: apiProduct.base_image_url, alt: apiProduct.title_ar }]
+    : [...base.productHeroGallery];
+  const desc = apiProduct.description_ar?.trim();
+  return {
+    ...base,
+    product: apiProduct,
+    productHeadline: apiProduct.title_ar,
+    productTagline: desc && desc.length > 0 ? desc : base.productTagline,
+    productHeroGallery: heroGallery,
+  };
+}
 
 export function getProductLandingData(slug: ProductMarketSlug): ProductLandingData {
   const baseProduct = (s: string, offers: Offer[], titleAr: string): Product => ({

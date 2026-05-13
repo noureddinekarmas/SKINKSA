@@ -13,7 +13,7 @@ export default function FinalCtaSection() {
     const offer = STATIC_OFFERS.find((o) => o.is_default) || STATIC_OFFERS[1];
     addOfferToCart(
       {
-        code: offer.code as "OFFER_1" | "OFFER_2" | "OFFER_3",
+        code: offer.code,
         quantity: offer.quantity,
         price_sar: Number(offer.price_sar),
         label_ar: offer.label_ar ?? "",

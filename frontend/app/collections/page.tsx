@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { STATIC_PRODUCT, STATIC_OFFERS } from "@/lib/content/products";
+import { getProducts } from "@/lib/api/products";
 import { Star, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,85 +11,81 @@ export const metadata: Metadata = {
   description: "تصفحي مجموعة SKINKSA للعناية الفاخرة بالبشرة",
 };
 
-export default function CollectionsPage() {
-  const defaultOffer = STATIC_OFFERS.find((o) => o.is_default) || STATIC_OFFERS[1];
+export const dynamic = "force-dynamic";
+
+export default async function CollectionsPage() {
+  const products = await getProducts().catch(() => []);
 
   return (
     <main dir="rtl">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#312E81] to-indigo-700 text-white py-16 text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">المجموعة</h1>
-          <p className="text-white/80 text-lg">
-            منتجات عناية فاخرة مصممة للمرأة السعودية
-          </p>
+      <section className="bg-gradient-to-br from-[#312E81] to-indigo-700 py-16 text-center text-white">
+        <div className="mx-auto max-w-4xl px-4">
+          <h1 className="mb-4 text-4xl font-bold">المجموعة</h1>
+          <p className="text-lg text-white/80">منتجات عناية فاخرة مصممة للمرأة السعودية</p>
         </div>
       </section>
 
       {/* Products */}
-      <section className="py-16 bg-[#F8FAFC]">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Main product */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#E2E8F0] hover:shadow-md transition group">
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-100 aspect-square flex items-center justify-center relative">
-                <Image
-                  src="/placeholders/serum-bottle.svg"
-                  alt={STATIC_PRODUCT.title_ar}
-                  width={180}
-                  height={180}
-                  className="object-contain"
-                />
-                <Badge className="absolute top-3 right-3 bg-[#B7791F] text-white hover:bg-[#B7791F]">
-                  الأكثر مبيعاً
-                </Badge>
-              </div>
-              <div className="p-5 space-y-3">
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                  <span className="text-[#475569] text-xs mr-1">4.9</span>
-                </div>
-                <h3 className="font-bold text-[#0F172A] text-sm leading-snug line-clamp-2">
-                  {STATIC_PRODUCT.title_ar}
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-[#312E81]">
-                    {defaultOffer.price_sar} ر.س
-                  </span>
-                  {defaultOffer.compare_at_sar && (
-                    <span className="text-sm text-[#475569] line-through">
-                      {defaultOffer.compare_at_sar} ر.س
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-[#15803D] text-xs">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>دفع عند الاستلام</span>
-                </div>
-                <Link href={`/products/${STATIC_PRODUCT.slug}`}>
-                  <Button className="w-full bg-[#312E81] hover:bg-indigo-800 text-white rounded-xl">
-                    اطلبي الآن
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      <section className="bg-[#F8FAFC] py-16">
+        <div className="mx-auto max-w-5xl px-4">
+          {products.length === 0 ? (
+            <p className="text-center text-[#475569]">لا توجد منتجات متاحة حالياً.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => {
+                const offers = product.offers ?? [];
+                const defaultOffer = offers.find((o) => o.is_default) || offers[1] || offers[0];
+                const price = defaultOffer ? Number(defaultOffer.price_sar) : null;
+                const compare = defaultOffer?.compare_at_sar != null ? Number(defaultOffer.compare_at_sar) : null;
+                const img = product.base_image_url || "/placeholders/serum-bottle.svg";
 
-            {/* Coming soon placeholders */}
-            {[1, 2].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl overflow-hidden border border-dashed border-[#E2E8F0] flex flex-col items-center justify-center aspect-square text-center p-6 space-y-3"
-              >
-                <div className="w-16 h-16 rounded-full bg-[#F8FAFC] flex items-center justify-center">
-                  <span className="text-2xl">🌿</span>
-                </div>
-                <p className="text-[#475569] font-medium">قريباً</p>
-                <p className="text-[#475569] text-xs">منتج جديد قيد التطوير</p>
-              </div>
-            ))}
-          </div>
+                return (
+                  <div
+                    key={product.id}
+                    className="group overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm transition hover:shadow-md"
+                  >
+                    <div className="relative flex aspect-square items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100">
+                      <Image
+                        src={img}
+                        alt={product.title_ar}
+                        width={180}
+                        height={180}
+                        className="object-contain"
+                      />
+                      <Badge className="absolute right-3 top-3 bg-[#B7791F] text-white hover:bg-[#B7791F]">
+                        متوفر
+                      </Badge>
+                    </div>
+                    <div className="space-y-3 p-5">
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <Star key={i} className="mr-1 h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                        ))}
+                        <span className="mr-1 text-xs text-[#475569]">4.9</span>
+                      </div>
+                      <h3 className="line-clamp-2 text-sm font-bold leading-snug text-[#0F172A]">{product.title_ar}</h3>
+                      {defaultOffer && price != null && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xl font-bold text-[#312E81]">{price} ر.س</span>
+                          {compare != null && compare > price && (
+                            <span className="text-sm text-[#475569] line-through">{compare} ر.س</span>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1 text-xs text-[#15803D]">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        <span>دفع عند الاستلام</span>
+                      </div>
+                      <Link href={`/products/${product.slug}`}>
+                        <Button className="w-full rounded-xl bg-[#312E81] text-white hover:bg-indigo-800">اطلبي الآن</Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
     </main>

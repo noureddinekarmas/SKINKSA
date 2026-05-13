@@ -6,7 +6,7 @@ import type { ShopCurrency } from "@/lib/content/product-landing-data";
 import { PRODUCT_CART_IMAGE } from "@/lib/content/products";
 
 export interface CartOffer {
-  code: "OFFER_1" | "OFFER_2" | "OFFER_3";
+  code: string;
   quantity: number;
   price_sar: number;
   label_ar: string;

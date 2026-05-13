@@ -24,9 +24,9 @@ export interface Product {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return apiFetch<Product[]>("/v1/products");
+  return apiFetch<Product[]>("/v1/products", { cache: "no-store" });
 }
 
 export async function getProduct(slug: string): Promise<Product> {
-  return apiFetch<Product>(`/v1/products/${slug}`);
+  return apiFetch<Product>(`/v1/products/${slug}`, { cache: "no-store" });
 }
