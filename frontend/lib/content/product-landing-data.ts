@@ -5,16 +5,14 @@ import {
   MECHANISM_BLOCK,
   OBJECTION_BUSTER,
   PAIN_CHECKLIST,
-  PRODUCT_BENEFITS,
   PRODUCT_DESCRIPTION_GALLERY,
   PRODUCT_HEADLINE,
-  PRODUCT_HERO_GALLERY,
+  PRODUCT_HERO_IMAGE,
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
   PRODUCT_LIFESTYLE_VISUAL,
   PRODUCT_RESULT_VISUAL,
-  PRODUCT_TAGLINE,
   AUTHENTICITY_SECTION,
   PRODUCT_VS_COMPARISON,
   PRODUCT_REVIEWS as REVIEWS_KSA,
@@ -91,7 +89,7 @@ export type ProductLandingData = {
   mechanismBlock: typeof MECHANISM_BLOCK;
   objectionBuster: typeof OBJECTION_BUSTER;
   painChecklist: typeof PAIN_CHECKLIST;
-  productBenefits: typeof PRODUCT_BENEFITS;
+  productBenefits: readonly string[];
   productDescriptionGallery: typeof PRODUCT_DESCRIPTION_GALLERY;
   productHeadline: string;
   productHeroGallery: GalleryImage[];
@@ -228,89 +226,6 @@ function offersKwd(): Offer[] {
   ];
 }
 
-const FAQ_KSA: ProductFaqItem[] = [
-  {
-    question: "هل المنتج يناسب كل أنواع البشرة، حتى الحساسة؟",
-    answer:
-      "نعم، التركيبة لطيفة جداً ومصممة لتناسب مختلف أنواع البشرة بما فيها الحساسة. كما أنها مختبرة ومرخصة من الهيئة العامة للغذاء والدواء (SFDA) لضمان أمانها التام.",
-  },
-  {
-    question: "متى أبدأ بملاحظة الفرق على بشرتي؟",
-    answer:
-      "معظم عميلاتنا يلاحظن زيادة في الترطيب والنضارة من الأسبوع الأول، ومع الاستمرار لمدة 3 إلى 4 أسابيع ستلاحظين تحسناً كبيراً في ملمس وشد البشرة.",
-  },
-  {
-    question: "ماذا لو لم تعجبني النتيجة؟",
-    answer:
-      "رضاكِ هو هدفنا الأول. نقدم لكِ (ضماناً ذهبياً لمدة 30 يوماً). استخدمي المنتج، وإذا لم تشعري بفرق ملموس في نضارة وجهك، سنعيد لكِ كامل المبلغ بدون أي تعقيدات.",
-  },
-  {
-    question: "كيف أدفع قيمة الطلب؟",
-    answer: "راحتك تهمنا، لذلك لا نطلب منكِ أي دفع مسبق. الدفع يكون يداً بيد (الدفع عند الاستلام) بعد أن يصلك المنتج لباب بيتك.",
-  },
-  {
-    question: "كم يستغرق التوصيل داخل السعودية؟",
-    answer:
-      "نحن نعمل مع أفضل شركات الشحن لضمان وصول طلبك خلال 3-5 أيام عمل كحد أقصى لأي مدينة في المملكة.",
-  },
-];
-
-const FAQ_QATAR: ProductFaqItem[] = [
-  {
-    question: "هل المنتج يناسب كل أنواع البشرة، حتى الحساسة؟",
-    answer:
-      "نعم، التركيبة لطيفة ومصممة لتناسب أغلب أنواع البشرة بما فيها الحساسة غالباً. نوصي دائماً بتجربة بسيطة على بقعة صغيرة لو بشرتك شديدة الحساسية، والالتزام بتعليمات الاستخدام.",
-  },
-  {
-    question: "متى أبدأ بملاحظة الفرق على بشرتي؟",
-    answer:
-      "كثير من العميلات يلاحظن ترطيباً أوضح خلال الأسبوع الأول، ومع الاستمرار لمدة 3 إلى 4 أسابيع يتحسّن الإحساس العام بالملمس والمظهر — والنتائج تختلف من شخص لآخر.",
-  },
-  {
-    question: "ماذا لو لم تعجبني النتيجة؟",
-    answer:
-      "رضاكِ يهمنا. نقدّم ضماناً لمدة 30 يوماً وفق سياسة الاسترجاع المنشورة على المتجر — اقرأي التفاصيل قبل الطلب وتواصلي معنا إذا احتجتِ أي توضيح.",
-  },
-  {
-    question: "كيف أدفع قيمة الطلب داخل قطر؟",
-    answer:
-      "لا نطلب دفعاً مسبقاً على الموقع. الدفع يكون عند الاستلام (كاش أو حسب سياسة المندوب) بعد استلام الطلب عند باب منزلك في قطر.",
-  },
-  {
-    question: "كم يستغرق التوصيل داخل قطر؟",
-    answer:
-      "نقوم بشحن الطلبات داخل قطر عبر شركاء شحن موثوقين. في المعتاد يصل الطلب خلال 2 إلى 4 أيام عمل حسب المنطقة، وقد يختلف الوقت في أيام الذروة أو العطل الرسمية.",
-  },
-];
-
-const FAQ_KUWAIT: ProductFaqItem[] = [
-  {
-    question: "هل المنتج يناسب كل أنواع البشرة، حتى الحساسة؟",
-    answer:
-      "التركيبة خفيفة ومناسبة لأغلب الأنواع. إذا بشرتك حساسة جداً، جرّبي كمية بسيطة أولاً على بقعة صغيرة، ثم وسّعي الاستخدام تدريجياً.",
-  },
-  {
-    question: "متى أبدأ بملاحظة الفرق على بشرتي؟",
-    answer:
-      "كثير من المستخدمات يبدأن بتحسّن في الإحساس بالترطيب أسبوعياً، والنتيجة الأوضح غالباً مع أسابيع من الالتزام اليومي — تختلف حسب نوع البشرة والروتين.",
-  },
-  {
-    question: "ماذا لو لم تعجبني النتيجة؟",
-    answer:
-      "عندنا ضمان 30 يوماً وفق سياسة الاسترجاع على المتجر. اقرأي الشروط بتمعّن، وإذا احتجتِ مساعدة فريق الدعم جاهز.",
-  },
-  {
-    question: "كيف أدفع قيمة الطلب داخل الكويت؟",
-    answer:
-      "الدفع عند الاستلام داخل الكويت بدون دفع مسبق عبر الموقع. تدفعين عند استلام الشحنة بحسب طريقة التحصيل المتفق عليها مع شركة التوصيل.",
-  },
-  {
-    question: "كم يستغرق التوصيل داخل الكويت؟",
-    answer:
-      "عادةً بين 2 و4 أيام عمل داخل محافظات الكويت، مع إمكانية تأخير بسيط خلال الإجازات أو الطلبات المرتفعة جداً.",
-  },
-];
-
 const SCIENCE_QA_KW = [
   "مكوّن أساس معروف في أدب العناية لدعم مظهر التماسك (GHK-Cu).",
   "الهيالورونيك يدعم الاحتفاظ بالرطوبة في طبقة القرنية.",
@@ -354,10 +269,8 @@ function storyKuwait(): StoryFrame[] {
   return s;
 }
 
-const PRODUCT_TITLE_QA =
-  "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل (توصيل قطر)";
-const PRODUCT_TITLE_KW =
-  "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل (توصيل الكويت)";
+const PRODUCT_TITLE_QA = "سيروم SKINKSA — ٣٠ مل · قطر";
+const PRODUCT_TITLE_KW = "سيروم SKINKSA — ٣٠ مل · الكويت";
 
 const REVIEWS_QATAR = [
   {
@@ -513,20 +426,18 @@ const SOCIAL_KUWAIT = {
   cities: ["الكويت", "حولي", "الفروانية", "الأحمدي", "الجهراء"],
 };
 
-const TAGLINE_QA = "ببتيد نحاس أزرق مع هيالورونيك: يمتص بسرعة ويناسب الجو الدافئ.";
-const TAGLINE_KW = "ببتيد نحاس أزرق مع هيالورونيك: خفيف على البشرة ومناسب للاستخدام اليومي داخل الكويت.";
-
 /** Merge live catalog product (prices, titles, hero image) into a regional landing template. */
 export function mergeApiProductLandingData(base: ProductLandingData, apiProduct: Product): ProductLandingData {
   const heroGallery: GalleryImage[] = apiProduct.base_image_url
     ? [{ src: apiProduct.base_image_url, alt: apiProduct.title_ar }]
     : [...base.productHeroGallery];
   const desc = apiProduct.description_ar?.trim();
+  const useApiTagline = desc != null && desc.length > 0 && desc.length <= 95;
   return {
     ...base,
     product: apiProduct,
     productHeadline: apiProduct.title_ar,
-    productTagline: desc && desc.length > 0 ? desc : base.productTagline,
+    productTagline: useApiTagline ? desc : base.productTagline,
     productHeroGallery: heroGallery,
   };
 }
@@ -546,29 +457,25 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
 
   if (slug === "blueskin") {
     return {
-      product: baseProduct(
-        "blueskin",
-        offersSar(),
-        "سيروم ببتيد النحاس الأزرق SKINKSA — منتج واحد: الببتيد لشد البشرة وتجديدها، 30 مل"
-      ),
+      product: baseProduct("blueskin", offersSar(), "سيروم SKINKSA — ٣٠ مل"),
       currency: "SAR",
       currencyLabelAr: "ر.س",
       numberLocale: "en-SA",
-      pdpShortTitle: "بشرة أنعم وأوضح — سيروم ببتيد نحاس أزرق مرخّص من SFDA",
-      pdpUrgencyLine: "🔥 عرض على الباقات لفترة محدودة — وفّري أكثر كلما زاد التزامج بالروتين",
-      pdpPrimaryCta: "ثبّتي روتينج اليوم — اطلبيه الآن والدفع عند الاستلام",
-      pdpBreadcrumbCurrent: "سيروم SKINKSA",
+      pdpShortTitle: "سيروم SKINKSA",
+      pdpUrgencyLine: "",
+      pdpPrimaryCta: "إتمام الطلب",
+      pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات العميلات وطلبات من المصدر الرسمي؛ النتائج التجميلية تختلف من شخص لآخر.",
-      faq: FAQ_KSA,
+      faq: [],
       upsellAddonPrice: 79,
       upsellCompareAtPrice: 179,
       upsellBundle: {
-        headlineAr: "✨🎁 باقة لحظة أخيرة — كمية إضافية بسعر ينافس!",
-        hookLineAr: "💎 عبوتك الإضافية بنفس التركيبة — أوفر من شرائها لوحدها 🔥",
+        headlineAr: "عرض بعد الطلب — عبوة إضافية بسعر أقل",
+        hookLineAr: "نفس التركيبة · عبوة كاملة توفّر مقارنة بشراء عبوة لوحدها",
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "الدفع عند الاستلام داخل السعودية · ما يحتاج كرت · توصيل لباب البيت من ٣–٥ أيام عمل",
+      topPromoStrip: "دفع عند الاستلام · توصيل ٣–٥ أيام عمل",
       heroStats: [
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
@@ -576,7 +483,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         { value: "يومي", label: "امتصاص سريع" },
       ],
       heroRatingScore: "4.9",
-      heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من المملكة",
+      heroRatingCaption: "آراء عملاء",
       vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من كل المناطق",
       mobileBadgeQuality: "مرخّص SFDA",
@@ -611,16 +518,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       mechanismBlock: MECHANISM_BLOCK,
       objectionBuster: OBJECTION_BUSTER,
       painChecklist: PAIN_CHECKLIST,
-      productBenefits: PRODUCT_BENEFITS,
+      productBenefits: [],
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
-      productHeroGallery: PRODUCT_HERO_GALLERY,
+      productHeroGallery: [PRODUCT_HERO_IMAGE],
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
       productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
       productResultVisual: PRODUCT_RESULT_VISUAL,
-      productTagline: PRODUCT_TAGLINE,
+      productTagline: "",
       productReviews: REVIEWS_KSA,
       scienceProofList: SCIENCE_KSA,
       socialStrip: SOCIAL_KSA,
@@ -634,21 +541,21 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       currency: "QAR",
       currencyLabelAr: "ر.ق",
       numberLocale: "en-QA",
-      pdpShortTitle: "امتصاص سريع وتركيبة خفيفة — نفس السيروم المرخّص، بتوصيل قطر",
-      pdpUrgencyLine: "🔥 باقات أوضح للسعر — وفّري أكثر مع عبوتين أو ثلاث عبوات",
-      pdpPrimaryCta: "اطلبيه اليوم — دفع عند الاستلام داخل قطر",
-      pdpBreadcrumbCurrent: "سيروم SKINKSA · قطر",
+      pdpShortTitle: "سيروم SKINKSA",
+      pdpUrgencyLine: "",
+      pdpPrimaryCta: "إتمام الطلب",
+      pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات وتجارب عميلات وطلبات من المصدر الرسمي.",
-      faq: FAQ_QATAR,
+      faq: [],
       upsellAddonPrice: 89,
       upsellCompareAtPrice: 199,
       upsellBundle: {
-        headlineAr: "✨🎁 عرض ما بعد الطلب — زيدي كميتك بأحسن سعر!",
-        hookLineAr: "💎 نفس السيروم · عبوة إضافية جاهزة للتوصيل داخل قطر 📦",
+        headlineAr: "بعد الطلب — عبوة إضافية بسعر أقل",
+        hookLineAr: "نفس السيروم · عبوة إضافية مع التوصيل داخل قطر",
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "الدفع عند الاستلام داخل قطر · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
+      topPromoStrip: "دفع عند الاستلام · توصيل ٢–٤ أيام",
       heroStats: [
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
@@ -656,7 +563,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         { value: "قطر", label: "توصيل لباب البيت" },
       ],
       heroRatingScore: "4.9",
-      heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من قطر",
+      heroRatingCaption: "آراء عملاء",
       vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من قطر",
       mobileBadgeQuality: "منتج أصلي",
@@ -677,16 +584,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       mechanismBlock: MECHANISM_BLOCK,
       objectionBuster: OBJ_QATAR as typeof OBJECTION_BUSTER,
       painChecklist: PAIN_QA as typeof PAIN_CHECKLIST,
-      productBenefits: PRODUCT_BENEFITS,
+      productBenefits: [],
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
-      productHeroGallery: PRODUCT_HERO_GALLERY,
+      productHeroGallery: [PRODUCT_HERO_IMAGE],
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
       productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
       productResultVisual: PRODUCT_RESULT_VISUAL,
-      productTagline: TAGLINE_QA,
+      productTagline: "",
       productReviews: REVIEWS_QATAR,
       scienceProofList: [...SCIENCE_QA_KW],
       socialStrip: SOCIAL_QATAR,
@@ -699,21 +606,21 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     currency: "KWD",
     currencyLabelAr: "د.ك",
     numberLocale: "en-KW",
-    pdpShortTitle: "سيروم خفيف للاستخدام اليومي — بتوصيل الكويت ودفع عند الاستلام",
-    pdpUrgencyLine: "🔥 باقات بالدينار الكويتي — أوفر للعبوة كلما زادت الكمية",
-    pdpPrimaryCta: "أكّدي طلبج الآن — COD لباب البيت",
-    pdpBreadcrumbCurrent: "سيروم SKINKSA · الكويت",
+    pdpShortTitle: "سيروم SKINKSA",
+    pdpUrgencyLine: "",
+    pdpPrimaryCta: "إتمام الطلب",
+    pdpBreadcrumbCurrent: "SKINKSA",
     pdpBoldStatsNote: "أرقام مستندة إلى تقييمات عملاء ومراجعات من المتجر الرسمي.",
-    faq: FAQ_KUWAIT,
+    faq: [],
     upsellAddonPrice: 7.75,
     upsellCompareAtPrice: 19,
     upsellBundle: {
-      headlineAr: "✨🎁 باقة مكملة — عبوة زيادة بتسعيرة محروقة!",
-      hookLineAr: "💎 روتين أطول بدون ما تفوتك العبوة الثانية — توصيل الكويت 📦",
+      headlineAr: "بعد الطلب — عبوة إضافية بسعر أقل",
+      hookLineAr: "عبوة إضافية لنفس الروتين — توصيل داخل الكويت",
       addonBottleQty: 1,
       bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
     },
-    topPromoStrip: "الدفع عند الاستلام داخل الكويت · بدون دفع مسبق عبر الموقع · توصيل لباب المنزل خلال ٢–٤ أيام عمل",
+    topPromoStrip: "دفع عند الاستلام · توصيل ٢–٤ أيام",
     heroStats: [
       { value: "30", label: "مل في العبوة" },
       { value: "~شهر", label: "روتين تقريبي" },
@@ -721,7 +628,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       { value: "الكويت", label: "توصيل لباب البيت" },
     ],
     heroRatingScore: "4.9",
-    heroRatingCaption: "تقييم تجربة شراء · طلبات مؤكدة من الكويت",
+    heroRatingCaption: "آراء عملاء",
     vsComparison: PRODUCT_VS_COMPARISON,
     mobileBadgeRegions: "عميلات من الكويت",
     mobileBadgeQuality: "منتج أصلي",
@@ -742,16 +649,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     mechanismBlock: MECHANISM_BLOCK,
     objectionBuster: OBJ_KUWAIT as typeof OBJECTION_BUSTER,
     painChecklist: PAIN_KW as typeof PAIN_CHECKLIST,
-    productBenefits: PRODUCT_BENEFITS,
+    productBenefits: [],
     productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
     productHeadline: PRODUCT_HEADLINE,
-    productHeroGallery: PRODUCT_HERO_GALLERY,
+    productHeroGallery: [PRODUCT_HERO_IMAGE],
     productHeroQuote: PRODUCT_HERO_QUOTE,
     productHowTo: PRODUCT_HOW_TO,
     productIngredients: PRODUCT_INGREDIENTS,
     productLifestyleVisual: PRODUCT_LIFESTYLE_VISUAL,
     productResultVisual: PRODUCT_RESULT_VISUAL,
-    productTagline: TAGLINE_KW,
+    productTagline: "",
     productReviews: REVIEWS_KUWAIT,
     scienceProofList: [...SCIENCE_QA_KW],
     socialStrip: SOCIAL_KUWAIT,
