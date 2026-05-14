@@ -58,6 +58,9 @@ export type UpsellBundleConfig = {
 /** Hero stats row (NAMBeauty-style trust micro-grid). */
 export type HeroStatItem = { value: string; label: string };
 
+/** One full-bleed visual between text blocks under the checkout form (text → image → text → …). */
+export type PdpBetweenFormImage = { src: string; alt: string };
+
 export type ProductLandingData = {
   product: Product;
   currency: ShopCurrency;
@@ -150,7 +153,29 @@ export type ProductLandingData = {
   pdpTrustPillars: readonly ProductTrustPillar[];
   /** We are the original; others are not — side-by-side. */
   pdpAuthenticCompare: ProductAuthenticCompare;
+  /** Shown under the order form: after bullets, stats, scarcity (if any), and accordion — in order. */
+  pdpBetweenFormImages: readonly PdpBetweenFormImage[];
 };
+
+/** Visual rhythm under checkout: bullets → [0] → stats → [1] → scarcity → [2] → accordion → [3]. */
+const PDP_BETWEEN_FORM_IMAGES: readonly PdpBetweenFormImage[] = [
+  {
+    src: productAsset("/images/product/gallery-texture-2.png"),
+    alt: "قوام سيروم SKINKSA — يمتص بسرعة دون طبقة ثقيلة",
+  },
+  {
+    src: productAsset("/images/product/story-card-1.png"),
+    alt: "سيروم للعناية اليومية — ترطيب ودعم مظهر النضارة",
+  },
+  {
+    src: productAsset("/images/product/gallery-usage-3.png"),
+    alt: "طريقة استخدام لطيفة على بشرة الوجه",
+  },
+  {
+    src: productAsset("/images/product/gallery-quality-4.png"),
+    alt: "جودة التغليف والعناية — SKINKSA",
+  },
+];
 
 /** Filenames you should add under `frontend/public/images/product/` */
 const OFFER_BUNDLE_IMAGES: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", OfferBundleImage>> = {
@@ -700,6 +725,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "رقم تشغيلي تقريبي يتراوح حسب اليوم والمنطقة؛ لا يعني عدداً ثابتاً لكل عميلة، ويُقرأ مع رقم ال٤٢ ألف+ كقصة تراكمية منفصلة.",
       pdpTrustPillars: PDP_TRUST_PILLARS,
       pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
+      pdpBetweenFormImages: PDP_BETWEEN_FORM_IMAGES,
     };
   }
 
@@ -789,6 +815,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "تقدير تشغيلي يتغيّر حسب الموسم؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
       pdpTrustPillars: PDP_TRUST_PILLARS,
       pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
+      pdpBetweenFormImages: PDP_BETWEEN_FORM_IMAGES,
     };
   }
 
@@ -877,6 +904,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       "رقم تشغيلي تقريبي للأيام المزدحمة؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
     pdpTrustPillars: PDP_TRUST_PILLARS,
     pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
+    pdpBetweenFormImages: PDP_BETWEEN_FORM_IMAGES,
   };
 }
 

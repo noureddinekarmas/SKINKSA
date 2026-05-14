@@ -115,6 +115,22 @@ function StarRow({ rating }: { rating: number }) {
   );
 }
 
+function BetweenFormFigure({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="my-5 overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-[0_16px_40px_-24px_rgba(26,86,219,0.18)]">
+      <div className="relative aspect-[16/10] w-full">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 768px) 100vw, 448px"
+        />
+      </div>
+    </figure>
+  );
+}
+
 const pillarIcons = [ShieldCheck, BadgeCheck, CheckCircle2] as const;
 
 function SectionTitle({ children, eyebrow }: { children: ReactNode; eyebrow?: string }) {
@@ -491,6 +507,10 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 ))}
               </ul>
 
+              {d.pdpBetweenFormImages[0] ? (
+                <BetweenFormFigure src={d.pdpBetweenFormImages[0].src} alt={d.pdpBetweenFormImages[0].alt} />
+              ) : null}
+
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-[var(--color-brand-primary)]/25 bg-gradient-to-br from-[var(--color-brand-light)]/60 to-white px-4 py-4 shadow-sm">
                   <p className="text-[11px] font-semibold text-[var(--color-brand-primary)]">عدد الطلبات اليومية</p>
@@ -514,6 +534,10 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
                 </div>
               </div>
+
+              {d.pdpBetweenFormImages[1] ? (
+                <BetweenFormFigure src={d.pdpBetweenFormImages[1].src} alt={d.pdpBetweenFormImages[1].alt} />
+              ) : null}
 
               {(d.pdpScarcityHeadline || d.pdpScarcityBody) && (
                 <div className="rounded-2xl border border-[var(--color-brand-accent)]/35 bg-gradient-to-br from-[var(--color-brand-accent)]/[0.07] via-white to-[var(--color-brand-light)]/35 p-4 shadow-sm">
@@ -549,6 +573,10 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   </div>
                 </div>
               )}
+
+              {d.pdpBetweenFormImages[2] ? (
+                <BetweenFormFigure src={d.pdpBetweenFormImages[2].src} alt={d.pdpBetweenFormImages[2].alt} />
+              ) : null}
 
               <div className="space-y-0 divide-y divide-[var(--color-brand-border)] border-t border-[var(--color-brand-border)] pt-1">
                 {productDesc ? (
@@ -599,6 +627,10 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   </ul>
                 </details>
               </div>
+
+              {d.pdpBetweenFormImages[3] ? (
+                <BetweenFormFigure src={d.pdpBetweenFormImages[3].src} alt={d.pdpBetweenFormImages[3].alt} />
+              ) : null}
 
               <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-b from-white via-white to-[var(--color-brand-mist)]/60 p-6 shadow-[0_28px_80px_-32px_rgba(26,86,219,0.18)] sm:p-8 md:p-10">
                 <div
