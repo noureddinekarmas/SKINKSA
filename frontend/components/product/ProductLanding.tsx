@@ -14,6 +14,7 @@ import type { GalleryImage } from "@/lib/content/product-page";
 import { formatMoney } from "@/lib/currency";
 import { useCartStore } from "@/lib/cart/store";
 import { trackCommerceEvent, generateEventId } from "@/lib/tracking";
+import { cn } from "@/lib/utils";
 
 function galleryKey(img: GalleryImage): string {
   const s = img.src;
@@ -34,6 +35,59 @@ function offerCtaLine(pieces: number): string {
   if (pieces === 1) return "اطلبي عبوة واحدة";
   if (pieces === 2) return "اطلبي عبوتين";
   return "اطلبي ثلاث عبوات";
+}
+
+/** Distinct bundle tiers — still within SKINKSA blues + gold accent for top tier. */
+function getOfferVisual(code: string): {
+  selectedCard: string;
+  idleCard: string;
+  priceClass: string;
+  ctaGradient: string;
+  mobileCtaGradient: string;
+  thumbSelected: string;
+} {
+  switch (code) {
+    case "OFFER_1":
+      return {
+        selectedCard:
+          "border-slate-500/55 bg-gradient-to-bl from-slate-50 via-white to-[var(--color-brand-light)]/30 shadow-[0_22px_56px_-20px_rgba(51,65,85,0.35)] ring-2 ring-slate-400/20",
+        idleCard: "hover:border-slate-300/90 hover:bg-slate-50/40",
+        priceClass: "text-slate-800",
+        ctaGradient: "bg-gradient-to-l from-slate-700 via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        mobileCtaGradient: "from-slate-700 via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        thumbSelected: "ring-2 ring-slate-400/50 border-slate-300",
+      };
+    case "OFFER_2":
+      return {
+        selectedCard:
+          "border-indigo-500/55 bg-gradient-to-bl from-indigo-50/95 via-white to-[var(--color-brand-light)]/25 shadow-[0_22px_56px_-20px_rgba(79,70,229,0.32)] ring-2 ring-indigo-400/25",
+        idleCard: "hover:border-indigo-200 hover:bg-indigo-50/30",
+        priceClass: "text-indigo-950",
+        ctaGradient: "bg-gradient-to-l from-indigo-700 via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        mobileCtaGradient: "from-indigo-700 via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        thumbSelected: "ring-2 ring-indigo-400/45 border-indigo-200",
+      };
+    case "OFFER_3":
+      return {
+        selectedCard:
+          "border-[var(--color-brand-accent)]/65 bg-gradient-to-bl from-amber-50/90 via-white to-[var(--color-brand-light)]/40 shadow-[0_26px_60px_-18px_rgba(201,164,74,0.38)] ring-2 ring-[var(--color-brand-accent)]/30",
+        idleCard: "hover:border-[var(--color-brand-accent)]/45 hover:bg-amber-50/25",
+        priceClass: "text-[var(--color-brand-deep)]",
+        ctaGradient: "bg-gradient-to-l from-[var(--color-brand-accent)] via-amber-600 to-[var(--color-brand-primary)]",
+        mobileCtaGradient: "from-[var(--color-brand-accent)] via-amber-600 to-[var(--color-brand-primary)]",
+        thumbSelected: "ring-2 ring-[var(--color-brand-accent)]/55 border-[var(--color-brand-accent)]/40",
+      };
+    default:
+      return {
+        selectedCard:
+          "border-[var(--color-brand-primary)]/70 bg-[var(--color-brand-light)]/35 shadow-[0_20px_50px_-18px_rgba(26,86,219,0.35)] ring-2 ring-[var(--color-brand-primary)]/20",
+        idleCard: "hover:border-[var(--color-brand-primary)]/40",
+        priceClass: "text-[var(--color-brand-primary)]",
+        ctaGradient: "bg-gradient-to-l from-[var(--color-brand-deep)] via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        mobileCtaGradient: "from-[var(--color-brand-deep)] via-[var(--color-brand-primary)] to-[var(--color-brand-blue)]",
+        thumbSelected: "ring-2 ring-[var(--color-brand-primary)]/35",
+      };
+  }
 }
 
 const pillarIcons = [ShieldCheck, BadgeCheck, CheckCircle2] as const;
@@ -82,6 +136,26 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
     () => AUTHENTICITY_TO_PAIN_PRODUCT_IMAGES.filter((row) => !heroKeys.has(row.imageSrc)),
     [heroKeys]
   );
+
+  const trustStoryImage = useMemo(() => {
+    const img = d.productDescriptionGallery[0] ?? d.productHeroGallery[1];
+    if (!img) return null;
+    return { src: img.src, alt: img.alt };
+  }, [d.productDescriptionGallery, d.productHeroGallery]);
+
+  const compareCenterImage = useMemo(() => {
+    const row = authenticityExtras[0];
+    if (row) return { src: row.imageSrc, alt: row.imageAlt };
+    return { src: d.productLifestyleVisual.imageSrc, alt: d.productLifestyleVisual.imageAlt };
+  }, [authenticityExtras, d.productLifestyleVisual]);
+
+  const scienceSideImage = useMemo(() => {
+    const img = d.productDescriptionGallery[2] ?? d.productDescriptionGallery[1];
+    if (!img) return null;
+    return { src: img.src, alt: img.alt };
+  }, [d.productDescriptionGallery]);
+
+  const selectedVisual = useMemo(() => getOfferVisual(selected.code), [selected.code]);
 
   const faqList = d.faq.length > 0 ? d.faq : faqItems;
 
@@ -260,6 +334,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                     const pct = savingsPercent(offer.price, offer.compare);
                     const saveAmt = savingsAbsolute(offer.price, offer.compare);
                     const isOn = idx === selectedIdx;
+                    const ov = getOfferVisual(offer.code);
                     const thumb =
                       offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
                         ? d.offerBundleImages[offer.code]
@@ -269,15 +344,21 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`w-full rounded-2xl border-2 bg-white p-4 text-right shadow-sm transition sm:p-5 ${
+                        className={cn(
+                          "w-full rounded-2xl border-2 p-4 text-right transition duration-300 sm:p-5",
                           isOn
-                            ? "border-[var(--color-brand-primary)] bg-[var(--color-brand-light)]/35 shadow-[0_12px_40px_-16px_rgba(26,86,219,0.35)]"
-                            : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/45"
-                        }`}
+                            ? ov.selectedCard
+                            : cn("border-[var(--color-brand-border)] bg-white shadow-sm", ov.idleCard)
+                        )}
                       >
                         <div className="flex flex-row-reverse items-start gap-4">
                           {thumb ? (
-                            <div className="relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border border-[var(--color-brand-border)] bg-white sm:h-24 sm:w-24">
+                            <div
+                              className={cn(
+                                "relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border bg-white sm:h-24 sm:w-24",
+                                isOn ? ov.thumbSelected : "border-[var(--color-brand-border)]"
+                              )}
+                            >
                               <Image src={thumb.src} alt={thumb.alt} fill className="object-contain p-2" sizes="96px" />
                             </div>
                           ) : null}
@@ -303,7 +384,12 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                             </p>
                             <p className="text-sm leading-snug text-[var(--color-brand-slate)]">{offer.label}</p>
                             <div className="flex flex-wrap items-baseline justify-end gap-2 pt-1" dir="ltr">
-                              <span className="text-2xl font-black tabular-nums text-[var(--color-brand-primary)] sm:text-3xl">
+                              <span
+                                className={cn(
+                                  "text-2xl font-black tabular-nums sm:text-3xl",
+                                  isOn ? ov.priceClass : "text-[var(--color-brand-primary)]"
+                                )}
+                              >
                                 {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
                               </span>
                               {offer.compare != null && (
@@ -323,9 +409,15 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
               <button
                 type="button"
                 onClick={scrollToCheckoutAndTrack}
-                className="w-full rounded-full bg-[var(--color-brand-primary)] py-4 text-center text-base font-black text-white shadow-[0_20px_44px_-18px_rgba(26,86,219,0.65)] transition hover:brightness-105 active:brightness-95"
+                className={cn(
+                  "relative w-full overflow-hidden rounded-full py-4 text-center text-base font-black text-white shadow-[0_22px_50px_-16px_rgba(26,86,219,0.55)] transition hover:brightness-110 hover:shadow-[0_26px_56px_-14px_rgba(26,86,219,0.45)] active:scale-[0.985]",
+                  selectedVisual.ctaGradient
+                )}
               >
-                {d.pdpPrimaryCta} · {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                <span className="relative z-[1]">
+                  {d.pdpPrimaryCta} · {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                </span>
+                <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/12 to-transparent" aria-hidden />
               </button>
 
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
@@ -483,80 +575,193 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 </details>
               </div>
 
-              <div className="rounded-2xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm">
-                <p className="text-sm leading-relaxed text-[var(--color-brand-ink)]">{d.pdpEmpathyLine}</p>
-                <p className="mt-3 text-sm font-medium leading-relaxed text-[var(--color-brand-primary)]">{d.pdpSolutionLine}</p>
-              </div>
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-b from-white via-white to-[var(--color-brand-mist)]/60 p-6 shadow-[0_28px_80px_-32px_rgba(26,86,219,0.18)] sm:p-8 md:p-10">
+                <div
+                  className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-[var(--color-brand-primary)]/[0.07] blur-3xl"
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-[var(--color-brand-accent)]/[0.09] blur-3xl"
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-l from-transparent via-[var(--color-brand-primary)]/35 to-transparent"
+                  aria-hidden
+                />
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                {d.pdpTrustPillars.map((p, i) => {
-                  const Icon = pillarIcons[i] ?? ShieldCheck;
-                  return (
-                    <div
-                      key={p.title}
-                      className="flex gap-3 rounded-xl border border-[var(--color-brand-border)] bg-white/90 px-3 py-3 shadow-sm"
-                    >
-                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                      <div>
-                        <p className="text-xs font-bold text-[var(--color-brand-ink)]">{p.title}</p>
-                        <p className="mt-1 text-[11px] leading-snug text-[var(--color-brand-slate)] sm:text-xs">{p.body}</p>
+                <div className="relative space-y-6">
+                  <p className="text-pretty text-base font-medium leading-relaxed text-[var(--color-brand-ink)] sm:text-lg">
+                    {d.pdpEmpathyLine}
+                  </p>
+
+                  <p className="text-pretty rounded-2xl border border-[var(--color-brand-primary)]/18 bg-[var(--color-brand-light)]/55 px-4 py-4 text-sm font-semibold leading-relaxed text-[var(--color-brand-deep)] sm:px-5 sm:text-base">
+                    {d.pdpSolutionLine}
+                  </p>
+
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {d.pdpTrustPillars.map((p, i) => {
+                      const Icon = pillarIcons[i] ?? ShieldCheck;
+                      const idxLabel = ["٠١", "٠٢", "٠٣"][i] ?? String(i + 1);
+                      return (
+                        <div
+                          key={p.title}
+                          className="group relative overflow-hidden rounded-2xl border border-[var(--color-brand-border)]/90 bg-white/95 p-4 shadow-[0_14px_44px_-22px_rgba(26,86,219,0.2)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(26,86,219,0.28)]"
+                        >
+                          <div className="mb-3 flex items-center justify-between gap-2">
+                            <span className="text-2xl font-black tabular-nums leading-none text-[var(--color-brand-primary)]/30 transition group-hover:text-[var(--color-brand-primary)]/50">
+                              {idxLabel}
+                            </span>
+                            <Icon className="h-6 w-6 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                          </div>
+                          <p className="text-sm font-bold text-[var(--color-brand-ink)]">{p.title}</p>
+                          <p className="mt-2 text-[11px] leading-relaxed text-[var(--color-brand-slate)] sm:text-xs">{p.body}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {trustStoryImage ? (
+                    <div className="relative mt-2 overflow-hidden rounded-2xl border border-[var(--color-brand-border)] shadow-lg">
+                      <div className="relative aspect-[2/1] sm:aspect-[21/8]">
+                        <Image
+                          src={trustStoryImage.src}
+                          alt={trustStoryImage.alt}
+                          fill
+                          className="object-cover object-center"
+                          sizes="(max-width: 768px) 100vw, 896px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-deep)]/55 via-[var(--color-brand-deep)]/15 to-transparent" />
+                        <p className="absolute bottom-3 end-4 max-w-sm text-end text-[10px] font-bold leading-snug text-white/95 drop-shadow-md sm:bottom-4 sm:text-xs">
+                          SKINKSA — أصلي · واضح · بمسار يُتتبّع
+                        </p>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  ) : null}
 
-              <div>
-                <SectionTitle>الأصلي مقابل غير المؤكد</SectionTitle>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-2xl border border-[var(--color-brand-success)]/35 bg-[var(--color-brand-success)]/[0.06] p-4">
-                    <p className="text-xs font-bold text-[var(--color-brand-success)]">{d.pdpAuthenticCompare.officialTitle}</p>
-                    <ul className="mt-3 space-y-2">
-                      {d.pdpAuthenticCompare.officialBullets.map((line) => (
-                        <li key={line} className="flex gap-2 text-xs leading-snug text-[var(--color-brand-ink)] sm:text-sm">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 p-4">
-                    <p className="text-xs font-bold text-[var(--color-brand-slate)]">{d.pdpAuthenticCompare.otherTitle}</p>
-                    <ul className="mt-3 space-y-2">
-                      {d.pdpAuthenticCompare.otherBullets.map((line) => (
-                        <li key={line} className="flex gap-2 text-xs leading-snug text-[var(--color-brand-slate)] sm:text-sm">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-brand-slate)]/40" aria-hidden />
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="space-y-6 pt-2">
+                    <SectionTitle eyebrow="وضوح المصدر">الأصلي مقابل غير المؤكد</SectionTitle>
+
+                    <div className="grid gap-4 lg:grid-cols-12 lg:items-stretch">
+                      <div className="flex flex-col rounded-2xl border-2 border-[var(--color-brand-success)]/45 bg-gradient-to-br from-[var(--color-brand-success)]/[0.09] to-white p-5 shadow-[0_16px_48px_-24px_rgba(13,148,100,0.25)] lg:col-span-5">
+                        <p className="text-xs font-black tracking-wide text-[var(--color-brand-success)]">
+                          {d.pdpAuthenticCompare.officialTitle}
+                        </p>
+                        <ul className="mt-4 flex flex-1 flex-col gap-3">
+                          {d.pdpAuthenticCompare.officialBullets.map((line) => (
+                            <li key={line} className="flex gap-3 text-sm leading-relaxed text-[var(--color-brand-ink)]">
+                              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="relative hidden flex-col items-center justify-center gap-4 lg:col-span-2 lg:flex">
+                        <div
+                          className="pointer-events-none absolute inset-y-10 start-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[var(--color-brand-border)] to-transparent"
+                          aria-hidden
+                        />
+                        {compareCenterImage ? (
+                          <div className="relative z-[1] w-full max-w-[9.5rem] overflow-hidden rounded-2xl border-2 border-white shadow-2xl ring-4 ring-[var(--color-brand-mist)]">
+                            <div className="relative aspect-[3/4] w-full">
+                              <Image
+                                src={compareCenterImage.src}
+                                alt={compareCenterImage.alt}
+                                fill
+                                className="object-cover"
+                                sizes="150px"
+                              />
+                            </div>
+                          </div>
+                        ) : null}
+                        <span className="relative z-[1] rounded-full bg-[var(--color-brand-ink)] px-3 py-1.5 text-[10px] font-black tracking-wide text-white shadow-lg">
+                          مقارنة
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/55 p-5 shadow-inner lg:col-span-5">
+                        <p className="text-xs font-black text-[var(--color-brand-slate)]">{d.pdpAuthenticCompare.otherTitle}</p>
+                        <ul className="mt-4 flex flex-1 flex-col gap-3">
+                          {d.pdpAuthenticCompare.otherBullets.map((line) => (
+                            <li key={line} className="flex gap-3 text-sm leading-relaxed text-[var(--color-brand-slate)]">
+                              <span
+                                className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--color-brand-error)]/75"
+                                aria-hidden
+                              />
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {compareCenterImage ? (
+                      <div className="relative overflow-hidden rounded-2xl border border-[var(--color-brand-border)] shadow-md lg:hidden">
+                        <div className="relative aspect-[16/10] w-full">
+                          <Image
+                            src={compareCenterImage.src}
+                            alt={compareCenterImage.alt}
+                            fill
+                            className="object-cover"
+                            sizes="100vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-ink)]/45 to-transparent" />
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl bg-[var(--color-brand-deep)] px-4 py-4 text-center text-[11px] font-semibold leading-relaxed text-white/95 sm:text-xs">
+                      <span>{d.topPromoStrip}</span>
+                      <span className="hidden h-1 w-1 rounded-full bg-white/45 sm:inline" aria-hidden />
+                      <span>{d.cartTrustLine}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <p className="text-xs text-[var(--color-brand-slate)]">
-                {d.topPromoStrip} · {d.cartTrustLine}
-              </p>
             </div>
           </div>
         </section>
 
-        {/* Science / proof */}
-        <section className="border-t border-[var(--color-brand-border)] bg-white py-10 sm:py-12">
+        {/* Science / proof — bento + hero visual */}
+        <section className="border-t border-[var(--color-brand-border)] bg-gradient-to-b from-white to-[var(--color-brand-mist)]/35 py-12 sm:py-16">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <SectionTitle eyebrow="الأساس العلمي">لماذا تثقين بالتركيبة</SectionTitle>
-            <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from(d.scienceProofList)
-                .slice(0, 6)
-                .map((line) => (
-                  <li
-                    key={line}
-                    className="rounded-xl border border-[var(--color-brand-border)] bg-white px-3 py-2.5 text-xs leading-snug text-[var(--color-brand-slate)] shadow-sm sm:text-sm"
-                  >
-                    {line}
-                  </li>
-                ))}
-            </ul>
+            <div
+              className={cn(
+                "mt-8 grid gap-8 lg:items-start",
+                scienceSideImage ? "lg:grid-cols-2 lg:gap-12" : ""
+              )}
+            >
+              {scienceSideImage ? (
+                <div className="relative order-2 overflow-hidden rounded-3xl border border-[var(--color-brand-border)] bg-white shadow-[0_28px_70px_-28px_rgba(26,86,219,0.22)] lg:order-1">
+                  <div className="relative aspect-[4/5] w-full lg:sticky lg:top-28">
+                    <Image
+                      src={scienceSideImage.src}
+                      alt={scienceSideImage.alt}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 1024px) 100vw, 420px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-deep)]/30 to-transparent" />
+                  </div>
+                </div>
+              ) : null}
+              <ul className={cn("order-1 flex flex-col gap-3", scienceSideImage ? "lg:order-2" : "")}>
+                {Array.from(d.scienceProofList)
+                  .slice(0, 6)
+                  .map((line, i) => (
+                    <li
+                      key={line}
+                      className="flex gap-4 rounded-2xl border border-[var(--color-brand-border)] bg-white/95 p-4 shadow-sm transition hover:shadow-md sm:p-5"
+                    >
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-blue)] text-base font-black text-white shadow-inner sm:h-12 sm:w-12">
+                        {i + 1}
+                      </span>
+                      <p className="min-w-0 flex-1 text-sm leading-relaxed text-[var(--color-brand-slate)] sm:text-base">{line}</p>
+                    </li>
+                  ))}
+              </ul>
+            </div>
           </div>
         </section>
 
@@ -741,9 +946,13 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           <button
             type="button"
             onClick={scrollToCheckoutAndTrack}
-            className="shrink-0 rounded-full bg-[var(--color-brand-primary)] px-6 py-2.5 text-sm font-black text-white shadow-md hover:brightness-105"
+            className={cn(
+              "relative shrink-0 overflow-hidden rounded-full px-6 py-2.5 text-sm font-black text-white shadow-lg transition hover:brightness-110 active:scale-[0.98] bg-gradient-to-l",
+              selectedVisual.mobileCtaGradient
+            )}
           >
-            {d.pdpPrimaryCta}
+            <span className="relative z-[1]">{d.pdpPrimaryCta}</span>
+            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" aria-hidden />
           </button>
         </div>
       </div>
