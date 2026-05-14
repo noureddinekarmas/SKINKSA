@@ -7,7 +7,7 @@ import {
   PAIN_CHECKLIST,
   PRODUCT_DESCRIPTION_GALLERY,
   PRODUCT_HEADLINE,
-  PRODUCT_HERO_IMAGE,
+  PRODUCT_HERO_GALLERY,
   PRODUCT_HERO_QUOTE,
   PRODUCT_HOW_TO,
   PRODUCT_INGREDIENTS,
@@ -433,7 +433,14 @@ const SOCIAL_KUWAIT = {
 /** Merge live catalog product (prices, titles, hero image) into a regional landing template. */
 export function mergeApiProductLandingData(base: ProductLandingData, apiProduct: Product): ProductLandingData {
   const heroGallery: GalleryImage[] = apiProduct.base_image_url
-    ? [{ src: apiProduct.base_image_url, alt: apiProduct.title_ar }]
+    ? [
+        {
+          src: apiProduct.base_image_url,
+          alt: apiProduct.title_ar,
+          thumbLabel: base.productHeroGallery[0]?.thumbLabel ?? "المنتج",
+        },
+        ...base.productHeroGallery.slice(1),
+      ]
     : [...base.productHeroGallery];
   const apiDesc = apiProduct.description_ar?.trim() ?? "";
   const useApiTagline = apiDesc.length > 0 && apiDesc.length <= 95;
@@ -472,10 +479,10 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       pdpShortTitle: "سيروم SKINKSA",
       pdpSubtitle: "ببتيد نحاس أزرق مرخّص SFDA — امتصاص سريع وتركيبة خفيفة للاستخدام اليومي.",
       pdpBullets: [
-        "يدعم مظهر نعومة ونضارة البشرة مع الاستمرار؛ النتائج تختلف بين الأشخاص.",
-        "قوام خفيف يناسب الاستخدام اليومي والمكياج.",
-        "الطلب من المتجر الرسمي يضمن الترخيص والتغليف الأصلي.",
-        "دفع عند الاستلام داخل السعودية — اسمك ورقم الجوال يكفيان لإكمال الطلب.",
+        "يدعم مظهر النضارة والنعومة مع الاستمرار.",
+        "قوام خفيف للاستخدام اليومي والمكياج.",
+        "متجر رسمي — ترخيص وتغليف أصلي.",
+        "دفع عند الاستلام داخل السعودية.",
       ],
       pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
       pdpPrimaryCta: "أكملي الطلب",
@@ -536,7 +543,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       productBenefits: [],
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
-      productHeroGallery: [PRODUCT_HERO_IMAGE],
+      productHeroGallery: [...PRODUCT_HERO_GALLERY],
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
@@ -559,10 +566,10 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       pdpShortTitle: "سيروم SKINKSA",
       pdpSubtitle: "نفس التركيبة المرخّصة — توصيل داخل قطر مع الدفع عند الاستلام.",
       pdpBullets: [
-        "تركيبة خفيفة تناسب الاستخدام اليومي في الجو الدافئ.",
-        "تسوّقي من المصدر الرسمي لضمان أصلية المنتج.",
-        "توصيل لباب المنزل خلال أيام عمل — دون دفع مسبق على الموقع.",
-        "بيانات بسيطة: الاسم ورقم الجوال فقط لإتمام الطلب.",
+        "تركيبة خفيفة للاستخدام اليومي.",
+        "من المصدر الرسمي لضمان الأصالة.",
+        "توصيل لباب المنزل في أيام عمل.",
+        "الاسم ورقم الجوال لإتمام الطلب.",
       ],
       pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
       pdpPrimaryCta: "أكملي الطلب",
@@ -609,7 +616,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       productBenefits: [],
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
-      productHeroGallery: [PRODUCT_HERO_IMAGE],
+      productHeroGallery: [...PRODUCT_HERO_GALLERY],
       productHeroQuote: PRODUCT_HERO_QUOTE,
       productHowTo: PRODUCT_HOW_TO,
       productIngredients: PRODUCT_INGREDIENTS,
@@ -632,9 +639,9 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     pdpSubtitle: "ببتيد نحاس أزرق — توصيل داخل الكويت والدفع عند الاستلام.",
     pdpBullets: [
       "تركيبة خفيفة للاستخدام اليومي.",
-      "الشراء من المتجر الرسمي لضمان الأصل والتغليف.",
-      "شحن لباب المنزل خلال أيام عمل داخل الكويت.",
-      "اكتبي الاسم والجوال فقط لإكمال الطلب.",
+      "متجر رسمي وتغليف أصلي.",
+      "شحن لباب المنزل خلال أيام عمل.",
+      "بيانات بسيطة لإكمال الطلب.",
     ],
     pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
     pdpPrimaryCta: "أكملي الطلب",
@@ -681,7 +688,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     productBenefits: [],
     productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
     productHeadline: PRODUCT_HEADLINE,
-    productHeroGallery: [PRODUCT_HERO_IMAGE],
+    productHeroGallery: [...PRODUCT_HERO_GALLERY],
     productHeroQuote: PRODUCT_HERO_QUOTE,
     productHowTo: PRODUCT_HOW_TO,
     productIngredients: PRODUCT_INGREDIENTS,
