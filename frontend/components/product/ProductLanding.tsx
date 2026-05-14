@@ -135,21 +135,27 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
     badge: o.badge_ar,
   }));
 
+  const resolveDefaultOfferIndex = () => {
+    const i = d.product.offers.findIndex((o) => o.is_default);
+    if (i >= 0) return i;
+    const j = d.product.offers.findIndex((o) => o.code === "OFFER_3");
+    return j >= 0 ? j : 0;
+  };
+
   const [trustTab, setTrustTab] = useState(0);
+  const [selectedIdx, setSelectedIdx] = useState(resolveDefaultOfferIndex);
   const replaceCartWithOffer = useCartStore((s) => s.replaceCartWithOffer);
-  const selected = offers[selectedIdx];
+  const selected = offers[selectedIdx] ?? offers[0];
   const primaryTheme = themeForOfferCode(selected.code);
 
   useEffect(() => {
     const i = d.product.offers.findIndex((o) => o.is_default);
-    setSelectedIdx(i >= 0 ? i : 0);
+    const j = d.product.offers.findIndex((o) => o.code === "OFFER_3");
+    setSelectedIdx(i >= 0 ? i : j >= 0 ? j : 0);
   }, [d.product.slug, d.product.offers]);
 
-  const defaultIdx =
-    d.product.offers.findIndex((o) => o.is_default) >= 0
-      ? d.product.offers.findIndex((o) => o.is_default)
-      : 0;
-  const defaultOffer = offers[defaultIdx];
+  const defaultIdx = resolveDefaultOfferIndex();
+  const defaultOffer = offers[defaultIdx] ?? offers[0];
 
   const minPerBottle = Math.min(...offers.map((o) => o.price / o.pieces));
 
