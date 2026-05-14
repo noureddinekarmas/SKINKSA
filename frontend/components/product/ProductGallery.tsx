@@ -27,7 +27,7 @@ export default function ProductGallery({
         className={cn(
           "relative w-full overflow-hidden bg-white",
           isClean
-            ? "aspect-square rounded-2xl border border-neutral-200 p-6 sm:p-8"
+            ? "aspect-square rounded-2xl border border-[var(--color-brand-border)] p-6 sm:p-8"
             : cn(
                 "group rounded-[1.75rem] border border-[var(--color-brand-border)] bg-gradient-to-br from-[#e8f2ff] via-white to-[#fdf8ee] shadow-[0_28px_70px_-28px_rgba(26,86,219,0.55)] ring-1 ring-black/[0.04]",
                 single ? "aspect-[3/4] sm:aspect-[4/5] md:aspect-square" : "aspect-square"
@@ -76,7 +76,9 @@ export default function ProductGallery({
               aria-label={img.alt || img.thumbLabel || `صورة ${i + 1}`}
               className={cn(
                 "relative aspect-square overflow-hidden rounded-lg border transition",
-                i === active ? "border-neutral-900 ring-1 ring-neutral-900" : "border-neutral-200 hover:border-neutral-400"
+                i === active
+                  ? "border-[var(--color-brand-primary)] ring-2 ring-[var(--color-brand-primary)]/25"
+                  : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
               )}
             >
               <Image src={img.src} alt="" fill className="object-cover" sizes="96px" />
