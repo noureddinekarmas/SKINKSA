@@ -20,7 +20,7 @@ import {
   SOCIAL_STRIP as SOCIAL_KSA,
   STORY_FRAMES as STORY_KSA,
 } from "@/lib/content/product-page";
-import type { GalleryImage, StoryFrame } from "@/lib/content/product-page";
+import type { GalleryImage, ProductReview, StoryFrame } from "@/lib/content/product-page";
 import { productAsset } from "@/lib/content/product-assets";
 
 export type ShopCurrency = "SAR" | "QAR" | "KWD";
@@ -122,7 +122,7 @@ export type ProductLandingData = {
   productLifestyleVisual: typeof PRODUCT_LIFESTYLE_VISUAL;
   productResultVisual: typeof PRODUCT_RESULT_VISUAL;
   productTagline: string;
-  productReviews: (typeof REVIEWS_KSA)[number][];
+  productReviews: readonly ProductReview[];
   scienceProofList: readonly string[] | typeof SCIENCE_KSA;
   socialStrip: {
     stat: string;
@@ -169,16 +169,16 @@ const OFFER_BUNDLE_IMAGES: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", Of
 
 const PDP_TRUST_PILLARS: readonly ProductTrustPillar[] = [
   {
-    title: "سلامة ووضوح",
-    body: "تركيبة مرخّصة ومسار واضح — ما نخبي ورا شعارات فاخرة فقط.",
+    title: "٤٢٬٠٠٠+ طلبية تراكمية",
+    body: "على هذا السيروم من المتجر الرسمي — أرقام تتكرر لما التجربة والأصلي يلتقون، مو لحظة إعلان.",
   },
   {
-    title: "مصدر واحد موثوق",
-    body: "نبيع الأصلي من هنا؛ أي عبوة خارج قنواتنا لا نستطيع ضمان تركيبتها.",
+    title: "SFDA + مصدر واحد",
+    body: "ترخيص يتبّعينه في الملف — والأصلي يُباع من قنواتنا المعتمدة فقط.",
   },
   {
     title: "تسوّق بهدوء",
-    body: "دفع عند الاستلام وسياسة إرجاع منشورة — قرارك أسهل.",
+    body: "دفع عند الاستلام وسياسة إرجاع منشورة — تقرأين الحدود قبل ما تدفعين ولا ريال.",
   },
 ];
 
@@ -342,7 +342,7 @@ function storyQatar(): StoryFrame[] {
   const s = [...STORY_KSA];
   s[2] = {
     ...s[2],
-    body: "دفع عند الاستلام داخل قطر يعني ما تدفعين لين تشوفين الطرد بيدج. وضمان ٣٠ يوم يخفّف مخاوف التجربة: إذا ما حسّيتي إن الاستمرار يناسبج، ترجعين وفق سياسة الاسترجاع المنشورة.",
+    body: "العميلات تكرر الطلب لما يلاقين منتج أصلي وتوصيل مرتب — وهذا يبان بأكثر من ٤٢ ألف طلبية تراكمية على نفس السيروم من المصدر الرسمي. داخل قطر: الدفع عند الاستلام يعني ما تدفعين لين تشوفين الطرد بيدج، وضمان ٣٠ يوم وفق سياسة الاسترجاع المنشورة.",
   };
   return s;
 }
@@ -359,65 +359,105 @@ function storyKuwait(): StoryFrame[] {
 const PRODUCT_TITLE_QA = "سيروم SKINKSA — ٣٠ مل · قطر";
 const PRODUCT_TITLE_KW = "سيروم SKINKSA — ٣٠ مل · الكويت";
 
-const REVIEWS_QATAR = [
+const REVIEWS_QATAR: readonly ProductReview[] = [
   {
     name: "موزة ح.",
     city: "الدوحة",
-    tag: "طلبت عبر الموقع",
+    tag: "مشترية موثّقة · أول طلب",
     rating: 5,
-    text: "كنت متخوفة من الشحن لكن التوصيل وصل منظم والمندوب لطيف. السيروم خفيف وما يثقل بشرتي مع الرطوبة.",
+    relativeTime: "منذ ١٠ أيام",
+    text: "كنت متخوفة من الشحن لكن التوصيل وصل منظم والمندوب لطيف. السيروم خفيف وما يثقل بشرتي مع الرطوبة — وصراحة فرق معاي إن التغليف مطابق للي بالإعلان.",
   },
   {
     name: "هند ع.",
     city: "الريان",
-    tag: "بشرة عادية",
+    tag: "بشرة عادية · COD",
     rating: 5,
-    text: "الدفع عند الاستلام راح عني همّة السداد أونلاين. لاحظت ملمس أنعم مع الأيام مو «سحر ليلة» بس إحساس مرتب.",
+    relativeTime: "منذ ٣ أسابيع",
+    text: "الدفع عند الاستلام راح عني همّة السداد أونلاين. ملمس أنعم مع الأيام مو «سحر ليلة» بس إحساس مرتب، وأكرر لأن الطلب كان من الموقع الرسمي مو متجر عشوائي.",
   },
   {
     name: "سارة م.",
     city: "الوكرة",
-    tag: "روتين بسيط",
+    tag: "دوام + مكياج خفيف",
     rating: 5,
-    text: "أحب إن الامتصاص سريع قبل المكياج. التوصيل كان خلال أيام قليلة حسب ما وعدوا تقريباً.",
+    relativeTime: "منذ أسبوعين",
+    text: "أحب إن الامتصاص سريع قبل المكياج. التوصيل كان بأيام قليلة تقريباً زي ما كتبوا — مو وعود فاضية.",
   },
   {
     name: "لطيفة ر.",
     city: "لوسيل",
-    tag: "أول طلب",
+    tag: "بشرة حساسة",
     rating: 5,
-    text: "غلّفت العبوة مرتبة وواضح إنها من المصدر الرسمي. جرّبت على بقعة صغيرة أولاً وبعدها كملت… مريحة.",
+    relativeTime: "منذ ٥ أيام",
+    text: "غلّفت العبوة مرتبة وواضح إنها من المصدر الرسمي. جرّبت على بقعة صغيرة يومين وبعدها كملت… بدون تهيج مزعج.",
+  },
+  {
+    name: "نورة ك.",
+    city: "الخور",
+    tag: "طلب ثاني",
+    rating: 5,
+    relativeTime: "منذ شهر",
+    text: "طلبي الثاني لأن أصلي زين يستاهل الالتزام. أبوي سأل عن السعر قلت له الأهم إني أعرف وش يجيني من مكان واحد مو إعلان عشوائي.",
+  },
+  {
+    name: "مريم ج.",
+    city: "أم صلال",
+    tag: "عرض عبوتين",
+    rating: 5,
+    relativeTime: "منذ ٨ أيام",
+    text: "الباقة الثنائية أنسب لي لأن الاستخدام يومي. فرق بسيط بالملمس أول أسبوع، بس الاستمرار خلّاني أرجع للطلب بدل أجرب كل شهر شيء جديد.",
   },
 ];
 
-const REVIEWS_KUWAIT = [
+const REVIEWS_KUWAIT: readonly ProductReview[] = [
   {
     name: "ديمة س.",
     city: "مدينة الكويت",
-    tag: "COD",
+    tag: "مشترية موثّقة · الدفع عند الاستلام",
     rating: 5,
-    text: "طلبت وما دفعت ولا شي لين يوم التسليم. السيروم ما زاد دهنية وجهي وخفف إحساس الجفاف بعد التكييف.",
+    relativeTime: "منذ ١١ يوماً",
+    text: "طلبت وما دفعت ولا شي لين يوم التسليم. السيروم ما زاد دهنية وجهي وخفف إحساس الجفاف بعد التكييف — والعبوة مثل الصور بالضبط.",
   },
   {
     name: "رغد ف.",
     city: "حولي",
-    tag: "عبوتين",
+    tag: "باقة عبوتين",
     rating: 5,
-    text: "الباقة الثانية منطقية لأني أستخدم يومياً. وصل الطلب بدون لفّ دوائر والمندوب اتصل قبل ما يجي.",
+    relativeTime: "منذ شهر",
+    text: "الباقة الثانية منطقية لأني أستخدم يومياً. وصل الطلب بدون لفّ دوائر والمندوب اتصل قبل ما يجي. قوامه خفيف مو زفت.",
   },
   {
     name: "منى ع.",
     city: "الأحمدي",
     tag: "بشرة مختلطة",
     rating: 5,
-    text: "الصبر على الروتين يفرق. أنا ما أحب الروائح القوية — هذا تقريباً ما له نفس صارخ، ولقيته يمشي معاي.",
+    relativeTime: "منذ ٣ أسابيع",
+    text: "الصبر على الروتين يفرق. ما عندي تحمّل لروائح قوية — تقريباً ما له نفس صارخ، ولقيته يمشي مع المكياج الصبح.",
   },
   {
     name: "هبة ك.",
     city: "الجهراء",
-    tag: "تجربة مرتبة",
+    tag: "أول مرة من الموقع",
     rating: 5,
-    text: "توصيل داخل الكويت كان سلس. السياسة والضمان مذكورة على الموقع وذكّروني أقراها… شي يطمن.",
+    relativeTime: "منذ ٦ أيام",
+    text: "توصيل داخل الكويت كان سلس. السياسة مكتوبة على الموقع وذكّروني أقراها قبل ما أكمل… شي يطمن ومو كلام معلّق بالهواء.",
+  },
+  {
+    name: "شهد ب.",
+    city: "الفروانية",
+    tag: "زحمة الدوام",
+    rating: 5,
+    relativeTime: "منذ أسبوعين",
+    text: "أبي شي سريع الصبح قبل ما أنطلق الدوام. قوامه يندمج بسرعة وما يخليني أحس إني حاطة قناع على وجهي.",
+  },
+  {
+    name: "نورة ط.",
+    city: "مبارك الكبير",
+    tag: "كررت الطلب",
+    rating: 5,
+    relativeTime: "منذ ٤ أيام",
+    text: "طلبي الثاني — نفس التغليف نفس اللون نفس الرائحة الخفيفة. هذا اللي يخليني أثق إني ما انضحك عليّ بمنتج «شبه».",
   },
 ];
 
@@ -450,7 +490,10 @@ const AUTH_KUWAIT = {
 const AUTH_KW_BAND = {
   title: AUTHORITY_BAND.title,
   points: [
-    { t: "جودة الإمداد", d: "نركز على توريد منتظم وتغليف سليم حتى يصل الطلب بحالة تليق بالعلامة." },
+    {
+      t: "٤٢٬٠٠٠+ طلبية",
+      d: "رقم تراكمي على نفس السيروم من المصدر الرسمي — يشمل شحنات الكويت ضمن النشاط العام للمتجر.",
+    },
     AUTHORITY_BAND.points[1],
     AUTHORITY_BAND.points[2],
   ],
@@ -459,7 +502,10 @@ const AUTH_KW_BAND = {
 const AUTH_QA_BAND = {
   title: AUTHORITY_BAND.title,
   points: [
-    { t: "توصيل قطر", d: "عمليات التجهيز والتسليم مصممة لتغطية مناطق قطر بشكل عملي مع تتبّع وتنسيق." },
+    {
+      t: "٤٢٬٠٠٠+ طلبية",
+      d: "نفس الرقم التراكمي على السيروم من المتجر الرسمي — مع مسار توصيل داخل قطر وتنسيق وتتبّع واضح.",
+    },
     AUTHORITY_BAND.points[1],
     AUTHORITY_BAND.points[2],
   ],
@@ -503,13 +549,13 @@ const OBJ_KUWAIT = {
 
 const SOCIAL_QATAR = {
   ...SOCIAL_KSA,
-  ratingLine: "تقييم تجربة شراء عالي من عميلات داخل قطر",
+  ratingLine: "٤٫٩/٥ متوسط تقييم · تجارب شراء من عميلات داخل قطر (وفق آراء المنشورة)",
   cities: ["الدوحة", "الريان", "الوكرة", "الخور", "لوسيل"],
 };
 
 const SOCIAL_KUWAIT = {
   ...SOCIAL_KSA,
-  ratingLine: "تقييم تجربة شراء عالي من عميلات داخل الكويت",
+  ratingLine: "٤٫٩/٥ متوسط تقييم · تجارب شراء من عميلات داخل الكويت (وفق آراء المنشورة)",
   cities: ["الكويت", "حولي", "الفروانية", "الأحمدي", "الجهراء"],
 };
 
@@ -573,7 +619,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "نخصص كميات للقنوات المعتمدة فقط. اختاري باقتج تحت الصور مباشرة، أكملي بياناتك، والدفع عند الاستلام يبقى لراحتج.",
       pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
-      pdpBoldStatsNote: "أرقام مبنية على تقييمات العميلات وطلبات من المصدر الرسمي؛ النتائج التجميلية تختلف من شخص لآخر.",
+      pdpBoldStatsNote:
+        "الأرقام أدناه تجميعية وتشمل حجماً تراكمياً يتجاوز ٤٢ ألف طلبية على هذا السيروم من المتجر الرسمي؛ التقييم يعكس آراء مشترين وفق ما يُنشر على الصفحة. النتائج التجميلية تختلف من شخص لآخر.",
       faq: [],
       upsellAddonPrice: 65,
       upsellCompareAtPrice: 129,
@@ -583,15 +630,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "دفع عند الاستلام · توصيل ٣–٥ أيام عمل",
+      topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على هذا السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٣–٥ أيام عمل",
       heroStats: [
+        { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية على السيروم (رسمي)" },
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
         { value: "SFDA", label: "مرخّص رسمياً" },
         { value: "يومي", label: "امتصاص سريع" },
       ],
       heroRatingScore: "4.9",
-      heroRatingCaption: "آراء عملاء",
+      heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
       vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من كل المناطق",
       mobileBadgeQuality: "مرخّص SFDA",
@@ -646,8 +694,9 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       pdpSolutionLine:
         "SKINKSA يقرّب لكِ العلم لبساطة يومية: ترخيص رسمي، قوام يمتص بسرعة، بدون وعود خرافية.",
       pdpDailyOrdersFigure: "٧٥+",
-      pdpDailyOrdersCaption: "طلب موثّق يومياً في أيام الذروة",
-      pdpDailyOrdersNote: "رقم تقريبي يتغيّر حسب اليوم والمنطقة؛ يعكس نشاط المتجر لا ضماناً ثابتاً يومياً.",
+      pdpDailyOrdersCaption: "طلب يومي في أيام الذروة على مستوى المتجر — يرافق زخم الطلب التراكمي على السيروم",
+      pdpDailyOrdersNote:
+        "رقم تشغيلي تقريبي يتراوح حسب اليوم والمنطقة؛ لا يعني عدداً ثابتاً لكل عميلة، ويُقرأ مع رقم ال٤٢ ألف+ كقصة تراكمية منفصلة.",
       pdpTrustPillars: PDP_TRUST_PILLARS,
       pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
     };
@@ -673,7 +722,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "نخصص كميات للمتجر الرسمي داخل قطر. اختاري باقتج تحت الصور، أكملي الطلب، والدفع عند الاستلام عند الباب.",
       pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
-      pdpBoldStatsNote: "أرقام مبنية على تقييمات وتجارب عميلات وطلبات من المصدر الرسمي.",
+      pdpBoldStatsNote:
+        "أرقام تجميعية تشمل تجاوز ٤٢ ألف طلبية تراكمية على هذا السيروم من المصدر الرسمي؛ التقييم وفق آراء منشورة. النتائج التجميلية فردية.",
       faq: [],
       upsellAddonPrice: 65,
       upsellCompareAtPrice: 129,
@@ -683,15 +733,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "دفع عند الاستلام · توصيل ٢–٤ أيام",
+      topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٢–٤ أيام",
       heroStats: [
+        { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية (رسمي)" },
         { value: "30", label: "مل في العبوة" },
         { value: "~شهر", label: "روتين تقريبي" },
         { value: "SFDA", label: "ترخيص مطابق" },
         { value: "قطر", label: "توصيل لباب البيت" },
       ],
       heroRatingScore: "4.9",
-      heroRatingCaption: "آراء عملاء",
+      heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
       vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من قطر",
       mobileBadgeQuality: "منتج أصلي",
@@ -732,8 +783,9 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       pdpSolutionLine:
         "نفس السيروم المرخّص يصلج من المصدر الرسمي داخل قطر: واضح، يُتتبّع، والدفع عند الاستلام يقلّل المخاطرة.",
       pdpDailyOrdersFigure: "٤٥+",
-      pdpDailyOrdersCaption: "طلب يومياً في أيام الذروة داخل قطر",
-      pdpDailyOrdersNote: "تقدير تشغيلي؛ يختلف حسب الموسم ومعدل الزيارات على الموقع.",
+      pdpDailyOrdersCaption: "طلب يومي في أيام الذروة داخل قطر — ضمن نشاط يرافق الطلب التراكمي الكبير على السيروم",
+      pdpDailyOrdersNote:
+        "تقدير تشغيلي يتغيّر حسب الموسم؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
       pdpTrustPillars: PDP_TRUST_PILLARS,
       pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
     };
@@ -758,7 +810,8 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       "كميات لكل دفعة شحن وفق الطلب. اختاري باقتج تحت الصور مباشرة، أكملي النموذج، والدفع عند الاستلام عند بابك.",
     pdpPrimaryCta: "أكملي الطلب",
     pdpBreadcrumbCurrent: "SKINKSA",
-    pdpBoldStatsNote: "أرقام مستندة إلى تقييمات عملاء ومراجعات من المتجر الرسمي.",
+    pdpBoldStatsNote:
+      "أرقام تجميعية تشمل تجاوز ٤٢ ألف طلبية تراكمية على هذا السيروم من المصدر الرسمي؛ التقييم وفق آراء منشورة. النتائج التجميلية فردية.",
     faq: [],
     upsellAddonPrice: 6.5,
     upsellCompareAtPrice: 12,
@@ -768,15 +821,16 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       addonBottleQty: 1,
       bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
     },
-    topPromoStrip: "دفع عند الاستلام · توصيل ٢–٤ أيام",
+    topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٢–٤ أيام",
     heroStats: [
+      { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية (رسمي)" },
       { value: "30", label: "مل في العبوة" },
       { value: "~شهر", label: "روتين تقريبي" },
       { value: "SFDA", label: "ترخيص مطابق" },
       { value: "الكويت", label: "توصيل لباب البيت" },
     ],
     heroRatingScore: "4.9",
-    heroRatingCaption: "آراء عملاء",
+    heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
     vsComparison: PRODUCT_VS_COMPARISON,
     mobileBadgeRegions: "عميلات من الكويت",
     mobileBadgeQuality: "منتج أصلي",
@@ -817,8 +871,9 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     pdpSolutionLine:
       "اطلبي من المتجر الرسمي داخل الكويت: تركيبة مرخّصة ومسار واضح، ودفع عند الاستلام يعطيكِ وقت تتأكدين.",
     pdpDailyOrdersFigure: "٣٥+",
-    pdpDailyOrdersCaption: "طلب يومياً في أيام الذروة داخل الكويت",
-    pdpDailyOrdersNote: "رقم تقريبي للأيام المزدحمة؛ ليس إحصاءً رسمياً يوماً بيوم.",
+    pdpDailyOrdersCaption: "طلب يومي في أيام الذروة داخل الكويت — ضمن نشاط يرافق الطلب التراكمي الكبير على السيروم",
+    pdpDailyOrdersNote:
+      "رقم تشغيلي تقريبي للأيام المزدحمة؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
     pdpTrustPillars: PDP_TRUST_PILLARS,
     pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
   };

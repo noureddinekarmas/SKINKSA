@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, CheckCircle2, ShieldCheck, Timer, Truck, Wallet } from "lucide-react";
+import { BadgeCheck, CheckCircle2, ShieldCheck, Star, Timer } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
@@ -88,6 +88,31 @@ function getOfferVisual(code: string): {
         thumbSelected: "ring-2 ring-[var(--color-brand-primary)]/35",
       };
   }
+}
+
+function ReviewAvatar({ name }: { name: string }) {
+  const ch = name.trim().charAt(0) || "?";
+  return (
+    <div
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] via-[var(--color-brand-blue)] to-[var(--color-brand-deep)] text-lg font-black text-white shadow-md ring-2 ring-white"
+      aria-hidden
+    >
+      {ch}
+    </div>
+  );
+}
+
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5" dir="ltr" aria-hidden>
+      {Array.from({ length: 5 }, (_, i) => (
+        <Star
+          key={i}
+          className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", i < rating ? "fill-amber-400 text-amber-400" : "fill-[var(--color-brand-border)]/50 text-[var(--color-brand-border)]")}
+        />
+      ))}
+    </div>
+  );
 }
 
 const pillarIcons = [ShieldCheck, BadgeCheck, CheckCircle2] as const;
@@ -274,6 +299,29 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           </div>
         </nav>
 
+        <section
+          className="border-b border-[var(--color-brand-border)] bg-gradient-to-b from-[var(--color-brand-light)]/40 via-white to-white"
+          aria-label="مؤشرات الثقة والطلبات"
+        >
+          <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6 sm:py-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-8">
+              <div className="text-center sm:text-start">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--color-brand-primary)]">مؤشر طلبات تراكمي</p>
+                <p className="mt-1 text-2xl font-black tabular-nums text-[var(--color-brand-ink)] sm:text-3xl" dir="ltr">
+                  {d.socialStrip.stat}
+                </p>
+                <p className="mt-1 max-w-md text-xs leading-relaxed text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
+              </div>
+              <div className="text-center sm:max-w-md sm:text-start">
+                <p className="text-sm font-bold leading-snug text-[var(--color-brand-ink)]">{d.socialStrip.ratingLine}</p>
+                <p className="mt-2 text-[11px] leading-relaxed text-[var(--color-brand-slate)]">
+                  مناطق وصلناها: {d.socialStrip.cities.join(" · ")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* NamBeauty-style storefront: معرض نظيف | شرائح ثقة → عنوان قوي → عروض بطاقات → CTA → شبكة ثقة → نموذج */}
         <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
           <div className="grid gap-10 md:grid-cols-2 md:gap-12 lg:gap-14 md:items-start">
@@ -304,6 +352,11 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   {d.pdpShortTitle}
                 </h1>
                 <p className="text-pretty text-base leading-relaxed text-[var(--color-brand-slate)] sm:text-lg">{d.pdpSubtitle}</p>
+                {d.productHeroQuote ? (
+                  <blockquote className="mt-4 rounded-2xl border border-[var(--color-brand-primary)]/22 bg-gradient-to-br from-[var(--color-brand-light)]/5 via-white to-[var(--color-brand-mist)]/25 px-4 py-3.5 text-sm font-semibold leading-relaxed text-[var(--color-brand-ink)] shadow-sm sm:px-5 sm:text-base">
+                    {d.productHeroQuote}
+                  </blockquote>
+                ) : null}
                 <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm text-[var(--color-brand-slate)] sm:text-base">
                   <span className="font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
                     {d.heroRatingScore}
@@ -455,7 +508,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   <p className="text-[11px] font-semibold text-[var(--color-brand-slate)]">عدد مرات الشراء</p>
                   <p className="mt-2 text-sm">
                     <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
-                      {d.socialStrip.stat}+
+                      {d.socialStrip.stat}
                     </span>
                   </p>
                   <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
@@ -694,6 +747,120 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           </div>
         </section>
 
+        <section className="border-t border-[var(--color-brand-border)] bg-white py-12 sm:py-16">
+          <div className="mx-auto max-w-5xl space-y-14 px-4 sm:space-y-16 sm:px-6">
+            <div>
+              <SectionTitle eyebrow="نقاط الألم">شفتي نفسج في هالنقاط؟</SectionTitle>
+              <ul className="mt-6 space-y-4">
+                {d.painChecklist.map((item) => (
+                  <li
+                    key={item.title}
+                    className="rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/20 p-4 shadow-sm sm:p-5"
+                  >
+                    <p className="text-sm font-bold text-[var(--color-brand-ink)] sm:text-base">{item.title}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{item.detail}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="relative overflow-hidden rounded-3xl border border-[var(--color-brand-primary)]/20 bg-gradient-to-b from-white via-[var(--color-brand-light)]/12 to-[var(--color-brand-mist)]/25 p-6 shadow-[0_24px_64px_-28px_rgba(26,86,219,0.22)] sm:p-8">
+              <div
+                className="pointer-events-none absolute -start-20 top-0 h-48 w-48 rounded-full bg-[var(--color-brand-primary)]/[0.06] blur-3xl"
+                aria-hidden
+              />
+              <SectionTitle eyebrow={d.mechanismBlock.eyebrow}>{d.mechanismBlock.title}</SectionTitle>
+              <div className="relative mt-4 space-y-4 text-sm leading-relaxed text-[var(--color-brand-slate)] sm:text-base">
+                {d.mechanismBlock.paras.map((para, idx) => (
+                  <p key={idx}>{para}</p>
+                ))}
+              </div>
+              <div className="relative mt-6 rounded-2xl border border-[var(--color-brand-accent)]/30 bg-white/90 px-4 py-4 shadow-inner sm:px-5 sm:py-5">
+                <p className="text-sm font-bold text-[var(--color-brand-ink)]">{d.mechanismBlock.calloutTitle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{d.mechanismBlock.calloutBody}</p>
+              </div>
+            </div>
+
+            <div>
+              <SectionTitle eyebrow="الثقة والمصداقية">ليش يختارونا؟</SectionTitle>
+              <h3 className="mt-2 text-balance text-lg font-black leading-snug text-[var(--color-brand-ink)] sm:text-xl">{d.authorityBand.title}</h3>
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                {d.authorityBand.points.map((pt) => (
+                  <div
+                    key={pt.t}
+                    className="rounded-2xl border border-[var(--color-brand-border)] bg-white p-5 shadow-sm transition hover:shadow-md"
+                  >
+                    <p className="text-sm font-black text-[var(--color-brand-primary)]">{pt.t}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-[var(--color-brand-slate)] sm:text-sm">{pt.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border-2 border-[var(--color-brand-accent)]/35 bg-gradient-to-br from-amber-50/30 via-white to-[var(--color-brand-light)]/20 p-6 sm:p-8">
+              <h3 className="text-balance text-lg font-black leading-snug text-[var(--color-brand-ink)] sm:text-xl">{d.objectionBuster.title}</h3>
+              <ul className="mt-5 space-y-4">
+                {d.objectionBuster.lines.map((line, i) => (
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed text-[var(--color-brand-slate)] sm:text-base">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <SectionTitle eyebrow={d.vsComparison.eyebrow}>{d.vsComparison.title}</SectionTitle>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--color-brand-slate)]">{d.vsComparison.subtitle}</p>
+              <div className="mt-8 grid gap-4 lg:grid-cols-3">
+                {d.vsComparison.alternatives.map((alt) => (
+                  <div
+                    key={alt.name}
+                    className="flex flex-col rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/35 p-5 shadow-sm"
+                  >
+                    <p className="text-sm font-black text-[var(--color-brand-ink)]">{alt.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">{alt.priceHint}</p>
+                    <ul className="mt-4 flex flex-1 flex-col gap-2.5">
+                      {alt.cons.map((c) => (
+                        <li key={c} className="flex gap-2 text-sm text-[var(--color-brand-slate)]">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-brand-error)]/80" aria-hidden />
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <div className="flex flex-col rounded-2xl border-2 border-[var(--color-brand-success)]/45 bg-gradient-to-br from-[var(--color-brand-success)]/[0.08] via-white to-white p-5 shadow-[0_20px_56px_-24px_rgba(13,148,100,0.28)]">
+                  <p className="text-xs font-black uppercase tracking-wide text-[var(--color-brand-success)]">{d.vsComparison.ours.name}</p>
+                  <p className="mt-1 text-xs font-semibold text-[var(--color-brand-slate)]">{d.vsComparison.ours.priceHint}</p>
+                  <ul className="mt-4 flex flex-1 flex-col gap-3">
+                    {d.vsComparison.ours.pros.map((pro) => (
+                      <li key={pro} className="flex gap-3 text-sm leading-relaxed text-[var(--color-brand-ink)]">
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                        <span>{pro}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {d.productBenefits.length > 0 ? (
+              <div>
+                <SectionTitle eyebrow="باختصار">اللي تلمسينه يومياً</SectionTitle>
+                <ul className="mt-4 space-y-3">
+                  {d.productBenefits.map((b) => (
+                    <li key={b} className="flex gap-3 text-sm text-[var(--color-brand-slate)]">
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
         {/* Science / proof — bento + hero visual */}
         <section className="border-t border-[var(--color-brand-border)] bg-gradient-to-b from-white to-[var(--color-brand-mist)]/35 py-12 sm:py-16">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -889,18 +1056,35 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
               {d.heroRatingCaption}
             </p>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {d.productReviews.map((r) => (
               <article
-                key={`${r.name}-${r.text.slice(0, 24)}`}
-                className="rounded-xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm"
+                key={`${r.name}-${r.city}-${r.text.slice(0, 32)}`}
+                className="rounded-xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm sm:p-5"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-semibold text-[var(--color-brand-ink)]">{r.name}</span>
-                  <span className="text-xs text-[var(--color-brand-slate)]">{r.city}</span>
+                <div className="flex flex-row-reverse items-start gap-3 sm:gap-4">
+                  <ReviewAvatar name={r.name} />
+                  <div className="min-w-0 flex-1 space-y-2 text-right">
+                    <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1">
+                      <span className="font-bold text-[var(--color-brand-ink)]">{r.name}</span>
+                      <span className="text-xs text-[var(--color-brand-slate)]">{r.city}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-success)]/12 px-2 py-0.5 text-[10px] font-bold text-[var(--color-brand-success)] sm:text-[11px]">
+                        <BadgeCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                        مشتريات موثّقة
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1" dir="ltr">
+                      <StarRow rating={r.rating} />
+                      {r.relativeTime ? (
+                        <span className="text-[11px] font-medium text-[var(--color-brand-slate)]" dir="rtl">
+                          {r.relativeTime}
+                        </span>
+                      ) : null}
+                    </div>
+                    {r.tag ? <p className="text-[11px] text-[var(--color-brand-slate)]">{r.tag}</p> : null}
+                    <p className="text-sm leading-relaxed text-[var(--color-brand-slate)]">{r.text}</p>
+                  </div>
                 </div>
-                {r.tag ? <p className="mt-1 text-[11px] text-[var(--color-brand-slate)]">{r.tag}</p> : null}
-                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)] line-clamp-4">{r.text}</p>
               </article>
             ))}
           </div>
