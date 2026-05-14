@@ -416,48 +416,15 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                       );
                     })}
                   </div>
-                  <p className="mt-3 text-center text-[11px] font-semibold leading-relaxed text-[var(--color-brand-slate)]">
-                    بعد الاختيار، أكملي النموذج أدناه — نفس الطلب، بدون خطوات إضافية.
-                  </p>
                 </div>
 
-                <div className="border-b border-[var(--color-brand-border)]/70 bg-white px-3 py-3 sm:px-5 sm:py-4">
-                  <p className="mb-2 text-center text-[10px] font-bold text-[var(--color-brand-slate)] sm:text-[11px]">
-                    لماذا تطلبين بثقة؟
-                  </p>
-                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
-                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                      <Wallet className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الدفع عند الاستلام</p>
-                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
-                        بدون دفع أونلاين
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                      <Truck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">التوصيل</p>
-                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
-                        {d.valueStripDelivery}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                      <ShieldCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">{d.authenticity.guarantee.title}</p>
-                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
-                        {d.authenticity.guarantee.kicker}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                      <BadgeCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الامتثال</p>
-                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
-                        {d.valueStripRegulatory}
-                      </p>
-                    </div>
-                  </div>
+                <div className="border-t border-[var(--color-brand-border)]/80 bg-[var(--color-brand-mist)]/20 px-4 py-5 sm:px-6 sm:py-6">
+                  <h2 className="text-balance text-center text-lg font-black leading-snug text-[var(--color-brand-ink)] sm:text-xl">
+                    أكملي بياناتك — جاهزة للشحن
+                  </h2>
                 </div>
 
-                <CheckoutFormFlow mode="inline" compact={false} embedded assignCheckoutId={false} />
+                <CheckoutFormFlow mode="inline" compact={false} embedded embeddedShowHeader={false} assignCheckoutId={false} />
               </div>
 
               <ul className="space-y-2.5 text-sm leading-snug text-[var(--color-brand-ink)]">

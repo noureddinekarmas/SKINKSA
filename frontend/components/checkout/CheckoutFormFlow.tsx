@@ -42,6 +42,8 @@ type CheckoutFormFlowProps = {
    * When inline+embedded, strips the outer card shell so the form sits flush inside a parent order module.
    */
   embedded?: boolean;
+  /** When embedded, show the gradient summary header (total + COD). Set false if the parent shows the title only. */
+  embeddedShowHeader?: boolean;
   /** Set false when a parent wrapper already has id="product-checkout" for scroll targets. */
   assignCheckoutId?: boolean;
 };
@@ -52,6 +54,7 @@ export function CheckoutFormFlow({
   onRequestClose,
   compact = false,
   embedded = false,
+  embeddedShowHeader = true,
   assignCheckoutId = true,
 }: CheckoutFormFlowProps) {
   const { items, cartTotal, clearCart, closeCheckout } = useCartStore();
@@ -257,34 +260,36 @@ export function CheckoutFormFlow({
         </p>
       </div>
     ) : mode === "inline" && embedded ? (
-      <div className="relative overflow-hidden border-b border-[var(--color-brand-border)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-4 py-4 text-white sm:px-6 sm:py-5">
-        <div
-          className="pointer-events-none absolute -start-20 -top-12 h-40 w-40 rounded-full bg-[var(--color-brand-accent)]/18 blur-3xl"
-          aria-hidden
-        />
-        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-brand-accent)]">
-              SKINKSA
-            </p>
-            <h2 className="text-balance text-lg font-black leading-tight sm:text-xl">أكملي بياناتك — جاهزة للشحن</h2>
-            <p className="mt-1 max-w-md text-[11px] font-semibold leading-relaxed text-white/85 sm:text-xs">
-              بخطوتين فقط: اسمكِ ورقمكِ — من دون دفع أونلاين. فريقنا يتصل للتأكيد.
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-stretch gap-2 rounded-2xl border border-white/25 bg-white/[0.12] px-4 py-3 text-center shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] backdrop-blur-md sm:min-w-[11rem] sm:text-start">
-            <span className="text-[10px] font-bold text-[var(--color-brand-light)]/90">إجمالي الطلب</span>
-            <p className="text-2xl font-black tabular-nums sm:text-3xl">
-              <span dir="ltr">{formatMoney(cartTotal(), checkoutCurrency, meta.numberLocale)}</span>{" "}
-              <span className="text-base font-bold">{meta.currencyLabelAr}</span>
-            </p>
-            <div className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--color-brand-success)]/40 bg-[var(--color-brand-success)]/25 px-2 py-1 text-[11px] font-black">
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-200" aria-hidden />
-              دفع عند الاستلام
+      embeddedShowHeader ? (
+        <div className="relative overflow-hidden border-b border-[var(--color-brand-border)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-4 py-4 text-white sm:px-6 sm:py-5">
+          <div
+            className="pointer-events-none absolute -start-20 -top-12 h-40 w-40 rounded-full bg-[var(--color-brand-accent)]/18 blur-3xl"
+            aria-hidden
+          />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-brand-accent)]">
+                SKINKSA
+              </p>
+              <h2 className="text-balance text-lg font-black leading-tight sm:text-xl">أكملي بياناتك — جاهزة للشحن</h2>
+              <p className="mt-1 max-w-md text-[11px] font-semibold leading-relaxed text-white/85 sm:text-xs">
+                بخطوتين فقط: اسمكِ ورقمكِ — من دون دفع أونلاين. فريقنا يتصل للتأكيد.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col items-stretch gap-2 rounded-2xl border border-white/25 bg-white/[0.12] px-4 py-3 text-center shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] backdrop-blur-md sm:min-w-[11rem] sm:text-start">
+              <span className="text-[10px] font-bold text-[var(--color-brand-light)]/90">إجمالي الطلب</span>
+              <p className="text-2xl font-black tabular-nums sm:text-3xl">
+                <span dir="ltr">{formatMoney(cartTotal(), checkoutCurrency, meta.numberLocale)}</span>{" "}
+                <span className="text-base font-bold">{meta.currencyLabelAr}</span>
+              </p>
+              <div className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--color-brand-success)]/40 bg-[var(--color-brand-success)]/25 px-2 py-1 text-[11px] font-black">
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-200" aria-hidden />
+                دفع عند الاستلام
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : null
     ) : (
       <div className="relative overflow-hidden border-b-4 border-[var(--color-brand-accent)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-5 py-4 text-white sm:px-6 sm:py-5">
         <div
