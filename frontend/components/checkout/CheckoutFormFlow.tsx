@@ -38,9 +38,22 @@ type CheckoutFormFlowProps = {
   onRequestClose?: () => void;
   /** PDP storefront style: flat header, single primary button, no gradients */
   compact?: boolean;
+  /**
+   * When inline+embedded, strips the outer card shell so the form sits flush inside a parent order module.
+   */
+  embedded?: boolean;
+  /** Set false when a parent wrapper already has id="product-checkout" for scroll targets. */
+  assignCheckoutId?: boolean;
 };
 
-export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compact = false }: CheckoutFormFlowProps) {
+export function CheckoutFormFlow({
+  mode,
+  modalOpen = true,
+  onRequestClose,
+  compact = false,
+  embedded = false,
+  assignCheckoutId = true,
+}: CheckoutFormFlowProps) {
   const { items, cartTotal, clearCart, closeCheckout } = useCartStore();
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderTotal, setOrderTotal] = useState<number>(0);
@@ -125,6 +138,21 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
     const ccy = items[0]?.currency ?? "SAR";
 
     try {
+      if (mode === "inline" && items[0]) {
+        const atcId = generateEventId("atc");
+        trackCommerceEvent({
+          eventName: "AddToCart",
+          eventId: atcId,
+          value: cartTotal(),
+          currency: ccy,
+          contents: items.map((item) => ({
+            id: item.slug,
+            quantity: item.quantity,
+            item_price: item.unitPrice,
+          })),
+          contentName: items[0].titleAr,
+        });
+      }
       const result = await createDraftOrder({
         customer_name: data.customer_name,
         customer_phone: data.customer_phone,
@@ -184,7 +212,7 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
     );
   }
 
-  const isCompactPdp = mode === "inline" && compact;
+  const isCompactPdp = mode === "inline" && compact && !embedded;
 
   const headerBlock =
     mode === "modal" ? (
@@ -228,6 +256,35 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
           <span className="text-sm font-semibold">{meta.currencyLabelAr}</span>
         </p>
       </div>
+    ) : mode === "inline" && embedded ? (
+      <div className="relative overflow-hidden border-b border-[var(--color-brand-border)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-4 py-4 text-white sm:px-6 sm:py-5">
+        <div
+          className="pointer-events-none absolute -start-20 -top-12 h-40 w-40 rounded-full bg-[var(--color-brand-accent)]/18 blur-3xl"
+          aria-hidden
+        />
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-brand-accent)]">
+              SKINKSA
+            </p>
+            <h2 className="text-balance text-lg font-black leading-tight sm:text-xl">أكملي بياناتك — جاهزة للشحن</h2>
+            <p className="mt-1 max-w-md text-[11px] font-semibold leading-relaxed text-white/85 sm:text-xs">
+              بخطوتين فقط: اسمكِ ورقمكِ — من دون دفع أونلاين. فريقنا يتصل للتأكيد.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-stretch gap-2 rounded-2xl border border-white/25 bg-white/[0.12] px-4 py-3 text-center shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] backdrop-blur-md sm:min-w-[11rem] sm:text-start">
+            <span className="text-[10px] font-bold text-[var(--color-brand-light)]/90">إجمالي الطلب</span>
+            <p className="text-2xl font-black tabular-nums sm:text-3xl">
+              <span dir="ltr">{formatMoney(cartTotal(), checkoutCurrency, meta.numberLocale)}</span>{" "}
+              <span className="text-base font-bold">{meta.currencyLabelAr}</span>
+            </p>
+            <div className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--color-brand-success)]/40 bg-[var(--color-brand-success)]/25 px-2 py-1 text-[11px] font-black">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-200" aria-hidden />
+              دفع عند الاستلام
+            </div>
+          </div>
+        </div>
+      </div>
     ) : (
       <div className="relative overflow-hidden border-b-4 border-[var(--color-brand-accent)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-5 py-4 text-white sm:px-6 sm:py-5">
         <div
@@ -261,14 +318,18 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
       </div>
     );
 
+  const checkoutDomId = mode === "inline" && assignCheckoutId ? "product-checkout" : undefined;
+
   if (mode === "inline" && items.length === 0) {
     return (
       <div
-        id="product-checkout"
+        id={checkoutDomId}
         className={
           isCompactPdp
             ? "rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center text-sm text-neutral-600"
-            : "rounded-[1.25rem] border-2 border-dashed border-[var(--color-brand-primary)]/35 bg-gradient-to-b from-[var(--color-brand-mist)] to-white p-6 text-center shadow-inner ring-1 ring-[var(--color-brand-primary)]/10"
+            : embedded
+              ? "border border-dashed border-[var(--color-brand-primary)]/35 bg-[var(--color-brand-mist)]/30 p-6 text-center"
+              : "rounded-[1.25rem] border-2 border-dashed border-[var(--color-brand-primary)]/35 bg-gradient-to-b from-[var(--color-brand-mist)] to-white p-6 text-center shadow-inner ring-1 ring-[var(--color-brand-primary)]/10"
         }
       >
         <p className={isCompactPdp ? "" : "text-sm font-bold text-[var(--color-brand-slate)]"}>
@@ -283,12 +344,16 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
       ? "bg-gradient-to-b from-white to-[var(--color-brand-mist)]/60 px-6 py-5"
       : isCompactPdp
         ? "px-4 py-4 sm:px-5 sm:py-5"
-        : "bg-gradient-to-b from-white via-[var(--color-brand-mist)]/40 to-white px-5 py-5 sm:px-6 sm:py-6";
+        : embedded
+          ? "bg-gradient-to-b from-white via-[var(--color-brand-mist)]/35 to-white px-4 py-5 sm:px-6 sm:py-6"
+          : "bg-gradient-to-b from-white via-[var(--color-brand-mist)]/40 to-white px-5 py-5 sm:px-6 sm:py-6";
   const shellClass =
     mode === "inline"
-      ? isCompactPdp
-        ? "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
-        : "overflow-hidden rounded-[1.25rem] border-2 border-[var(--color-brand-border)] bg-white shadow-[0_24px_64px_-24px_rgba(26,86,219,0.28)] ring-1 ring-[var(--color-brand-primary)]/[0.08]"
+      ? embedded
+        ? "bg-white"
+        : isCompactPdp
+          ? "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+          : "overflow-hidden rounded-[1.25rem] border-2 border-[var(--color-brand-border)] bg-white shadow-[0_24px_64px_-24px_rgba(26,86,219,0.28)] ring-1 ring-[var(--color-brand-primary)]/[0.08]"
       : "";
 
   const nameInputClass = isCompactPdp
@@ -312,7 +377,7 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compa
       }`;
 
   return (
-    <div id={mode === "inline" ? "product-checkout" : undefined} className={shellClass}>
+    <div id={checkoutDomId} className={shellClass}>
       {headerBlock}
       <div className={formWrapClass}>
         {isCompactPdp ? (

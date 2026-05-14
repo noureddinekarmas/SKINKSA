@@ -327,132 +327,137 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 ) : null}
               </header>
 
-              <div>
-                <p className="mb-3 text-sm font-black text-[var(--color-brand-ink)] sm:text-base">اختاري العرض:</p>
-                <div className="flex flex-col gap-3">
-                  {offers.map((offer, idx) => {
-                    const pct = savingsPercent(offer.price, offer.compare);
-                    const saveAmt = savingsAbsolute(offer.price, offer.compare);
-                    const isOn = idx === selectedIdx;
-                    const ov = getOfferVisual(offer.code);
-                    const thumb =
-                      offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
-                        ? d.offerBundleImages[offer.code]
-                        : undefined;
-                    return (
-                      <button
-                        key={offer.code}
-                        type="button"
-                        onClick={() => setSelectedIdx(idx)}
-                        className={cn(
-                          "w-full rounded-2xl border-2 p-4 text-right transition duration-300 sm:p-5",
-                          isOn
-                            ? ov.selectedCard
-                            : cn("border-[var(--color-brand-border)] bg-white shadow-sm", ov.idleCard)
-                        )}
-                      >
-                        <div className="flex flex-row-reverse items-start gap-4">
-                          {thumb ? (
-                            <div
-                              className={cn(
-                                "relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border bg-white sm:h-24 sm:w-24",
-                                isOn ? ov.thumbSelected : "border-[var(--color-brand-border)]"
-                              )}
-                            >
-                              <Image src={thumb.src} alt={thumb.alt} fill className="object-contain p-2" sizes="96px" />
-                            </div>
-                          ) : null}
-                          <div className="min-w-0 flex-1 space-y-2">
-                            <div className="flex flex-wrap items-center justify-end gap-2">
-                              {saveAmt != null && saveAmt > 0 ? (
-                                <span className="rounded-full bg-[var(--color-brand-success)]/12 px-2.5 py-1 text-[11px] font-black text-[var(--color-brand-success)] sm:text-xs">
-                                  وفّري {formatMoney(saveAmt, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                                </span>
-                              ) : pct != null && pct > 0 ? (
-                                <span className="rounded-full bg-[var(--color-brand-primary)] px-2.5 py-1 text-[11px] font-bold text-white">
-                                  ٪{pct} توفير
-                                </span>
-                              ) : null}
-                              {offer.badge ? (
-                                <span className="rounded-full border border-[var(--color-brand-border)] bg-white px-2.5 py-1 text-[11px] font-bold text-[var(--color-brand-ink)]">
-                                  {offer.badge}
-                                </span>
-                              ) : null}
-                            </div>
-                            <p className="text-sm font-black text-[var(--color-brand-ink)] sm:text-base">
-                              {offerCtaLine(offer.pieces)}
-                            </p>
-                            <p className="text-sm leading-snug text-[var(--color-brand-slate)]">{offer.label}</p>
-                            <div className="flex flex-wrap items-baseline justify-end gap-2 pt-1" dir="ltr">
-                              <span
+              <div
+                id="product-checkout"
+                className="scroll-mt-28 overflow-hidden rounded-[1.75rem] border-2 border-[var(--color-brand-border)] bg-white shadow-[0_32px_88px_-36px_rgba(26,86,219,0.35)] ring-1 ring-[var(--color-brand-primary)]/10"
+              >
+                <div
+                  className="h-1.5 bg-gradient-to-l from-[var(--color-brand-primary)] via-[var(--color-brand-blue)] to-[var(--color-brand-accent)]"
+                  aria-hidden
+                />
+
+                <div className="border-b border-[var(--color-brand-border)]/80 bg-gradient-to-b from-[var(--color-brand-mist)]/5 to-white px-4 py-4 sm:px-5 sm:py-5">
+                  <p className="mb-1 text-[11px] font-black uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
+                    SKINKSA · طلب مباشر
+                  </p>
+                  <p className="mb-3 text-sm font-black text-[var(--color-brand-ink)] sm:text-base">اختاري العرض ثم أكملي بياناتك:</p>
+                  <div className="flex flex-col gap-3">
+                    {offers.map((offer, idx) => {
+                      const pct = savingsPercent(offer.price, offer.compare);
+                      const saveAmt = savingsAbsolute(offer.price, offer.compare);
+                      const isOn = idx === selectedIdx;
+                      const ov = getOfferVisual(offer.code);
+                      const thumb =
+                        offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
+                          ? d.offerBundleImages[offer.code]
+                          : undefined;
+                      return (
+                        <button
+                          key={offer.code}
+                          type="button"
+                          onClick={() => setSelectedIdx(idx)}
+                          className={cn(
+                            "w-full rounded-2xl border-2 p-4 text-right transition duration-300 sm:p-5",
+                            isOn
+                              ? ov.selectedCard
+                              : cn("border-[var(--color-brand-border)] bg-white shadow-sm", ov.idleCard)
+                          )}
+                        >
+                          <div className="flex flex-row-reverse items-start gap-4">
+                            {thumb ? (
+                              <div
                                 className={cn(
-                                  "text-2xl font-black tabular-nums sm:text-3xl",
-                                  isOn ? ov.priceClass : "text-[var(--color-brand-primary)]"
+                                  "relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl border bg-white sm:h-24 sm:w-24",
+                                  isOn ? ov.thumbSelected : "border-[var(--color-brand-border)]"
                                 )}
                               >
-                                {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                              </span>
-                              {offer.compare != null && (
-                                <span className="text-sm tabular-nums text-[var(--color-brand-slate)]/55 line-through">
-                                  {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                                <Image src={thumb.src} alt={thumb.alt} fill className="object-contain p-2" sizes="96px" />
+                              </div>
+                            ) : null}
+                            <div className="min-w-0 flex-1 space-y-2">
+                              <div className="flex flex-wrap items-center justify-end gap-2">
+                                {saveAmt != null && saveAmt > 0 ? (
+                                  <span className="rounded-full bg-[var(--color-brand-success)]/12 px-2.5 py-1 text-[11px] font-black text-[var(--color-brand-success)] sm:text-xs">
+                                    وفّري {formatMoney(saveAmt, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                                  </span>
+                                ) : pct != null && pct > 0 ? (
+                                  <span className="rounded-full bg-[var(--color-brand-primary)] px-2.5 py-1 text-[11px] font-bold text-white">
+                                    ٪{pct} توفير
+                                  </span>
+                                ) : null}
+                                {offer.badge ? (
+                                  <span className="rounded-full border border-[var(--color-brand-border)] bg-white px-2.5 py-1 text-[11px] font-bold text-[var(--color-brand-ink)]">
+                                    {offer.badge}
+                                  </span>
+                                ) : null}
+                              </div>
+                              <p className="text-sm font-black text-[var(--color-brand-ink)] sm:text-base">
+                                {offerCtaLine(offer.pieces)}
+                              </p>
+                              <p className="text-sm leading-snug text-[var(--color-brand-slate)]">{offer.label}</p>
+                              <div className="flex flex-wrap items-baseline justify-end gap-2 pt-1" dir="ltr">
+                                <span
+                                  className={cn(
+                                    "text-2xl font-black tabular-nums sm:text-3xl",
+                                    isOn ? ov.priceClass : "text-[var(--color-brand-primary)]"
+                                  )}
+                                >
+                                  {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
                                 </span>
-                              )}
+                                {offer.compare != null && (
+                                  <span className="text-sm tabular-nums text-[var(--color-brand-slate)]/55 line-through">
+                                    {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 text-center text-[11px] font-semibold leading-relaxed text-[var(--color-brand-slate)]">
+                    بعد الاختيار، أكملي النموذج أدناه — نفس الطلب، بدون خطوات إضافية.
+                  </p>
                 </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={scrollToCheckoutAndTrack}
-                className={cn(
-                  "relative w-full overflow-hidden rounded-full py-4 text-center text-base font-black text-white shadow-[0_22px_50px_-16px_rgba(26,86,219,0.55)] transition hover:brightness-110 hover:shadow-[0_26px_56px_-14px_rgba(26,86,219,0.45)] active:scale-[0.985]",
-                  selectedVisual.ctaGradient
-                )}
-              >
-                <span className="relative z-[1]">
-                  {d.pdpPrimaryCta} · {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                </span>
-                <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/12 to-transparent" aria-hidden />
-              </button>
+                <div className="border-b border-[var(--color-brand-border)]/70 bg-white px-3 py-3 sm:px-5 sm:py-4">
+                  <p className="mb-2 text-center text-[10px] font-bold text-[var(--color-brand-slate)] sm:text-[11px]">
+                    لماذا تطلبين بثقة؟
+                  </p>
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
+                      <Wallet className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
+                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الدفع عند الاستلام</p>
+                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
+                        بدون دفع أونلاين
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
+                      <Truck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
+                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">التوصيل</p>
+                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
+                        {d.valueStripDelivery}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
+                      <ShieldCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
+                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">{d.authenticity.guarantee.title}</p>
+                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
+                        {d.authenticity.guarantee.kicker}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
+                      <BadgeCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
+                      <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الامتثال</p>
+                      <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
+                        {d.valueStripRegulatory}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
-                <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-white px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                  <Wallet className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                  <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الدفع عند الاستلام</p>
-                  <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
-                    بدون دفع أونلاين
-                  </p>
-                </div>
-                <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-white px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                  <Truck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                  <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">التوصيل</p>
-                  <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
-                    {d.valueStripDelivery}
-                  </p>
-                </div>
-                <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-white px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                  <ShieldCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                  <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">{d.authenticity.guarantee.title}</p>
-                  <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px]">
-                    {d.authenticity.guarantee.kicker}
-                  </p>
-                </div>
-                <div className="flex flex-col items-center rounded-2xl border border-[var(--color-brand-border)] bg-white px-2 py-3 text-center shadow-sm sm:px-3 sm:py-4">
-                  <BadgeCheck className="h-5 w-5 text-[var(--color-brand-primary)] sm:h-6 sm:w-6" aria-hidden />
-                  <p className="mt-2 text-[10px] font-black text-[var(--color-brand-ink)] sm:text-[11px]">الامتثال</p>
-                  <p className="mt-0.5 text-[9px] font-semibold leading-tight text-[var(--color-brand-slate)] sm:text-[10px] line-clamp-2">
-                    {d.valueStripRegulatory}
-                  </p>
-                </div>
-              </div>
-
-              <div className="scroll-mt-28">
-                <CheckoutFormFlow mode="inline" compact />
+                <CheckoutFormFlow mode="inline" compact={false} embedded assignCheckoutId={false} />
               </div>
 
               <ul className="space-y-2.5 text-sm leading-snug text-[var(--color-brand-ink)]">
