@@ -161,7 +161,7 @@ export const PRODUCT_HEADLINE = "سيروم SKINKSA — بروتين خفيف، 
 
 /** سطر ثانٍ تحت العنوان — مختصر */
 export const PRODUCT_TAGLINE =
-  "ببتيد نحاس أزرق مع هيالورونيك: يمتص بسرعة ويناسب الجو الحار.";
+  "امتصاص سريع · خفيف على البشرة · مرخّص SFDA.";
 
 /** جملة أطول في بطاقة اقتباس تحت العنوان */
 export const PRODUCT_HERO_QUOTE =
@@ -170,7 +170,7 @@ export const PRODUCT_HERO_QUOTE =
 export const SOCIAL_STRIP = {
   stat: "+١٠٠٠",
   statLabel: "عميلة خلال فترة قصيرة",
-  ratingLine: "تقييم تجربة شراء عالي من مدن المملكة",
+  ratingLine: "تقييمات من عملاء",
   cities: ["الرياض", "جدة", "الدمام", "المدينة", "أبها"],
 };
 

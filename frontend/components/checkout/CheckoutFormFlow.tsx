@@ -36,9 +36,11 @@ type CheckoutFormFlowProps = {
   /** When mode=modal: whether the dialog is open (drives reset + initiate checkout) */
   modalOpen?: boolean;
   onRequestClose?: () => void;
+  /** PDP storefront style: flat header, single primary button, no gradients */
+  compact?: boolean;
 };
 
-export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: CheckoutFormFlowProps) {
+export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose, compact = false }: CheckoutFormFlowProps) {
   const { items, cartTotal, clearCart, closeCheckout } = useCartStore();
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderTotal, setOrderTotal] = useState<number>(0);
@@ -182,6 +184,8 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
     );
   }
 
+  const isCompactPdp = mode === "inline" && compact;
+
   const headerBlock =
     mode === "modal" ? (
       <div className="relative overflow-hidden border-b-4 border-[var(--color-brand-accent)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-6 py-5 text-white">
@@ -212,6 +216,17 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
             <span className="text-sm font-black">الدفع عند الاستلام</span>
           </div>
         </div>
+      </div>
+    ) : isCompactPdp ? (
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 bg-neutral-50/80 px-4 py-3 sm:px-5">
+        <div>
+          <h2 className="text-sm font-semibold text-neutral-900">إتمام الطلب</h2>
+          <p className="text-xs text-neutral-500">الدفع عند الاستلام</p>
+        </div>
+        <p className="text-lg font-bold text-neutral-900 tabular-nums" dir="ltr">
+          {formatMoney(cartTotal(), checkoutCurrency, meta.numberLocale)}{" "}
+          <span className="text-sm font-semibold">{meta.currencyLabelAr}</span>
+        </p>
       </div>
     ) : (
       <div className="relative overflow-hidden border-b-4 border-[var(--color-brand-accent)] bg-gradient-to-bl from-[var(--color-brand-ink)] via-[var(--color-brand-primary)] to-[var(--color-brand-deep)] px-5 py-4 text-white sm:px-6 sm:py-5">
@@ -250,9 +265,15 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
     return (
       <div
         id="product-checkout"
-        className="rounded-[1.25rem] border-2 border-dashed border-[var(--color-brand-primary)]/35 bg-gradient-to-b from-[var(--color-brand-mist)] to-white p-6 text-center shadow-inner ring-1 ring-[var(--color-brand-primary)]/10"
+        className={
+          isCompactPdp
+            ? "rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center text-sm text-neutral-600"
+            : "rounded-[1.25rem] border-2 border-dashed border-[var(--color-brand-primary)]/35 bg-gradient-to-b from-[var(--color-brand-mist)] to-white p-6 text-center shadow-inner ring-1 ring-[var(--color-brand-primary)]/10"
+        }
       >
-        <p className="text-sm font-bold text-[var(--color-brand-slate)]">اختاري عرضاً أعلاه ليظهر نموذج الطلب.</p>
+        <p className={isCompactPdp ? "" : "text-sm font-bold text-[var(--color-brand-slate)]"}>
+          اختاري عرضاً أعلاه ليظهر نموذج الطلب.
+        </p>
       </div>
     );
   }
@@ -260,36 +281,64 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
   const formWrapClass =
     mode === "modal"
       ? "bg-gradient-to-b from-white to-[var(--color-brand-mist)]/60 px-6 py-5"
-      : "bg-gradient-to-b from-white via-[var(--color-brand-mist)]/40 to-white px-5 py-5 sm:px-6 sm:py-6";
+      : isCompactPdp
+        ? "px-4 py-4 sm:px-5 sm:py-5"
+        : "bg-gradient-to-b from-white via-[var(--color-brand-mist)]/40 to-white px-5 py-5 sm:px-6 sm:py-6";
   const shellClass =
     mode === "inline"
-      ? "overflow-hidden rounded-[1.25rem] border-2 border-[var(--color-brand-border)] bg-white shadow-[0_24px_64px_-24px_rgba(26,86,219,0.28)] ring-1 ring-[var(--color-brand-primary)]/[0.08]"
+      ? isCompactPdp
+        ? "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+        : "overflow-hidden rounded-[1.25rem] border-2 border-[var(--color-brand-border)] bg-white shadow-[0_24px_64px_-24px_rgba(26,86,219,0.28)] ring-1 ring-[var(--color-brand-primary)]/[0.08]"
       : "";
+
+  const nameInputClass = isCompactPdp
+    ? `block w-full rounded-lg border bg-white p-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 ${
+        errors.customer_name ? "border-red-400" : "border-neutral-300"
+      }`
+    : `block w-full rounded-xl border-2 bg-white p-3.5 pr-11 text-sm font-medium text-[var(--color-brand-ink)] shadow-[0_4px_14px_-6px_rgba(15,28,46,0.12)] transition-all placeholder:text-[var(--color-brand-slate)]/55 focus:outline-none focus:ring-4 ${
+        errors.customer_name
+          ? "border-[var(--color-brand-error)] focus:border-[var(--color-brand-error)] focus:ring-red-500/15"
+          : "border-[var(--color-brand-border)] focus:border-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]/18"
+      }`;
+
+  const phoneInputClass = isCompactPdp
+    ? `block w-full rounded-lg border bg-white p-3 text-left text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 placeholder:text-right ${
+        errors.customer_phone ? "border-red-400" : "border-neutral-300"
+      }`
+    : `block w-full rounded-xl border-2 bg-white p-3.5 pr-11 text-left text-sm font-medium text-[var(--color-brand-ink)] shadow-[0_4px_14px_-6px_rgba(15,28,46,0.12)] transition-all placeholder:text-[var(--color-brand-slate)]/55 focus:outline-none focus:ring-4 placeholder:text-right ${
+        errors.customer_phone
+          ? "border-[var(--color-brand-error)] focus:border-[var(--color-brand-error)] focus:ring-red-500/15"
+          : "border-[var(--color-brand-border)] focus:border-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]/18"
+      }`;
 
   return (
     <div id={mode === "inline" ? "product-checkout" : undefined} className={shellClass}>
       {headerBlock}
       <div className={formWrapClass}>
-        <div className="mb-5 rounded-2xl border border-[var(--color-brand-border)] bg-white/80 px-4 py-3 text-center shadow-sm backdrop-blur-sm">
-          <p className="text-pretty text-sm font-semibold leading-relaxed text-[var(--color-brand-slate)]">
+        {isCompactPdp ? (
+          <div className="mb-4 rounded-lg bg-neutral-50 px-3 py-2 text-center text-xs leading-relaxed text-neutral-600">
             {meta.checkoutIntro}
-          </p>
-        </div>
+          </div>
+        ) : (
+          <div className="mb-5 rounded-2xl border border-[var(--color-brand-border)] bg-white/80 px-4 py-3 text-center shadow-sm backdrop-blur-sm">
+            <p className="text-pretty text-sm font-semibold leading-relaxed text-[var(--color-brand-slate)]">
+              {meta.checkoutIntro}
+            </p>
+          </div>
+        )}
 
         <form key={formKey} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--color-brand-primary)]/50">
-              <User size={18} />
-            </div>
+            {!isCompactPdp && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--color-brand-primary)]/50">
+                <User size={18} />
+              </div>
+            )}
             <input
               {...register("customer_name")}
               type="text"
               placeholder="الاسم الكامل (مثال: نورة محمد)"
-              className={`block w-full rounded-xl border-2 bg-white p-3.5 pr-11 text-sm font-medium text-[var(--color-brand-ink)] shadow-[0_4px_14px_-6px_rgba(15,28,46,0.12)] transition-all placeholder:text-[var(--color-brand-slate)]/55 focus:outline-none focus:ring-4 ${
-                errors.customer_name
-                  ? "border-[var(--color-brand-error)] focus:border-[var(--color-brand-error)] focus:ring-red-500/15"
-                  : "border-[var(--color-brand-border)] focus:border-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]/18"
-              }`}
+              className={nameInputClass}
               dir="rtl"
               autoComplete="name"
             />
@@ -301,18 +350,16 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
           </div>
 
           <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--color-brand-primary)]/50">
-              <Phone size={18} />
-            </div>
+            {!isCompactPdp && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--color-brand-primary)]/50">
+                <Phone size={18} />
+              </div>
+            )}
             <input
               {...register("customer_phone")}
               type="tel"
               placeholder={meta.phonePlaceholder}
-              className={`block w-full rounded-xl border-2 bg-white p-3.5 pr-11 text-left text-sm font-medium text-[var(--color-brand-ink)] shadow-[0_4px_14px_-6px_rgba(15,28,46,0.12)] transition-all placeholder:text-[var(--color-brand-slate)]/55 focus:outline-none focus:ring-4 placeholder:text-right ${
-                errors.customer_phone
-                  ? "border-[var(--color-brand-error)] focus:border-[var(--color-brand-error)] focus:ring-red-500/15"
-                  : "border-[var(--color-brand-border)] focus:border-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]/18"
-              }`}
+              className={phoneInputClass}
               dir="ltr"
               autoComplete="tel"
             />
@@ -324,8 +371,7 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 rounded-xl border-2 border-red-200 bg-red-50/90 p-3 text-sm font-semibold text-[var(--color-brand-error)]">
-              <span className="font-black">⚠️</span>
+            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-800">
               <span>{error}</span>
             </div>
           )}
@@ -334,18 +380,28 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex min-h-[3.5rem] w-full touch-manipulation items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-l from-[var(--color-brand-primary)] via-[var(--color-brand-blue)] to-[var(--color-brand-deep)] px-4 py-3.5 text-base font-black text-white shadow-[0_16px_40px_-12px_rgba(26,86,219,0.55)] ring-2 ring-[var(--color-brand-accent)]/45 transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-14px_rgba(26,86,219,0.62)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-55 sm:min-h-[3.75rem] sm:text-lg"
+              className={
+                isCompactPdp
+                  ? "w-full rounded-lg bg-neutral-900 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:pointer-events-none disabled:opacity-50"
+                  : "group relative flex min-h-[3.5rem] w-full touch-manipulation items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-l from-[var(--color-brand-primary)] via-[var(--color-brand-blue)] to-[var(--color-brand-deep)] px-4 py-3.5 text-base font-black text-white shadow-[0_16px_40px_-12px_rgba(26,86,219,0.55)] ring-2 ring-[var(--color-brand-accent)]/45 transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-14px_rgba(26,86,219,0.62)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-55 sm:min-h-[3.75rem] sm:text-lg"
+              }
             >
-              <span
-                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/18 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-l from-[var(--color-brand-accent)] via-amber-300 to-[var(--color-brand-accent)]"
-                aria-hidden
-              />
+              {!isCompactPdp && (
+                <>
+                  <span
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/18 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    aria-hidden
+                  />
+                  <span
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-l from-[var(--color-brand-accent)] via-amber-300 to-[var(--color-brand-accent)]"
+                    aria-hidden
+                  />
+                </>
+              )}
               {loading ? (
-                <span className="relative">جاري التأكيد…</span>
+                <span className={isCompactPdp ? "" : "relative"}>جاري التأكيد…</span>
+              ) : isCompactPdp ? (
+                "تأكيد الطلب"
               ) : (
                 <>
                   <Sparkles className="relative h-5 w-5 shrink-0 text-amber-200 drop-shadow-sm" aria-hidden />
@@ -356,17 +412,23 @@ export function CheckoutFormFlow({ mode, modalOpen = true, onRequestClose }: Che
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pb-1 pt-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-brand-slate)]">
-              <Truck className="h-3.5 w-3.5 text-[var(--color-brand-primary)]" aria-hidden />
-              <span>{meta.checkoutFooterDelivery}</span>
+          {isCompactPdp ? (
+            <p className="pb-1 pt-1 text-center text-[11px] text-neutral-500">
+              {meta.checkoutFooterDelivery} · الدفع عند الاستلام
+            </p>
+          ) : (
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pb-1 pt-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-brand-slate)]">
+                <Truck className="h-3.5 w-3.5 text-[var(--color-brand-primary)]" aria-hidden />
+                <span>{meta.checkoutFooterDelivery}</span>
+              </div>
+              <div className="hidden h-1 w-1 rounded-full bg-[var(--color-brand-border)] sm:block" aria-hidden />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-brand-slate)]">
+                <Lock className="h-3.5 w-3.5 text-[var(--color-brand-success)]" aria-hidden />
+                <span>بياناتك محمية</span>
+              </div>
             </div>
-            <div className="hidden h-1 w-1 rounded-full bg-[var(--color-brand-border)] sm:block" aria-hidden />
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-brand-slate)]">
-              <Lock className="h-3.5 w-3.5 text-[var(--color-brand-success)]" aria-hidden />
-              <span>بياناتك محمية</span>
-            </div>
-          </div>
+          )}
         </form>
       </div>
     </div>

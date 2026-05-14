@@ -49,6 +49,10 @@ export type ProductLandingData = {
   numberLocale: string;
   /** Punchy merchandising H1 — conversion PDP (short), not the long catalog title. */
   pdpShortTitle: string;
+  /** One line under H1 (benefit / positioning). */
+  pdpSubtitle: string;
+  /** 3–4 very short bullets — storefront style, no emoji. */
+  pdpBullets: readonly string[];
   /** Urgency / value line directly under breadcrumb. */
   pdpUrgencyLine: string;
   /** Full-width primary CTA under offer tiles. */
@@ -431,13 +435,17 @@ export function mergeApiProductLandingData(base: ProductLandingData, apiProduct:
   const heroGallery: GalleryImage[] = apiProduct.base_image_url
     ? [{ src: apiProduct.base_image_url, alt: apiProduct.title_ar }]
     : [...base.productHeroGallery];
-  const desc = apiProduct.description_ar?.trim();
-  const useApiTagline = desc != null && desc.length > 0 && desc.length <= 95;
+  const apiDesc = apiProduct.description_ar?.trim() ?? "";
+  const useApiTagline = apiDesc.length > 0 && apiDesc.length <= 95;
+  const mergedProduct: Product = {
+    ...apiProduct,
+    description_ar: apiDesc.length > 0 ? apiProduct.description_ar : base.product.description_ar,
+  };
   return {
     ...base,
-    product: apiProduct,
+    product: mergedProduct,
     productHeadline: apiProduct.title_ar,
-    productTagline: useApiTagline ? desc : base.productTagline,
+    productTagline: useApiTagline ? apiDesc : base.productTagline,
     productHeroGallery: heroGallery,
   };
 }
@@ -462,8 +470,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       currencyLabelAr: "ر.س",
       numberLocale: "en-SA",
       pdpShortTitle: "سيروم SKINKSA",
-      pdpUrgencyLine: "",
-      pdpPrimaryCta: "إتمام الطلب",
+      pdpSubtitle: "ببتيد نحاس أزرق مرخّص SFDA — امتصاص سريع وتركيبة خفيفة للاستخدام اليومي.",
+      pdpBullets: [
+        "يدعم مظهر نعومة ونضارة البشرة مع الاستمرار؛ النتائج تختلف بين الأشخاص.",
+        "قوام خفيف يناسب الاستخدام اليومي والمكياج.",
+        "الطلب من المتجر الرسمي يضمن الترخيص والتغليف الأصلي.",
+        "دفع عند الاستلام داخل السعودية — اسمك ورقم الجوال يكفيان لإكمال الطلب.",
+      ],
+      pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+      pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات العميلات وطلبات من المصدر الرسمي؛ النتائج التجميلية تختلف من شخص لآخر.",
       faq: [],
@@ -491,7 +506,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       valueStripRegulatory: "منتج مرخّص SFDA",
       reviewsEyebrow: "شهادات من السعودية",
       cartTrustLine: "الدفع عند الاستلام داخل السعودية",
-      checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل.",
+      checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
       checkoutFooterDelivery: "توصيل سريع",
       phonePlaceholder: "رقم الهاتف (مع رمز الدولة، 7–15 رقماً)",
       phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
@@ -542,8 +557,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       currencyLabelAr: "ر.ق",
       numberLocale: "en-QA",
       pdpShortTitle: "سيروم SKINKSA",
-      pdpUrgencyLine: "",
-      pdpPrimaryCta: "إتمام الطلب",
+      pdpSubtitle: "نفس التركيبة المرخّصة — توصيل داخل قطر مع الدفع عند الاستلام.",
+      pdpBullets: [
+        "تركيبة خفيفة تناسب الاستخدام اليومي في الجو الدافئ.",
+        "تسوّقي من المصدر الرسمي لضمان أصلية المنتج.",
+        "توصيل لباب المنزل خلال أيام عمل — دون دفع مسبق على الموقع.",
+        "بيانات بسيطة: الاسم ورقم الجوال فقط لإتمام الطلب.",
+      ],
+      pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+      pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات وتجارب عميلات وطلبات من المصدر الرسمي.",
       faq: [],
@@ -571,7 +593,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       valueStripRegulatory: "مصدر رسمي SKINKSA",
       reviewsEyebrow: "شهادات من قطر",
       cartTrustLine: "الدفع عند الاستلام داخل قطر",
-      checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل داخل قطر.",
+      checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
       checkoutFooterDelivery: "توصيل داخل قطر",
       phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
       phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
@@ -607,8 +629,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     currencyLabelAr: "د.ك",
     numberLocale: "en-KW",
     pdpShortTitle: "سيروم SKINKSA",
-    pdpUrgencyLine: "",
-    pdpPrimaryCta: "إتمام الطلب",
+    pdpSubtitle: "ببتيد نحاس أزرق — توصيل داخل الكويت والدفع عند الاستلام.",
+    pdpBullets: [
+      "تركيبة خفيفة للاستخدام اليومي.",
+      "الشراء من المتجر الرسمي لضمان الأصل والتغليف.",
+      "شحن لباب المنزل خلال أيام عمل داخل الكويت.",
+      "اكتبي الاسم والجوال فقط لإكمال الطلب.",
+    ],
+    pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+    pdpPrimaryCta: "أكملي الطلب",
     pdpBreadcrumbCurrent: "SKINKSA",
     pdpBoldStatsNote: "أرقام مستندة إلى تقييمات عملاء ومراجعات من المتجر الرسمي.",
     faq: [],
@@ -636,7 +665,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     valueStripRegulatory: "مصدر رسمي SKINKSA",
     reviewsEyebrow: "شهادات من الكويت",
     cartTrustLine: "الدفع عند الاستلام داخل الكويت",
-    checkoutIntro: "يرجى إدخال اسمك ورقم الجوال لتأكيد الطلب والتواصل معك عند التوصيل داخل الكويت.",
+    checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
     checkoutFooterDelivery: "توصيل داخل الكويت",
     phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
     phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
