@@ -68,8 +68,12 @@ export type ProductLandingData = {
   pdpSubtitle: string;
   /** 3–4 very short bullets — storefront style, no emoji. */
   pdpBullets: readonly string[];
-  /** Urgency / value line directly under breadcrumb. */
+  /** Legacy strip copy; shown inside scarcity card under gallery (not full-page banner). */
   pdpUrgencyLine: string;
+  /** Scarcity title under gallery (bold). */
+  pdpScarcityHeadline: string;
+  /** Scarcity support line under gallery. */
+  pdpScarcityBody: string;
   /** Full-width primary CTA under offer tiles. */
   pdpPrimaryCta: string;
   /** Short label for breadcrumb «current» segment. */
@@ -563,7 +567,10 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "متجر رسمي — ترخيص وتغليف أصلي.",
         "دفع عند الاستلام داخل السعودية.",
       ],
-      pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+      pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
+      pdpScarcityHeadline: "دفعات اليوم تُغلق حسب الطلب — والأصلي ينفذ بسرعة من المتجر الرسمي",
+      pdpScarcityBody:
+        "نخصص كميات للقنوات المعتمدة فقط. اختاري باقتج تحت الصور مباشرة، أكملي بياناتك، والدفع عند الاستلام يبقى لراحتج.",
       pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات العميلات وطلبات من المصدر الرسمي؛ النتائج التجميلية تختلف من شخص لآخر.",
@@ -660,7 +667,10 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "توصيل لباب المنزل في أيام عمل.",
         "الاسم ورقم الجوال لإتمام الطلب.",
       ],
-      pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+      pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
+      pdpScarcityHeadline: "دفعات التوصيل داخل قطر تُدار يومياً — أصلي من مصدر واحد فقط",
+      pdpScarcityBody:
+        "نخصص كميات للمتجر الرسمي داخل قطر. اختاري باقتج تحت الصور، أكملي الطلب، والدفع عند الاستلام عند الباب.",
       pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote: "أرقام مبنية على تقييمات وتجارب عميلات وطلبات من المصدر الرسمي.",
@@ -742,7 +752,10 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       "شحن لباب المنزل خلال أيام عمل.",
       "بيانات بسيطة لإكمال الطلب.",
     ],
-    pdpUrgencyLine: "عرض لفترة محدودة — خصومات على باقات العبوات.",
+    pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
+    pdpScarcityHeadline: "دفعات الكويت تُجهّز يومياً — والأصلي من قناة SKINKSA فقط",
+    pdpScarcityBody:
+      "كميات لكل دفعة شحن وفق الطلب. اختاري باقتج تحت الصور مباشرة، أكملي النموذج، والدفع عند الاستلام عند بابك.",
     pdpPrimaryCta: "أكملي الطلب",
     pdpBreadcrumbCurrent: "SKINKSA",
     pdpBoldStatsNote: "أرقام مستندة إلى تقييمات عملاء ومراجعات من المتجر الرسمي.",

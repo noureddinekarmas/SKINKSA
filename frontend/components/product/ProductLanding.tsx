@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, CheckCircle2, ShieldCheck } from "lucide-react";
+import { BadgeCheck, CheckCircle2, ShieldCheck, Timer } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
@@ -157,13 +157,12 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
     <>
       <article className="bg-gradient-to-b from-[var(--color-brand-mist)]/80 via-white to-[var(--color-brand-mist)]/40 pb-28 md:pb-12">
         {d.pdpUrgencyLine.trim() ? (
-          <div className="border-b border-[var(--color-brand-accent)]/25 bg-[var(--color-brand-accent)]/[0.07]">
-            <p className="mx-auto max-w-3xl px-4 py-2.5 text-center text-xs font-medium text-[var(--color-brand-ink)] sm:text-sm">
+          <div className="border-b border-[var(--color-brand-accent)]/20 bg-[var(--color-brand-accent)]/[0.09]">
+            <p className="mx-auto max-w-3xl px-4 py-2 text-center text-[11px] font-bold text-[var(--color-brand-ink)] sm:text-xs">
               {d.pdpUrgencyLine}
             </p>
           </div>
         ) : null}
-
         <div className="border-b border-[var(--color-brand-border)] bg-white/90 backdrop-blur-sm">
           <p className="mx-auto max-w-5xl px-4 py-2.5 text-center text-xs font-medium text-[var(--color-brand-slate)] sm:text-sm">
             {d.productHeadline}
@@ -194,10 +193,11 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           </div>
         </nav>
 
-        {/* Hero + buy box */}
+        {/* Funnel: يسار معرض فقط | عنوان → باقات → CTA → نموذج → نقاط + إثبات + ندرة + تفاصيل */}
         <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12">
-            <div className="md:sticky md:top-24 md:self-start">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12 md:items-start">
+            {/* عمود الصور: معرض + ندرة فقط (sticky مثل صفحات دارينا) */}
+            <div className="flex flex-col gap-5 md:sticky md:top-24 md:self-start">
               <div className="rounded-[1.25rem] border border-[var(--color-brand-border)] bg-white p-2 shadow-[0_20px_50px_-28px_rgba(26,86,219,0.35)]">
                 <ProductGallery images={d.productHeroGallery} variant="storefront" />
               </div>
@@ -221,158 +221,64 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 </p>
               </header>
 
-              <div className="rounded-2xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm">
-                <p className="text-sm leading-relaxed text-[var(--color-brand-ink)]">{d.pdpEmpathyLine}</p>
-                <p className="mt-3 text-sm font-medium leading-relaxed text-[var(--color-brand-primary)]">{d.pdpSolutionLine}</p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {d.pdpTrustPillars.map((p, i) => {
-                  const Icon = pillarIcons[i] ?? ShieldCheck;
+              <SectionTitle>اختيار الباقة</SectionTitle>
+              <div className="flex flex-col gap-3">
+                {offers.map((offer, idx) => {
+                  const pct = savingsPercent(offer.price, offer.compare);
+                  const isOn = idx === selectedIdx;
+                  const thumb =
+                    offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
+                      ? d.offerBundleImages[offer.code]
+                      : undefined;
                   return (
-                    <div
-                      key={p.title}
-                      className="flex gap-3 rounded-xl border border-[var(--color-brand-border)] bg-white/90 px-3 py-3 shadow-sm"
+                    <button
+                      key={offer.code}
+                      type="button"
+                      onClick={() => setSelectedIdx(idx)}
+                      className={`flex w-full flex-row-reverse items-center gap-3 rounded-2xl border bg-white px-3 py-3 text-right shadow-sm transition sm:px-4 sm:py-3.5 ${
+                        isOn
+                          ? "border-[var(--color-brand-primary)] ring-2 ring-[var(--color-brand-primary)]/20"
+                          : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
+                      }`}
                     >
-                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
-                      <div>
-                        <p className="text-xs font-bold text-[var(--color-brand-ink)]">{p.title}</p>
-                        <p className="mt-1 text-[11px] leading-snug text-[var(--color-brand-slate)] sm:text-xs">{p.body}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[var(--color-brand-primary)]/25 bg-gradient-to-br from-[var(--color-brand-light)]/60 to-white px-4 py-4 shadow-sm">
-                  <p className="text-[11px] font-semibold text-[var(--color-brand-primary)]">حركة الطلب اليومية</p>
-                  <p className="mt-1 flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
-                      {d.pdpDailyOrdersFigure}
-                    </span>
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-[var(--color-brand-slate)]">{d.pdpDailyOrdersCaption}</p>
-                  <p className="mt-2 border-t border-[var(--color-brand-border)] pt-2 text-[10px] leading-relaxed text-[var(--color-brand-slate)]/90">
-                    {d.pdpDailyOrdersNote}
-                  </p>
-                </div>
-                <div className="flex flex-col justify-center rounded-2xl border border-[var(--color-brand-border)] bg-white/90 px-4 py-4 shadow-sm">
-                  <p className="text-[11px] font-semibold text-[var(--color-brand-slate)]">مجتمع العميلات</p>
-                  <p className="mt-2 text-sm">
-                    <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
-                      {d.socialStrip.stat}+
-                    </span>
-                  </p>
-                  <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
-                </div>
-              </div>
-
-              <div>
-                <SectionTitle>الأصلي مقابل غير المؤكد</SectionTitle>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-2xl border border-[var(--color-brand-success)]/35 bg-[var(--color-brand-success)]/[0.06] p-4">
-                    <p className="text-xs font-bold text-[var(--color-brand-success)]">{d.pdpAuthenticCompare.officialTitle}</p>
-                    <ul className="mt-3 space-y-2">
-                      {d.pdpAuthenticCompare.officialBullets.map((line) => (
-                        <li key={line} className="flex gap-2 text-xs leading-snug text-[var(--color-brand-ink)] sm:text-sm">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="rounded-2xl border border-neutral-200 bg-neutral-50/80 p-4">
-                    <p className="text-xs font-bold text-neutral-600">{d.pdpAuthenticCompare.otherTitle}</p>
-                    <ul className="mt-3 space-y-2">
-                      {d.pdpAuthenticCompare.otherBullets.map((line) => (
-                        <li key={line} className="flex gap-2 text-xs leading-snug text-neutral-600 sm:text-sm">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-neutral-400" aria-hidden />
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <ul className="space-y-2.5 text-sm leading-snug text-[var(--color-brand-ink)]">
-                {d.pdpBullets.slice(0, 4).map((line) => (
-                  <li key={line} className="flex gap-2">
-                    <span className="mt-0.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden>
-                      —
-                    </span>
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div>
-                <SectionTitle>اختيار الباقة</SectionTitle>
-                <div className="flex flex-col gap-3">
-                  {offers.map((offer, idx) => {
-                    const pct = savingsPercent(offer.price, offer.compare);
-                    const isOn = idx === selectedIdx;
-                    const thumb =
-                      offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
-                        ? d.offerBundleImages[offer.code]
-                        : undefined;
-                    return (
-                      <button
-                        key={offer.code}
-                        type="button"
-                        onClick={() => setSelectedIdx(idx)}
-                        className={`flex w-full flex-row-reverse items-center gap-3 rounded-2xl border bg-white px-3 py-3 text-right shadow-sm transition sm:px-4 sm:py-3.5 ${
-                          isOn
-                            ? "border-[var(--color-brand-primary)] ring-2 ring-[var(--color-brand-primary)]/20"
-                            : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
-                        }`}
-                      >
-                        {thumb ? (
-                          <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 sm:h-20 sm:w-20">
-                            <Image
-                              src={thumb.src}
-                              alt={thumb.alt}
-                              fill
-                              className="object-contain p-1.5"
-                              sizes="80px"
-                            />
+                      {thumb ? (
+                        <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 sm:h-20 sm:w-20">
+                          <Image src={thumb.src} alt={thumb.alt} fill className="object-contain p-1.5" sizes="80px" />
+                        </div>
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+                          {pct != null && pct > 0 && (
+                            <span className="rounded-md bg-[var(--color-brand-primary)] px-2 py-0.5 text-[11px] font-semibold text-white">
+                              ٪{pct} توفير
+                            </span>
+                          )}
+                          {offer.badge && (
+                            <span className="rounded-md border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/50 px-2 py-0.5 text-[11px] font-semibold text-[var(--color-brand-ink)]">
+                              {offer.badge}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                          <div className="space-y-1">
+                            <p className="text-[13px] font-semibold text-[var(--color-brand-slate)]">{offerCtaLine(offer.pieces)}</p>
+                            <p className="text-sm font-medium text-[var(--color-brand-ink)]">{offer.label}</p>
                           </div>
-                        ) : null}
-                        <div className="min-w-0 flex-1">
-                          <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
-                            {pct != null && pct > 0 && (
-                              <span className="rounded-md bg-[var(--color-brand-primary)] px-2 py-0.5 text-[11px] font-semibold text-white">
-                                ٪{pct} توفير
+                          <div className="flex flex-col items-end gap-0.5 sm:text-end" dir="ltr">
+                            <span className="text-lg font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-xl">
+                              {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                            </span>
+                            {offer.compare != null && (
+                              <span className="text-xs tabular-nums text-[var(--color-brand-slate)]/70 line-through">
+                                {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
                               </span>
                             )}
-                            {offer.badge && (
-                              <span className="rounded-md border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/50 px-2 py-0.5 text-[11px] font-semibold text-[var(--color-brand-ink)]">
-                                {offer.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                            <div className="space-y-1">
-                              <p className="text-[13px] font-semibold text-[var(--color-brand-slate)]">{offerCtaLine(offer.pieces)}</p>
-                              <p className="text-sm font-medium text-[var(--color-brand-ink)]">{offer.label}</p>
-                            </div>
-                            <div className="flex flex-col items-end gap-0.5 sm:text-end" dir="ltr">
-                              <span className="text-lg font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-xl">
-                                {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                              </span>
-                              {offer.compare != null && (
-                                <span className="text-xs tabular-nums text-[var(--color-brand-slate)]/70 line-through">
-                                  {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                                </span>
-                              )}
-                            </div>
                           </div>
                         </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <button
@@ -386,6 +292,76 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
               <div className="scroll-mt-28">
                 <CheckoutFormFlow mode="inline" compact />
               </div>
+
+              <ul className="space-y-2.5 text-sm leading-snug text-[var(--color-brand-ink)]">
+                {d.pdpBullets.slice(0, 4).map((line) => (
+                  <li key={line} className="flex gap-2">
+                    <span className="mt-0.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden>
+                      —
+                    </span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[var(--color-brand-primary)]/25 bg-gradient-to-br from-[var(--color-brand-light)]/60 to-white px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-semibold text-[var(--color-brand-primary)]">عدد الطلبات اليومية</p>
+                  <p className="mt-1 flex items-baseline gap-1.5">
+                    <span className="text-3xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
+                      {d.pdpDailyOrdersFigure}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-[var(--color-brand-slate)]">{d.pdpDailyOrdersCaption}</p>
+                  <p className="mt-2 border-t border-[var(--color-brand-border)] pt-2 text-[10px] leading-relaxed text-[var(--color-brand-slate)]/90">
+                    {d.pdpDailyOrdersNote}
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center rounded-2xl border border-[var(--color-brand-border)] bg-white/90 px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-semibold text-[var(--color-brand-slate)]">عدد مرات الشراء</p>
+                  <p className="mt-2 text-sm">
+                    <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
+                      {d.socialStrip.stat}+
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
+                </div>
+              </div>
+
+              {(d.pdpScarcityHeadline || d.pdpScarcityBody) && (
+                <div className="rounded-2xl border border-[var(--color-brand-accent)]/35 bg-gradient-to-br from-[var(--color-brand-accent)]/[0.07] via-white to-[var(--color-brand-light)]/35 p-4 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <Timer className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-accent)]" aria-hidden />
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold leading-snug text-[var(--color-brand-ink)]">{d.pdpScarcityHeadline}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{d.pdpScarcityBody}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 border-t border-[var(--color-brand-border)]/70 pt-4">
+                    <p className="mb-3 text-center text-[10px] font-semibold text-[var(--color-brand-slate)] sm:text-[11px]">
+                      لمحة سريعة على الباقات — أصلي SKINKSA
+                    </p>
+                    <div className="flex justify-center gap-2 sm:gap-4">
+                      {(["OFFER_1", "OFFER_2", "OFFER_3"] as const).map((code) => {
+                        const img = d.offerBundleImages[code];
+                        const quickLabels: Record<typeof code, string> = {
+                          OFFER_1: "عبوة",
+                          OFFER_2: "عبوتان",
+                          OFFER_3: "٣ عبوات",
+                        };
+                        return (
+                          <div key={code} className="w-[4.25rem] shrink-0 text-center sm:w-24">
+                            <div className="relative mx-auto aspect-square overflow-hidden rounded-xl border border-[var(--color-brand-border)] bg-white shadow-sm">
+                              <Image src={img.src} alt={img.alt} fill className="object-contain p-1" sizes="72px" />
+                            </div>
+                            <p className="mt-1.5 text-[10px] font-semibold text-[var(--color-brand-ink)]">{quickLabels[code]}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-0 divide-y divide-[var(--color-brand-border)] border-t border-[var(--color-brand-border)] pt-1">
                 {productDesc ? (
@@ -435,6 +411,57 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                     ))}
                   </ul>
                 </details>
+              </div>
+
+              <div className="rounded-2xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm">
+                <p className="text-sm leading-relaxed text-[var(--color-brand-ink)]">{d.pdpEmpathyLine}</p>
+                <p className="mt-3 text-sm font-medium leading-relaxed text-[var(--color-brand-primary)]">{d.pdpSolutionLine}</p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                {d.pdpTrustPillars.map((p, i) => {
+                  const Icon = pillarIcons[i] ?? ShieldCheck;
+                  return (
+                    <div
+                      key={p.title}
+                      className="flex gap-3 rounded-xl border border-[var(--color-brand-border)] bg-white/90 px-3 py-3 shadow-sm"
+                    >
+                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                      <div>
+                        <p className="text-xs font-bold text-[var(--color-brand-ink)]">{p.title}</p>
+                        <p className="mt-1 text-[11px] leading-snug text-[var(--color-brand-slate)] sm:text-xs">{p.body}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div>
+                <SectionTitle>الأصلي مقابل غير المؤكد</SectionTitle>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-2xl border border-[var(--color-brand-success)]/35 bg-[var(--color-brand-success)]/[0.06] p-4">
+                    <p className="text-xs font-bold text-[var(--color-brand-success)]">{d.pdpAuthenticCompare.officialTitle}</p>
+                    <ul className="mt-3 space-y-2">
+                      {d.pdpAuthenticCompare.officialBullets.map((line) => (
+                        <li key={line} className="flex gap-2 text-xs leading-snug text-[var(--color-brand-ink)] sm:text-sm">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-2xl border border-neutral-200 bg-neutral-50/80 p-4">
+                    <p className="text-xs font-bold text-neutral-600">{d.pdpAuthenticCompare.otherTitle}</p>
+                    <ul className="mt-3 space-y-2">
+                      {d.pdpAuthenticCompare.otherBullets.map((line) => (
+                        <li key={line} className="flex gap-2 text-xs leading-snug text-neutral-600 sm:text-sm">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-neutral-400" aria-hidden />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <p className="text-xs text-[var(--color-brand-slate)]">
