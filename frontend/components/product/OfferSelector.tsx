@@ -17,7 +17,7 @@ interface Props {
 
 export default function OfferSelector({ offers, productId, productTitleAr, productSlug }: Props) {
   const defaultOffer = offers.find((o) => o.is_default) || offers[1] || offers[0];
-  const [selectedCode, setSelectedCode] = useState(defaultOffer?.code || "OFFER_2");
+  const [selectedCode, setSelectedCode] = useState(defaultOffer?.code || "OFFER_3");
   const { addOfferToCart } = useCartStore();
 
   const selectedOffer = offers.find((o) => o.code === selectedCode) || offers[0];
