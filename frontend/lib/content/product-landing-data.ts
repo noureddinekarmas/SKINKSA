@@ -32,6 +32,17 @@ export type CheckoutRegionOption = { value: string; label: string };
 /** One bundle-tier image (square / pack shot). */
 export type OfferBundleImage = { src: string; alt: string };
 
+/** One trust / safety pillar (short title + one line). */
+export type ProductTrustPillar = { title: string; body: string };
+
+/** Official vs unofficial — tight scan (no long essays). */
+export type ProductAuthenticCompare = {
+  officialTitle: string;
+  officialBullets: readonly string[];
+  otherTitle: string;
+  otherBullets: readonly string[];
+};
+
 export type UpsellBundleConfig = {
   /** Main title; include emojis for the interstitial */
   headlineAr: string;
@@ -121,6 +132,19 @@ export type ProductLandingData = {
    * Files: see `OFFER_BUNDLE_IMAGES` under `/public/images/product/`.
    */
   offerBundleImages: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", OfferBundleImage>>;
+  /** Emotional hook — acknowledges the problem in one line. */
+  pdpEmpathyLine: string;
+  /** Brand promise / solution — one line, calm and confident. */
+  pdpSolutionLine: string;
+  /** Large figure for daily momentum (e.g. orders). Pair with caption + note. */
+  pdpDailyOrdersFigure: string;
+  pdpDailyOrdersCaption: string;
+  /** Honest qualifier under the daily figure (keeps trust). */
+  pdpDailyOrdersNote: string;
+  /** Authority & safety — three compact pillars. */
+  pdpTrustPillars: readonly ProductTrustPillar[];
+  /** We are the original; others are not — side-by-side. */
+  pdpAuthenticCompare: ProductAuthenticCompare;
 };
 
 /** Filenames you should add under `frontend/public/images/product/` */
@@ -137,6 +161,36 @@ const OFFER_BUNDLE_IMAGES: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", Of
     src: productAsset("/images/product/bundle-offer-3.png"),
     alt: "سيروم SKINKSA — ثلاث عبوات (٣٠ مل)",
   },
+};
+
+const PDP_TRUST_PILLARS: readonly ProductTrustPillar[] = [
+  {
+    title: "سلامة ووضوح",
+    body: "تركيبة مرخّصة ومسار واضح — ما نخبي ورا شعارات فاخرة فقط.",
+  },
+  {
+    title: "مصدر واحد موثوق",
+    body: "نبيع الأصلي من هنا؛ أي عبوة خارج قنواتنا لا نستطيع ضمان تركيبتها.",
+  },
+  {
+    title: "تسوّق بهدوء",
+    body: "دفع عند الاستلام وسياسة إرجاع منشورة — قرارك أسهل.",
+  },
+];
+
+const PDP_AUTHENTIC_COMPARE: ProductAuthenticCompare = {
+  officialTitle: "من المتجر الرسمي SKINKSA",
+  officialBullets: [
+    "تغليف ولوت يطابق إعلاننا وترخيصنا.",
+    "شحن وتتبّع من نظامنا — لا وسيط مجهول.",
+    "ضمان يطابق سياسة الإرجاع المنشورة على الموقع.",
+  ],
+  otherTitle: "خارج القنوات الرسمية",
+  otherBullets: [
+    "لا نؤكد سلامة المنتج ولا طريقة تخزينه.",
+    "عروض متكررة بلا مرجع — صعوبة التحقق من المصدر.",
+    "مخاطرة على بشرتك وعلى ما دفعتِه.",
+  ],
 };
 
 const PROD_ID = "prod_blue_copper_serum" as const;
@@ -580,6 +634,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       socialStrip: SOCIAL_KSA,
       storyFrames: [...STORY_KSA],
       offerBundleImages: OFFER_BUNDLE_IMAGES,
+      pdpEmpathyLine:
+        "إذا حسيتِ إن البشرة تعبت من تجارب كثيرة وما ثبت معك روتين خفيف يلاقي وجهك — فأنتِ مو لوحدك.",
+      pdpSolutionLine:
+        "SKINKSA يقرّب لكِ العلم لبساطة يومية: ترخيص رسمي، قوام يمتص بسرعة، بدون وعود خرافية.",
+      pdpDailyOrdersFigure: "٧٥+",
+      pdpDailyOrdersCaption: "طلب موثّق يومياً في أيام الذروة",
+      pdpDailyOrdersNote: "رقم تقريبي يتغيّر حسب اليوم والمنطقة؛ يعكس نشاط المتجر لا ضماناً ثابتاً يومياً.",
+      pdpTrustPillars: PDP_TRUST_PILLARS,
+      pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
     };
   }
 
@@ -654,6 +717,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       socialStrip: SOCIAL_QATAR,
       storyFrames: storyQatar(),
       offerBundleImages: OFFER_BUNDLE_IMAGES,
+      pdpEmpathyLine:
+        "الجو الدافئ والتكييف يجهدون البشرة — وتدورين على شيء خفيف يثبت، مو كومة منتجات مبهمة المصدر.",
+      pdpSolutionLine:
+        "نفس السيروم المرخّص يصلج من المصدر الرسمي داخل قطر: واضح، يُتتبّع، والدفع عند الاستلام يقلّل المخاطرة.",
+      pdpDailyOrdersFigure: "٤٥+",
+      pdpDailyOrdersCaption: "طلب يومياً في أيام الذروة داخل قطر",
+      pdpDailyOrdersNote: "تقدير تشغيلي؛ يختلف حسب الموسم ومعدل الزيارات على الموقع.",
+      pdpTrustPillars: PDP_TRUST_PILLARS,
+      pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
     };
   }
 
@@ -727,6 +799,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     socialStrip: SOCIAL_KUWAIT,
     storyFrames: storyKuwait(),
     offerBundleImages: OFFER_BUNDLE_IMAGES,
+    pdpEmpathyLine:
+      "التسوّق أونلاين يرهق لما ما تعرفين وش يصلج بشرتك — وكل عبوة «شكلها نفس الشكل» مو معناه نفس المحتوى.",
+    pdpSolutionLine:
+      "اطلبي من المتجر الرسمي داخل الكويت: تركيبة مرخّصة ومسار واضح، ودفع عند الاستلام يعطيكِ وقت تتأكدين.",
+    pdpDailyOrdersFigure: "٣٥+",
+    pdpDailyOrdersCaption: "طلب يومياً في أيام الذروة داخل الكويت",
+    pdpDailyOrdersNote: "رقم تقريبي للأيام المزدحمة؛ ليس إحصاءً رسمياً يوماً بيوم.",
+    pdpTrustPillars: PDP_TRUST_PILLARS,
+    pdpAuthenticCompare: PDP_AUTHENTIC_COMPARE,
   };
 }
 

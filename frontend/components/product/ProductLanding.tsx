@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { BadgeCheck, CheckCircle2, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import ProductGallery from "@/components/product/ProductGallery";
 import { CheckoutFormFlow } from "@/components/checkout/CheckoutFormFlow";
@@ -28,6 +29,17 @@ function offerCtaLine(pieces: number): string {
   if (pieces === 1) return "اطلبي عبوة واحدة";
   if (pieces === 2) return "اطلبي عبوتين";
   return "اطلبي ثلاث عبوات";
+}
+
+const pillarIcons = [ShieldCheck, BadgeCheck, CheckCircle2] as const;
+
+function SectionTitle({ children }: { children: ReactNode }) {
+  return (
+    <h2 className="mb-3 flex items-center gap-2.5 text-sm font-bold text-[var(--color-brand-ink)] sm:text-base">
+      <span className="h-1.5 w-8 rounded-full bg-[var(--color-brand-primary)]" aria-hidden />
+      {children}
+    </h2>
+  );
 }
 
 export default function ProductLanding({ data }: { data: ProductLandingData }) {
@@ -143,78 +155,151 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
 
   return (
     <>
-      <article className="bg-white pb-28 md:pb-12">
+      <article className="bg-gradient-to-b from-[var(--color-brand-mist)]/80 via-white to-[var(--color-brand-mist)]/40 pb-28 md:pb-12">
         {d.pdpUrgencyLine.trim() ? (
-          <div className="border-b border-amber-100 bg-amber-50/80">
-            <p className="mx-auto max-w-3xl px-4 py-2.5 text-center text-xs font-medium text-amber-950 sm:text-sm">
+          <div className="border-b border-[var(--color-brand-accent)]/25 bg-[var(--color-brand-accent)]/[0.07]">
+            <p className="mx-auto max-w-3xl px-4 py-2.5 text-center text-xs font-medium text-[var(--color-brand-ink)] sm:text-sm">
               {d.pdpUrgencyLine}
             </p>
           </div>
         ) : null}
 
-        <p className="border-b border-neutral-100 bg-neutral-50/60 px-4 py-2 text-center text-[11px] text-neutral-600 sm:text-xs">
-          {d.productHeadline}
-        </p>
+        <div className="border-b border-[var(--color-brand-border)] bg-white/90 backdrop-blur-sm">
+          <p className="mx-auto max-w-5xl px-4 py-2.5 text-center text-xs font-medium text-[var(--color-brand-slate)] sm:text-sm">
+            {d.productHeadline}
+          </p>
+        </div>
 
-        <nav className="border-b border-neutral-100 text-sm text-neutral-500" aria-label="مسار التنقل">
+        <nav className="border-b border-[var(--color-brand-border)] bg-white/70 text-sm text-[var(--color-brand-slate)]" aria-label="مسار التنقل">
           <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6">
             <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <li>
-                <Link href="/" className="hover:text-neutral-900">
+                <Link href="/" className="font-medium text-[var(--color-brand-primary)] hover:text-[var(--color-brand-deep)]">
                   الرئيسية
                 </Link>
               </li>
-              <li aria-hidden className="text-neutral-300">
+              <li aria-hidden className="text-[var(--color-brand-border)]">
                 /
               </li>
               <li>
-                <Link href="/collections" className="hover:text-neutral-900">
+                <Link href="/collections" className="font-medium text-[var(--color-brand-primary)] hover:text-[var(--color-brand-deep)]">
                   المجموعة
                 </Link>
               </li>
-              <li aria-hidden className="text-neutral-300">
+              <li aria-hidden className="text-[var(--color-brand-border)]">
                 /
               </li>
-              <li className="font-medium text-neutral-900">{d.pdpBreadcrumbCurrent}</li>
+              <li className="font-semibold text-[var(--color-brand-ink)]">{d.pdpBreadcrumbCurrent}</li>
             </ol>
           </div>
         </nav>
 
-        {/* Hero + buy box — Darina-style density */}
+        {/* Hero + buy box */}
         <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
           <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12">
             <div className="md:sticky md:top-24 md:self-start">
-              <ProductGallery images={d.productHeroGallery} variant="storefront" />
+              <div className="rounded-[1.25rem] border border-[var(--color-brand-border)] bg-white p-2 shadow-[0_20px_50px_-28px_rgba(26,86,219,0.35)]">
+                <ProductGallery images={d.productHeroGallery} variant="storefront" />
+              </div>
             </div>
 
             <div className="flex flex-col gap-5">
-              <header className="space-y-2 border-b border-neutral-100 pb-5">
-                <h1 className="text-2xl font-bold leading-snug text-neutral-900 sm:text-3xl">{d.pdpShortTitle}</h1>
-                <p className="text-sm leading-relaxed text-neutral-600 sm:text-base">{d.pdpSubtitle}</p>
-                <p className="text-sm text-neutral-500">
-                  <span className="font-semibold text-neutral-800" dir="ltr">
+              <header className="space-y-3 border-b border-[var(--color-brand-border)] pb-5">
+                <p className="text-[11px] font-semibold tracking-wide text-[var(--color-brand-primary)] sm:text-xs">
+                  SKINKSA الرسمي
+                </p>
+                <h1 className="text-2xl font-bold leading-snug text-[var(--color-brand-ink)] sm:text-3xl">
+                  {d.pdpShortTitle}
+                </h1>
+                <p className="text-sm leading-relaxed text-[var(--color-brand-slate)] sm:text-base">{d.pdpSubtitle}</p>
+                <p className="text-sm text-[var(--color-brand-slate)]">
+                  <span className="font-semibold text-[var(--color-brand-ink)]" dir="ltr">
                     {d.heroRatingScore}
                   </span>
-                  <span className="mx-1.5 text-neutral-300">·</span>
+                  <span className="mx-1.5 text-[var(--color-brand-border)]">·</span>
                   {d.heroRatingCaption}
                 </p>
               </header>
 
-              <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-neutral-100 pb-4 text-sm">
-                <span className="text-neutral-500">ثقة بالشراء</span>
-                <span className="text-end">
-                  <span className="font-bold tabular-nums text-neutral-900" dir="ltr">
-                    {d.socialStrip.stat}+
-                  </span>
-                  <span className="mx-1 text-neutral-400">·</span>
-                  <span className="text-neutral-600">{d.socialStrip.statLabel}</span>
-                </span>
+              <div className="rounded-2xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm">
+                <p className="text-sm leading-relaxed text-[var(--color-brand-ink)]">{d.pdpEmpathyLine}</p>
+                <p className="mt-3 text-sm font-medium leading-relaxed text-[var(--color-brand-primary)]">{d.pdpSolutionLine}</p>
               </div>
 
-              <ul className="space-y-2 text-sm leading-snug text-neutral-800">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {d.pdpTrustPillars.map((p, i) => {
+                  const Icon = pillarIcons[i] ?? ShieldCheck;
+                  return (
+                    <div
+                      key={p.title}
+                      className="flex gap-3 rounded-xl border border-[var(--color-brand-border)] bg-white/90 px-3 py-3 shadow-sm"
+                    >
+                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+                      <div>
+                        <p className="text-xs font-bold text-[var(--color-brand-ink)]">{p.title}</p>
+                        <p className="mt-1 text-[11px] leading-snug text-[var(--color-brand-slate)] sm:text-xs">{p.body}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[var(--color-brand-primary)]/25 bg-gradient-to-br from-[var(--color-brand-light)]/60 to-white px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-semibold text-[var(--color-brand-primary)]">حركة الطلب اليومية</p>
+                  <p className="mt-1 flex items-baseline gap-1.5">
+                    <span className="text-3xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
+                      {d.pdpDailyOrdersFigure}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-[var(--color-brand-slate)]">{d.pdpDailyOrdersCaption}</p>
+                  <p className="mt-2 border-t border-[var(--color-brand-border)] pt-2 text-[10px] leading-relaxed text-[var(--color-brand-slate)]/90">
+                    {d.pdpDailyOrdersNote}
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center rounded-2xl border border-[var(--color-brand-border)] bg-white/90 px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-semibold text-[var(--color-brand-slate)]">مجتمع العميلات</p>
+                  <p className="mt-2 text-sm">
+                    <span className="text-2xl font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
+                      {d.socialStrip.stat}+
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
+                </div>
+              </div>
+
+              <div>
+                <SectionTitle>الأصلي مقابل غير المؤكد</SectionTitle>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-2xl border border-[var(--color-brand-success)]/35 bg-[var(--color-brand-success)]/[0.06] p-4">
+                    <p className="text-xs font-bold text-[var(--color-brand-success)]">{d.pdpAuthenticCompare.officialTitle}</p>
+                    <ul className="mt-3 space-y-2">
+                      {d.pdpAuthenticCompare.officialBullets.map((line) => (
+                        <li key={line} className="flex gap-2 text-xs leading-snug text-[var(--color-brand-ink)] sm:text-sm">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-success)]" aria-hidden />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-2xl border border-neutral-200 bg-neutral-50/80 p-4">
+                    <p className="text-xs font-bold text-neutral-600">{d.pdpAuthenticCompare.otherTitle}</p>
+                    <ul className="mt-3 space-y-2">
+                      {d.pdpAuthenticCompare.otherBullets.map((line) => (
+                        <li key={line} className="flex gap-2 text-xs leading-snug text-neutral-600 sm:text-sm">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-neutral-400" aria-hidden />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <ul className="space-y-2.5 text-sm leading-snug text-[var(--color-brand-ink)]">
                 {d.pdpBullets.slice(0, 4).map((line) => (
                   <li key={line} className="flex gap-2">
-                    <span className="mt-0.5 shrink-0 text-neutral-300" aria-hidden>
+                    <span className="mt-0.5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden>
                       —
                     </span>
                     <span>{line}</span>
@@ -223,7 +308,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
               </ul>
 
               <div>
-                <h2 className="mb-3 text-sm font-semibold text-neutral-900">اختيار الباقة</h2>
+                <SectionTitle>اختيار الباقة</SectionTitle>
                 <div className="flex flex-col gap-3">
                   {offers.map((offer, idx) => {
                     const pct = savingsPercent(offer.price, offer.compare);
@@ -237,14 +322,14 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`flex w-full flex-row-reverse items-center gap-3 rounded-xl border bg-white px-3 py-3 text-right transition sm:px-4 sm:py-3.5 ${
+                        className={`flex w-full flex-row-reverse items-center gap-3 rounded-2xl border bg-white px-3 py-3 text-right shadow-sm transition sm:px-4 sm:py-3.5 ${
                           isOn
-                            ? "border-neutral-900 shadow-sm ring-1 ring-neutral-900"
-                            : "border-neutral-200 hover:border-neutral-400"
+                            ? "border-[var(--color-brand-primary)] ring-2 ring-[var(--color-brand-primary)]/20"
+                            : "border-[var(--color-brand-border)] hover:border-[var(--color-brand-primary)]/40"
                         }`}
                       >
                         {thumb ? (
-                          <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-white sm:h-20 sm:w-20">
+                          <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/40 sm:h-20 sm:w-20">
                             <Image
                               src={thumb.src}
                               alt={thumb.alt}
@@ -257,27 +342,27 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                         <div className="min-w-0 flex-1">
                           <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
                             {pct != null && pct > 0 && (
-                              <span className="rounded bg-neutral-900 px-2 py-0.5 text-[11px] font-semibold text-white">
+                              <span className="rounded-md bg-[var(--color-brand-primary)] px-2 py-0.5 text-[11px] font-semibold text-white">
                                 ٪{pct} توفير
                               </span>
                             )}
                             {offer.badge && (
-                              <span className="rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-800">
+                              <span className="rounded-md border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/50 px-2 py-0.5 text-[11px] font-semibold text-[var(--color-brand-ink)]">
                                 {offer.badge}
                               </span>
                             )}
                           </div>
                           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                             <div className="space-y-1">
-                              <p className="text-[13px] font-semibold text-neutral-500">{offerCtaLine(offer.pieces)}</p>
-                              <p className="text-sm font-medium text-neutral-900">{offer.label}</p>
+                              <p className="text-[13px] font-semibold text-[var(--color-brand-slate)]">{offerCtaLine(offer.pieces)}</p>
+                              <p className="text-sm font-medium text-[var(--color-brand-ink)]">{offer.label}</p>
                             </div>
                             <div className="flex flex-col items-end gap-0.5 sm:text-end" dir="ltr">
-                              <span className="text-lg font-bold tabular-nums text-neutral-900 sm:text-xl">
+                              <span className="text-lg font-bold tabular-nums text-[var(--color-brand-ink)] sm:text-xl">
                                 {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
                               </span>
                               {offer.compare != null && (
-                                <span className="text-xs tabular-nums text-neutral-400 line-through">
+                                <span className="text-xs tabular-nums text-[var(--color-brand-slate)]/70 line-through">
                                   {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
                                 </span>
                               )}
@@ -293,7 +378,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
               <button
                 type="button"
                 onClick={scrollToCheckoutAndTrack}
-                className="w-full rounded-xl bg-neutral-900 py-3.5 text-center text-sm font-bold text-white transition hover:bg-neutral-800"
+                className="w-full rounded-2xl bg-[var(--color-brand-primary)] py-3.5 text-center text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(26,86,219,0.55)] transition hover:brightness-105"
               >
                 {d.pdpPrimaryCta}
               </button>
@@ -302,44 +387,49 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 <CheckoutFormFlow mode="inline" compact />
               </div>
 
-              <div className="space-y-0 divide-y divide-neutral-100 border-t border-neutral-100 pt-1">
+              <div className="space-y-0 divide-y divide-[var(--color-brand-border)] border-t border-[var(--color-brand-border)] pt-1">
                 {productDesc ? (
                   <details className="group py-3">
-                    <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">وصف المنتج</summary>
-                    <p className="mt-2 text-sm leading-relaxed text-neutral-600">{productDesc}</p>
+                    <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">
+                      وصف المنتج
+                    </summary>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)]">{productDesc}</p>
                   </details>
                 ) : null}
                 <details className="group py-3">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">
+                  <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">
                     الشحن والتوصيل
                   </summary>
-                  <p className="mt-2 text-sm text-neutral-600">{d.valueStripDelivery}</p>
+                  <p className="mt-2 text-sm text-[var(--color-brand-slate)]">{d.valueStripDelivery}</p>
                 </details>
                 <details className="group py-3">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">الضمان</summary>
-                  <p className="mt-2 text-sm text-neutral-600">
+                  <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">الضمان</summary>
+                  <p className="mt-2 text-sm text-[var(--color-brand-slate)]">
                     {d.authenticity.guarantee.title}. {d.valueStripRegulatory}
                   </p>
                 </details>
                 <details className="group py-3">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">الاسترجاع</summary>
-                  <p className="mt-2 text-sm text-neutral-600">
+                  <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">الاسترجاع</summary>
+                  <p className="mt-2 text-sm text-[var(--color-brand-slate)]">
                     التفاصيل في{" "}
-                    <Link href="/returns-policy" className="font-medium text-neutral-900 underline underline-offset-2">
+                    <Link
+                      href="/returns-policy"
+                      className="font-semibold text-[var(--color-brand-primary)] underline underline-offset-2"
+                    >
                       سياسة الإرجاع
                     </Link>
                     .
                   </p>
                 </details>
                 <details className="group py-3">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">
+                  <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">
                     طريقة الاستخدام
                   </summary>
-                  <ul className="mt-2 space-y-2 text-sm text-neutral-600">
+                  <ul className="mt-2 space-y-2 text-sm text-[var(--color-brand-slate)]">
                     {d.productHowTo.map((step) => (
                       <li key={step.step}>
-                        <span className="font-semibold text-neutral-800">{step.title}</span>
-                        <span className="text-neutral-400"> — </span>
+                        <span className="font-semibold text-[var(--color-brand-ink)]">{step.title}</span>
+                        <span className="text-[var(--color-brand-border)]"> — </span>
                         {step.desc}
                       </li>
                     ))}
@@ -347,23 +437,24 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                 </details>
               </div>
 
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-[var(--color-brand-slate)]">
                 {d.topPromoStrip} · {d.cartTrustLine}
               </p>
             </div>
           </div>
         </section>
 
-        {/* Short proof row — Darina-style icon strip, text-only here */}
-        <section className="border-t border-neutral-100 bg-neutral-50/40 py-6">
+        {/* Science / proof */}
+        <section className="border-t border-[var(--color-brand-border)] bg-white/60 py-8">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <SectionTitle>لماذا تثقين بالتركيبة</SectionTitle>
             <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from(d.scienceProofList)
                 .slice(0, 6)
                 .map((line) => (
                   <li
                     key={line}
-                    className="rounded-lg border border-neutral-100 bg-white px-3 py-2 text-xs leading-snug text-neutral-700 sm:text-sm"
+                    className="rounded-xl border border-[var(--color-brand-border)] bg-white px-3 py-2.5 text-xs leading-snug text-[var(--color-brand-slate)] shadow-sm sm:text-sm"
                   >
                     {line}
                   </li>
@@ -373,15 +464,15 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
         </section>
 
         {/* Stats band */}
-        <section className="border-y border-neutral-100 py-10">
+        <section className="border-y border-[var(--color-brand-border)] bg-white py-10">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2 className="text-center text-lg font-bold text-neutral-900">أرقام تثق بها</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-center text-[11px] text-neutral-500">{d.pdpBoldStatsNote}</p>
+            <h2 className="text-center text-lg font-bold text-[var(--color-brand-ink)]">أرقام تثق بها</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-center text-[11px] text-[var(--color-brand-slate)]">{d.pdpBoldStatsNote}</p>
             <div className="mt-8 grid grid-cols-3 gap-4 text-center">
               {d.heroStats.slice(0, 3).map((s) => (
-                <div key={s.label}>
-                  <p className="text-lg font-bold text-neutral-900 sm:text-xl">{s.value}</p>
-                  <p className="mt-1 text-xs text-neutral-600">{s.label}</p>
+                <div key={s.label} className="rounded-xl border border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/30 py-4">
+                  <p className="text-lg font-bold text-[var(--color-brand-primary)] sm:text-xl">{s.value}</p>
+                  <p className="mt-1 text-xs text-[var(--color-brand-slate)]">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -390,9 +481,9 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
 
         {/* Full-width result image */}
         <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-          <p className="text-xs font-semibold text-neutral-500">{d.productResultVisual.eyebrow}</p>
-          <h2 className="mt-1 text-lg font-bold text-neutral-900 sm:text-xl">{d.productResultVisual.title}</h2>
-          <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-100 sm:aspect-[16/10]">
+          <p className="text-xs font-semibold text-[var(--color-brand-primary)]">{d.productResultVisual.eyebrow}</p>
+          <h2 className="mt-1 text-lg font-bold text-[var(--color-brand-ink)] sm:text-xl">{d.productResultVisual.title}</h2>
+          <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--color-brand-border)] shadow-sm sm:aspect-[16/10]">
             <Image
               src={d.productResultVisual.imageSrc}
               alt={d.productResultVisual.imageAlt}
@@ -405,9 +496,9 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
 
         {/* Lifestyle image */}
         <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-          <p className="text-xs font-semibold text-neutral-500">{d.productLifestyleVisual.eyebrow}</p>
-          <h2 className="mt-1 text-lg font-bold text-neutral-900 sm:text-xl">{d.productLifestyleVisual.title}</h2>
-          <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-100 sm:aspect-[16/10]">
+          <p className="text-xs font-semibold text-[var(--color-brand-primary)]">{d.productLifestyleVisual.eyebrow}</p>
+          <h2 className="mt-1 text-lg font-bold text-[var(--color-brand-ink)] sm:text-xl">{d.productLifestyleVisual.title}</h2>
+          <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--color-brand-border)] shadow-sm sm:aspect-[16/10]">
             <Image
               src={d.productLifestyleVisual.imageSrc}
               alt={d.productLifestyleVisual.imageAlt}
@@ -419,21 +510,21 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
         </section>
 
         {/* Story cards — image + short headline only */}
-        <section className="border-t border-neutral-100 bg-neutral-50/30 py-10">
+        <section className="border-t border-[var(--color-brand-border)] bg-[var(--color-brand-mist)]/25 py-10">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <h2 className="mb-6 text-lg font-bold text-neutral-900">لمحة من القصة</h2>
+            <SectionTitle>لمحة من القصة</SectionTitle>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {d.storyFrames.map((sf) => (
                 <div
                   key={sf.headline}
-                  className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm"
+                  className="overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm"
                 >
                   <div className="relative aspect-[4/3]">
                     <Image src={sf.src} alt={sf.alt} fill className="object-cover" sizes="(max-width:768px) 100vw, 33vw" />
                   </div>
                   <div className="space-y-1 p-3">
-                    <p className="text-[11px] font-semibold text-neutral-500">{sf.badge}</p>
-                    <p className="text-sm font-bold leading-snug text-neutral-900">{sf.headline}</p>
+                    <p className="text-[11px] font-semibold text-[var(--color-brand-primary)]">{sf.badge}</p>
+                    <p className="text-sm font-bold leading-snug text-[var(--color-brand-ink)]">{sf.headline}</p>
                   </div>
                 </div>
               ))}
@@ -441,13 +532,14 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           </div>
         </section>
 
-        {/* Ingredient chips — names only */}
+        {/* Ingredient chips */}
         <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+          <SectionTitle>مكوّنات بارزة</SectionTitle>
           <div className="flex flex-wrap justify-center gap-2">
             {d.productIngredients.map((ing) => (
               <span
                 key={ing.name}
-                className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs text-neutral-800"
+                className="rounded-full border border-[var(--color-brand-border)] bg-white px-3 py-1 text-xs text-[var(--color-brand-ink)] shadow-sm"
               >
                 {ing.name}
               </span>
@@ -460,7 +552,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
             <div className="grid gap-4 sm:grid-cols-3">
               {extraDescriptionGallery.map((img) => (
-                <div key={galleryKey(img)} className="relative aspect-square overflow-hidden rounded-2xl border border-neutral-100">
+                <div key={galleryKey(img)} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--color-brand-border)] bg-white shadow-sm">
                   <Image src={img.src} alt={img.alt} fill className="object-contain p-4" sizes="(max-width:768px) 100vw, 280px" />
                 </div>
               ))}
@@ -472,7 +564,7 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
             <div className="grid gap-4 sm:grid-cols-2">
               {authenticityExtras.map((row) => (
-                <div key={row.imageSrc} className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-100">
+                <div key={row.imageSrc} className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--color-brand-border)] shadow-sm">
                   <Image src={row.imageSrc} alt={row.imageAlt} fill className="object-cover" sizes="(max-width:768px) 100vw, 50vw" />
                 </div>
               ))}
@@ -482,13 +574,13 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
 
         {/* Guarantee CTA strip */}
         <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-5 py-6 text-center sm:px-8">
-            <p className="text-xs font-semibold text-neutral-500">{d.authenticity.guarantee.kicker}</p>
-            <h2 className="mt-1 text-lg font-bold text-neutral-900">{d.authenticity.guarantee.title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600 line-clamp-3">{d.authenticity.guarantee.body}</p>
+          <div className="rounded-2xl border border-[var(--color-brand-border)] bg-gradient-to-br from-[var(--color-brand-light)]/40 to-white px-5 py-6 text-center shadow-sm sm:px-8">
+            <p className="text-xs font-semibold text-[var(--color-brand-primary)]">{d.authenticity.guarantee.kicker}</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--color-brand-ink)]">{d.authenticity.guarantee.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)] line-clamp-3">{d.authenticity.guarantee.body}</p>
             <Link
               href={d.authenticity.guarantee.returnsLink.href}
-              className="mt-3 inline-block text-sm font-semibold text-neutral-900 underline underline-offset-4"
+              className="mt-3 inline-block text-sm font-semibold text-[var(--color-brand-primary)] underline underline-offset-4"
             >
               {d.authenticity.guarantee.returnsLink.label}
             </Link>
@@ -497,12 +589,12 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
 
         {/* FAQ */}
         <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
-          <h2 className="mb-4 text-lg font-bold text-neutral-900">الأسئلة الشائعة</h2>
-          <div className="divide-y divide-neutral-200 border-y border-neutral-200">
+          <SectionTitle>الأسئلة الشائعة</SectionTitle>
+          <div className="divide-y divide-[var(--color-brand-border)] border-y border-[var(--color-brand-border)] rounded-xl bg-white/80">
             {faqList.map((item) => (
-              <details key={item.question} className="group py-3">
-                <summary className="cursor-pointer list-none text-sm font-semibold text-neutral-900">{item.question}</summary>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-600 line-clamp-5">{item.answer}</p>
+              <details key={item.question} className="group px-1 py-3 sm:px-2">
+                <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--color-brand-ink)]">{item.question}</summary>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)] line-clamp-5">{item.answer}</p>
               </details>
             ))}
           </div>
@@ -512,11 +604,11 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
         <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
             <div>
-              <h2 className="text-lg font-bold text-neutral-900">التقييمات</h2>
-              <p className="mt-1 text-sm text-neutral-500">{d.reviewsEyebrow}</p>
+              <SectionTitle>التقييمات</SectionTitle>
+              <p className="-mt-1 text-sm text-[var(--color-brand-slate)]">{d.reviewsEyebrow}</p>
             </div>
-            <p className="text-sm text-neutral-600">
-              <span className="font-bold tabular-nums text-neutral-900" dir="ltr">
+            <p className="text-sm text-[var(--color-brand-slate)]">
+              <span className="font-bold tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
                 {d.heroRatingScore}
               </span>
               <span className="mx-1">·</span>
@@ -525,31 +617,34 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
           </div>
           <div className="space-y-3">
             {d.productReviews.map((r) => (
-              <article key={`${r.name}-${r.text.slice(0, 24)}`} className="rounded-xl border border-neutral-100 bg-white p-4">
+              <article
+                key={`${r.name}-${r.text.slice(0, 24)}`}
+                className="rounded-xl border border-[var(--color-brand-border)] bg-white/90 p-4 shadow-sm"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-semibold text-neutral-900">{r.name}</span>
-                  <span className="text-xs text-neutral-500">{r.city}</span>
+                  <span className="font-semibold text-[var(--color-brand-ink)]">{r.name}</span>
+                  <span className="text-xs text-[var(--color-brand-slate)]">{r.city}</span>
                 </div>
-                {r.tag ? <p className="mt-1 text-[11px] text-neutral-500">{r.tag}</p> : null}
-                <p className="mt-2 text-sm leading-relaxed text-neutral-700 line-clamp-4">{r.text}</p>
+                {r.tag ? <p className="mt-1 text-[11px] text-[var(--color-brand-slate)]">{r.tag}</p> : null}
+                <p className="mt-2 text-sm leading-relaxed text-[var(--color-brand-slate)] line-clamp-4">{r.text}</p>
               </article>
             ))}
           </div>
         </section>
       </article>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/95 px-3 py-2.5 backdrop-blur-md md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--color-brand-border)] bg-white/95 px-3 py-2.5 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] text-neutral-500">المجموع</p>
-            <p className="truncate text-base font-bold text-neutral-900 tabular-nums" dir="ltr">
+            <p className="text-[10px] text-[var(--color-brand-slate)]">المجموع</p>
+            <p className="truncate text-base font-bold text-[var(--color-brand-ink)] tabular-nums" dir="ltr">
               {formatMoney(selected.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
             </p>
           </div>
           <button
             type="button"
             onClick={scrollToCheckoutAndTrack}
-            className="shrink-0 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white"
+            className="shrink-0 rounded-xl bg-[var(--color-brand-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:brightness-105"
           >
             {d.pdpPrimaryCta}
           </button>
