@@ -228,43 +228,60 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
                   {offers.map((offer, idx) => {
                     const pct = savingsPercent(offer.price, offer.compare);
                     const isOn = idx === selectedIdx;
+                    const thumb =
+                      offer.code === "OFFER_1" || offer.code === "OFFER_2" || offer.code === "OFFER_3"
+                        ? d.offerBundleImages[offer.code]
+                        : undefined;
                     return (
                       <button
                         key={offer.code}
                         type="button"
                         onClick={() => setSelectedIdx(idx)}
-                        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-right transition ${
+                        className={`flex w-full flex-row-reverse items-center gap-3 rounded-xl border bg-white px-3 py-3 text-right transition sm:px-4 sm:py-3.5 ${
                           isOn
                             ? "border-neutral-900 shadow-sm ring-1 ring-neutral-900"
                             : "border-neutral-200 hover:border-neutral-400"
                         }`}
                       >
-                        <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
-                          {pct != null && pct > 0 && (
-                            <span className="rounded bg-neutral-900 px-2 py-0.5 text-[11px] font-semibold text-white">
-                              ٪{pct} توفير
-                            </span>
-                          )}
-                          {offer.badge && (
-                            <span className="rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-800">
-                              {offer.badge}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                          <div className="space-y-1">
-                            <p className="text-[13px] font-semibold text-neutral-500">{offerCtaLine(offer.pieces)}</p>
-                            <p className="text-sm font-medium text-neutral-900">{offer.label}</p>
+                        {thumb ? (
+                          <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-white sm:h-20 sm:w-20">
+                            <Image
+                              src={thumb.src}
+                              alt={thumb.alt}
+                              fill
+                              className="object-contain p-1.5"
+                              sizes="80px"
+                            />
                           </div>
-                          <div className="flex flex-col items-end gap-0.5 sm:text-end" dir="ltr">
-                            <span className="text-lg font-bold tabular-nums text-neutral-900 sm:text-xl">
-                              {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
-                            </span>
-                            {offer.compare != null && (
-                              <span className="text-xs tabular-nums text-neutral-400 line-through">
-                                {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                        ) : null}
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+                            {pct != null && pct > 0 && (
+                              <span className="rounded bg-neutral-900 px-2 py-0.5 text-[11px] font-semibold text-white">
+                                ٪{pct} توفير
                               </span>
                             )}
+                            {offer.badge && (
+                              <span className="rounded border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-semibold text-neutral-800">
+                                {offer.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                            <div className="space-y-1">
+                              <p className="text-[13px] font-semibold text-neutral-500">{offerCtaLine(offer.pieces)}</p>
+                              <p className="text-sm font-medium text-neutral-900">{offer.label}</p>
+                            </div>
+                            <div className="flex flex-col items-end gap-0.5 sm:text-end" dir="ltr">
+                              <span className="text-lg font-bold tabular-nums text-neutral-900 sm:text-xl">
+                                {formatMoney(offer.price, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                              </span>
+                              {offer.compare != null && (
+                                <span className="text-xs tabular-nums text-neutral-400 line-through">
+                                  {formatMoney(offer.compare, d.currency, d.numberLocale)} {d.currencyLabelAr}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </button>

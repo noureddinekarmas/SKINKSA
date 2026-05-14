@@ -21,12 +21,16 @@ import {
   STORY_FRAMES as STORY_KSA,
 } from "@/lib/content/product-page";
 import type { GalleryImage, StoryFrame } from "@/lib/content/product-page";
+import { productAsset } from "@/lib/content/product-assets";
 
 export type ShopCurrency = "SAR" | "QAR" | "KWD";
 
 export type ProductFaqItem = { question: string; answer: string };
 
 export type CheckoutRegionOption = { value: string; label: string };
+
+/** One bundle-tier image (square / pack shot). */
+export type OfferBundleImage = { src: string; alt: string };
 
 export type UpsellBundleConfig = {
   /** Main title; include emojis for the interstitial */
@@ -112,6 +116,27 @@ export type ProductLandingData = {
     cities: readonly string[];
   };
   storyFrames: StoryFrame[];
+  /**
+   * Thumbnails for bundle picker — keys match `Offer.code` (OFFER_1 … OFFER_3).
+   * Files: see `OFFER_BUNDLE_IMAGES` under `/public/images/product/`.
+   */
+  offerBundleImages: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", OfferBundleImage>>;
+};
+
+/** Filenames you should add under `frontend/public/images/product/` */
+const OFFER_BUNDLE_IMAGES: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", OfferBundleImage>> = {
+  OFFER_1: {
+    src: productAsset("/images/product/bundle-offer-1.png"),
+    alt: "سيروم SKINKSA — عبوة واحدة (٣٠ مل)",
+  },
+  OFFER_2: {
+    src: productAsset("/images/product/bundle-offer-2.png"),
+    alt: "سيروم SKINKSA — عبوتان (٣٠ مل)",
+  },
+  OFFER_3: {
+    src: productAsset("/images/product/bundle-offer-3.png"),
+    alt: "سيروم SKINKSA — ثلاث عبوات (٣٠ مل)",
+  },
 };
 
 const PROD_ID = "prod_blue_copper_serum" as const;
@@ -554,6 +579,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       scienceProofList: SCIENCE_KSA,
       socialStrip: SOCIAL_KSA,
       storyFrames: [...STORY_KSA],
+      offerBundleImages: OFFER_BUNDLE_IMAGES,
     };
   }
 
@@ -627,6 +653,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       scienceProofList: [...SCIENCE_QA_KW],
       socialStrip: SOCIAL_QATAR,
       storyFrames: storyQatar(),
+      offerBundleImages: OFFER_BUNDLE_IMAGES,
     };
   }
 
@@ -699,6 +726,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     scienceProofList: [...SCIENCE_QA_KW],
     socialStrip: SOCIAL_KUWAIT,
     storyFrames: storyKuwait(),
+    offerBundleImages: OFFER_BUNDLE_IMAGES,
   };
 }
 
