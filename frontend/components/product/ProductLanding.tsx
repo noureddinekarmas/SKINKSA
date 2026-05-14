@@ -1071,60 +1071,66 @@ export default function ProductLanding({ data }: { data: ProductLandingData }) {
         </section>
 
         <div className="border-t border-[var(--color-brand-border)] bg-white">
-          <p className="mx-auto max-w-5xl px-4 py-3 text-center text-[11px] leading-relaxed text-[var(--color-brand-slate)] sm:py-4 sm:text-xs">
-            {d.productHeadline}
-          </p>
-        </div>
-
-        <nav
-          className="border-t border-[var(--color-brand-border)] bg-white text-xs text-[var(--color-brand-slate)] sm:text-sm"
-          aria-label="مسار التنقل"
-        >
-          <div className="mx-auto max-w-5xl px-4 py-2.5 sm:px-6 sm:py-3">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link href="/" className="font-medium text-[var(--color-brand-primary)] hover:text-[var(--color-brand-deep)]">
-                  الرئيسية
-                </Link>
-              </li>
-              <li aria-hidden className="text-[var(--color-brand-border)]">
-                /
-              </li>
-              <li>
-                <Link href="/collections" className="font-medium text-[var(--color-brand-primary)] hover:text-[var(--color-brand-deep)]">
-                  المجموعة
-                </Link>
-              </li>
-              <li aria-hidden className="text-[var(--color-brand-border)]">
-                /
-              </li>
-              <li className="font-semibold text-[var(--color-brand-ink)]">{d.pdpBreadcrumbCurrent}</li>
-            </ol>
-          </div>
-        </nav>
-
-        <section
-          className="border-t border-[var(--color-brand-border)] bg-gradient-to-b from-[var(--color-brand-light)]/40 via-white to-[var(--color-brand-mist)]/30"
-          aria-label="مؤشرات الثقة والطلبات"
-        >
-          <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-8">
-              <div className="text-center sm:text-start">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--color-brand-primary)]">مؤشر طلبات تراكمي</p>
-                <p className="mt-1 text-2xl font-black tabular-nums text-[var(--color-brand-ink)] sm:text-3xl" dir="ltr">
-                  {d.socialStrip.stat}
+          <div className="mx-auto max-w-5xl px-3 py-2 sm:px-4 sm:py-2.5">
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-1">
+              <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+                <nav className="shrink-0 text-[10px] text-[var(--color-brand-slate)] sm:text-xs" aria-label="مسار التنقل">
+                  <ol className="flex flex-wrap items-center gap-x-1.5">
+                    <li>
+                      <Link href="/" className="font-medium text-[var(--color-brand-primary)] hover:underline">
+                        الرئيسية
+                      </Link>
+                    </li>
+                    <li aria-hidden className="text-[var(--color-brand-border)]">
+                      /
+                    </li>
+                    <li>
+                      <Link href="/collections" className="font-medium text-[var(--color-brand-primary)] hover:underline">
+                        المجموعة
+                      </Link>
+                    </li>
+                    <li aria-hidden className="text-[var(--color-brand-border)]">
+                      /
+                    </li>
+                    <li className="font-semibold text-[var(--color-brand-ink)]">{d.pdpBreadcrumbCurrent}</li>
+                  </ol>
+                </nav>
+                <p
+                  className="min-w-0 text-[10px] leading-snug text-[var(--color-brand-slate)] sm:max-w-[min(100%,36rem)] sm:truncate sm:text-[11px]"
+                  title={d.productHeadline}
+                >
+                  {d.productHeadline}
                 </p>
-                <p className="mt-1 max-w-md text-xs leading-relaxed text-[var(--color-brand-slate)]">{d.socialStrip.statLabel}</p>
               </div>
-              <div className="text-center sm:max-w-md sm:text-start">
-                <p className="text-sm font-bold leading-snug text-[var(--color-brand-ink)]">{d.socialStrip.ratingLine}</p>
-                <p className="mt-2 text-[11px] leading-relaxed text-[var(--color-brand-slate)]">
-                  مناطق وصلناها: {d.socialStrip.cities.join(" · ")}
-                </p>
+
+              <div
+                className="flex flex-wrap items-center gap-x-2 gap-y-0.5 border-t border-[var(--color-brand-border)]/50 pt-1.5 text-[10px] leading-tight text-[var(--color-brand-slate)] sm:border-t-0 sm:pt-0 sm:text-[11px]"
+                aria-label="مؤشرات الثقة والطلبات"
+              >
+                <span className="whitespace-nowrap font-bold uppercase tracking-wide text-[var(--color-brand-primary)]">طلبات تراكمية</span>
+                <span className="font-black tabular-nums text-[var(--color-brand-ink)]" dir="ltr">
+                  {d.socialStrip.stat}
+                </span>
+                <span className="hidden text-[var(--color-brand-border)] sm:inline" aria-hidden>
+                  ·
+                </span>
+                <span className="line-clamp-1 max-w-[11rem] sm:max-w-[14rem]" title={d.socialStrip.statLabel}>
+                  {d.socialStrip.statLabel}
+                </span>
+                <span className="text-[var(--color-brand-border)] sm:inline" aria-hidden>
+                  ·
+                </span>
+                <span className="whitespace-nowrap font-semibold text-[var(--color-brand-ink)]">{d.socialStrip.ratingLine}</span>
+                <span className="text-[var(--color-brand-border)] sm:inline" aria-hidden>
+                  ·
+                </span>
+                <span className="line-clamp-1 max-w-[14rem] md:max-w-[18rem]" title={`مناطق: ${d.socialStrip.cities.join("، ")}`}>
+                  {d.socialStrip.cities.join(" · ")}
+                </span>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </article>
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--color-brand-border)] bg-white/95 px-3 py-2.5 backdrop-blur-md md:hidden">
