@@ -177,6 +177,21 @@ const PDP_BETWEEN_FORM_IMAGES: readonly PdpBetweenFormImage[] = [
   },
 ];
 
+/** Customer-facing lines — no country names; short home-delivery promise. */
+const PDP_DELIVERY_HOME = "نوصّل لباب منزلك خلال ١–٢ يوم عمل في أغلب الطلبات";
+const PDP_TOP_PROMO =
+  "أكثر من ٤٢ ألف طلبية تراكمية على هذا السيروم من المصدر الرسمي · الدفع عند الاستلام عند التسليم · " +
+  PDP_DELIVERY_HOME;
+const PDP_CART_COD = "الدفع عند الاستلام عند التسليم";
+const PDP_REVIEWS_EYEBROW = "شهادات العميلات";
+const HERO_STATS_PRODUCT: readonly HeroStatItem[] = [
+  { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية على السيروم (رسمي)" },
+  { value: "30", label: "مل في العبوة" },
+  { value: "~شهر", label: "روتين تقريبي" },
+  { value: "SFDA", label: "مرخّص رسمياً" },
+  { value: "١–٢", label: "يوم عمل للشحن غالباً" },
+];
+
 /** Filenames you should add under `frontend/public/images/product/` */
 const OFFER_BUNDLE_IMAGES: Readonly<Record<"OFFER_1" | "OFFER_2" | "OFFER_3", OfferBundleImage>> = {
   OFFER_1: {
@@ -364,31 +379,10 @@ const REGIONS_KUWAIT: CheckoutRegionOption[] = [
   { value: "محافظة مبارك الكبير", label: "محافظة مبارك الكبير" },
 ];
 
-function storyQatar(): StoryFrame[] {
-  const s = [...STORY_KSA];
-  s[2] = {
-    ...s[2],
-    body: "العميلات تكرر الطلب لما يلاقين منتج أصلي وتوصيل مرتب — وهذا يبان بأكثر من ٤٢ ألف طلبية تراكمية على نفس السيروم من المصدر الرسمي. داخل قطر: الدفع عند الاستلام يعني ما تدفعين لين تشوفين الطرد بيدج، وضمان ٣٠ يوم وفق سياسة الاسترجاع المنشورة.",
-  };
-  return s;
-}
-
-function storyKuwait(): StoryFrame[] {
-  const s = [...STORY_KSA];
-  s[2] = {
-    ...s[2],
-    body: "دفع عند الاستلام داخل الكويت يعطيج مساحة أمان قبل ما تكمّلين المبلغ. وضمان ٣٠ يوم يساعدج تتخذين قرار هادئ — التفاصيل مكتوبة في سياسة الاسترجاع.",
-  };
-  return s;
-}
-
-const PRODUCT_TITLE_QA = "سيروم SKINKSA — ٣٠ مل · قطر";
-const PRODUCT_TITLE_KW = "سيروم SKINKSA — ٣٠ مل · الكويت";
-
 const REVIEWS_QATAR: readonly ProductReview[] = [
   {
     name: "موزة ح.",
-    city: "الدوحة",
+    city: "عميلة موثّقة",
     tag: "مشترية موثّقة · أول طلب",
     rating: 5,
     relativeTime: "منذ ١٠ أيام",
@@ -396,7 +390,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
   },
   {
     name: "هند ع.",
-    city: "الريان",
+    city: "عميلة موثّقة",
     tag: "بشرة عادية · COD",
     rating: 5,
     relativeTime: "منذ ٣ أسابيع",
@@ -404,7 +398,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
   },
   {
     name: "سارة م.",
-    city: "الوكرة",
+    city: "عميلة موثّقة",
     tag: "دوام + مكياج خفيف",
     rating: 5,
     relativeTime: "منذ أسبوعين",
@@ -412,7 +406,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
   },
   {
     name: "لطيفة ر.",
-    city: "لوسيل",
+    city: "عميلة موثّقة",
     tag: "بشرة حساسة",
     rating: 5,
     relativeTime: "منذ ٥ أيام",
@@ -420,7 +414,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
   },
   {
     name: "نورة ك.",
-    city: "الخور",
+    city: "عميلة موثّقة",
     tag: "طلب ثاني",
     rating: 5,
     relativeTime: "منذ شهر",
@@ -428,7 +422,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
   },
   {
     name: "مريم ج.",
-    city: "أم صلال",
+    city: "عميلة موثّقة",
     tag: "عرض عبوتين",
     rating: 5,
     relativeTime: "منذ ٨ أيام",
@@ -439,7 +433,7 @@ const REVIEWS_QATAR: readonly ProductReview[] = [
 const REVIEWS_KUWAIT: readonly ProductReview[] = [
   {
     name: "ديمة س.",
-    city: "مدينة الكويت",
+    city: "عميلة موثّقة",
     tag: "مشترية موثّقة · الدفع عند الاستلام",
     rating: 5,
     relativeTime: "منذ ١١ يوماً",
@@ -447,7 +441,7 @@ const REVIEWS_KUWAIT: readonly ProductReview[] = [
   },
   {
     name: "رغد ف.",
-    city: "حولي",
+    city: "عميلة موثّقة",
     tag: "باقة عبوتين",
     rating: 5,
     relativeTime: "منذ شهر",
@@ -455,7 +449,7 @@ const REVIEWS_KUWAIT: readonly ProductReview[] = [
   },
   {
     name: "منى ع.",
-    city: "الأحمدي",
+    city: "عميلة موثّقة",
     tag: "بشرة مختلطة",
     rating: 5,
     relativeTime: "منذ ٣ أسابيع",
@@ -463,15 +457,15 @@ const REVIEWS_KUWAIT: readonly ProductReview[] = [
   },
   {
     name: "هبة ك.",
-    city: "الجهراء",
+    city: "عميلة موثّقة",
     tag: "أول مرة من الموقع",
     rating: 5,
     relativeTime: "منذ ٦ أيام",
-    text: "توصيل داخل الكويت كان سلس. السياسة مكتوبة على الموقع وذكّروني أقراها قبل ما أكمل… شي يطمن ومو كلام معلّق بالهواء.",
+    text: "التوصيل كان سلس. السياسة مكتوبة على الموقع وذكّروني أقراها قبل ما أكمل… شي يطمن ومو كلام معلّق بالهواء.",
   },
   {
     name: "شهد ب.",
-    city: "الفروانية",
+    city: "عميلة موثّقة",
     tag: "زحمة الدوام",
     rating: 5,
     relativeTime: "منذ أسبوعين",
@@ -479,111 +473,13 @@ const REVIEWS_KUWAIT: readonly ProductReview[] = [
   },
   {
     name: "نورة ط.",
-    city: "مبارك الكبير",
+    city: "عميلة موثّقة",
     tag: "كررت الطلب",
     rating: 5,
     relativeTime: "منذ ٤ أيام",
     text: "طلبي الثاني — نفس التغليف نفس اللون نفس الرائحة الخفيفة. هذا اللي يخليني أثق إني ما انضحك عليّ بمنتج «شبه».",
   },
 ];
-
-const AUTH_QATAR = {
-  ...AUTHENTICITY_SECTION,
-  lead: "التركيبة المعروضة هنا تُباع عبر هذا المتجر كمصدر رسمي لطلبات قطر. أي عروض خارج قنواتنا قد تختلف التخزين أو التعامل معها — ولا نقدر نضمن نفس المعايير.",
-  real: {
-    ...AUTHENTICITY_SECTION.real,
-    items: [
-      "تغليف رسمي ومسار شحن يمكن تتبّعه من نظامنا داخل قطر.",
-      "سياسة استرجاع مكتوبة + دعم بالعربي بعد الشراء.",
-      "عروض واضحة بالريال القطري — بدون مفاجآت في السعر عند الاستلام.",
-    ],
-  },
-};
-
-const AUTH_KUWAIT = {
-  ...AUTHENTICITY_SECTION,
-  lead: "طلبات الكويت تُخدم عبر هذا المتجر الرسمي لضمان نفس تجربة التغليف والمتابعة. المنتجات خارج القنوات الرسمية قد لا تحمل نفس الضمانات.",
-  real: {
-    ...AUTHENTICITY_SECTION.real,
-    items: [
-      "شحن داخل الكويت مع تنسيق تسليم واضح وبيانات تواصل محلية.",
-      "ضمان ٣٠ يوم وفق السياسة المنشورة — اقرأيها قبل الشراء.",
-      "أسعار بالدينار الكويتي كما تظهر في الباقة المختارة.",
-    ],
-  },
-};
-
-const AUTH_KW_BAND = {
-  title: AUTHORITY_BAND.title,
-  points: [
-    {
-      t: "٤٢٬٠٠٠+ طلبية",
-      d: "رقم تراكمي على نفس السيروم من المصدر الرسمي — يشمل شحنات الكويت ضمن النشاط العام للمتجر.",
-    },
-    AUTHORITY_BAND.points[1],
-    AUTHORITY_BAND.points[2],
-  ],
-};
-
-const AUTH_QA_BAND = {
-  title: AUTHORITY_BAND.title,
-  points: [
-    {
-      t: "٤٢٬٠٠٠+ طلبية",
-      d: "نفس الرقم التراكمي على السيروم من المتجر الرسمي — مع مسار توصيل داخل قطر وتنسيق وتتبّع واضح.",
-    },
-    AUTHORITY_BAND.points[1],
-    AUTHORITY_BAND.points[2],
-  ],
-};
-
-const PAIN_QA = [
-  PAIN_CHECKLIST[0],
-  PAIN_CHECKLIST[1],
-  {
-    title: "تبغين تسوّقين بأمان داخل قطر",
-    detail: "دفع عند الاستلام + متجر رسمي يقلّل المخاطرة على ميزانيتج قبل ما تتأكدين من المنتج.",
-  },
-];
-
-const PAIN_KW = [
-  PAIN_CHECKLIST[0],
-  PAIN_CHECKLIST[1],
-  {
-    title: "تبغين تجربة شراء واضحة داخل الكويت",
-    detail: "COD وخط سير مكتوب يساعدج تتجنبين المجهول — خصوصاً مع الطلبات أول مرة.",
-  },
-];
-
-const OBJ_QATAR = {
-  ...OBJECTION_BUSTER,
-  lines: [
-    OBJECTION_BUSTER.lines[0],
-    OBJECTION_BUSTER.lines[1],
-    "إذا ما عجبك التوجه — سياسة الاسترجاع مكتوبة… اقرأيها براحتج قبل ما تدفعين ولا ريال قطري عند الباب.",
-  ],
-};
-
-const OBJ_KUWAIT = {
-  ...OBJECTION_BUSTER,
-  lines: [
-    OBJECTION_BUSTER.lines[0],
-    OBJECTION_BUSTER.lines[1],
-    "إذا ما عجبك التوجه — سياسة الاسترجاع مكتوبة… اقرأيها براحتج قبل تسديد مبلغ الطلب عند الاستلام.",
-  ],
-};
-
-const SOCIAL_QATAR = {
-  ...SOCIAL_KSA,
-  ratingLine: "٤٫٩/٥ متوسط تقييم · تجارب شراء من عميلات داخل قطر (وفق آراء المنشورة)",
-  cities: ["الدوحة", "الريان", "الوكرة", "الخور", "لوسيل"],
-};
-
-const SOCIAL_KUWAIT = {
-  ...SOCIAL_KSA,
-  ratingLine: "٤٫٩/٥ متوسط تقييم · تجارب شراء من عميلات داخل الكويت (وفق آراء المنشورة)",
-  cities: ["الكويت", "حولي", "الفروانية", "الأحمدي", "الجهراء"],
-};
 
 /** Merge live catalog product (prices, titles, hero image) into a regional landing template. */
 export function mergeApiProductLandingData(base: ProductLandingData, apiProduct: Product): ProductLandingData {
@@ -637,7 +533,7 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         "يدعم مظهر النضارة والنعومة مع الاستمرار.",
         "قوام خفيف للاستخدام اليومي والمكياج.",
         "متجر رسمي — ترخيص وتغليف أصلي.",
-        "دفع عند الاستلام داخل السعودية.",
+        "دفع عند الاستلام عند التسليم.",
       ],
       pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
       pdpScarcityHeadline: "دفعات اليوم تُغلق حسب الطلب — والأصلي ينفذ بسرعة من المتجر الرسمي",
@@ -656,25 +552,19 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على هذا السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٣–٥ أيام عمل",
-      heroStats: [
-        { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية على السيروم (رسمي)" },
-        { value: "30", label: "مل في العبوة" },
-        { value: "~شهر", label: "روتين تقريبي" },
-        { value: "SFDA", label: "مرخّص رسمياً" },
-        { value: "يومي", label: "امتصاص سريع" },
-      ],
+      topPromoStrip: PDP_TOP_PROMO,
+      heroStats: [...HERO_STATS_PRODUCT],
       heroRatingScore: "4.9",
       heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
       vsComparison: PRODUCT_VS_COMPARISON,
       mobileBadgeRegions: "عميلات من كل المناطق",
       mobileBadgeQuality: "مرخّص SFDA",
-      valueStripDelivery: "توصيل داخل المملكة · ٣–٥ أيام عمل",
+      valueStripDelivery: PDP_DELIVERY_HOME,
       valueStripRegulatory: "منتج مرخّص SFDA",
-      reviewsEyebrow: "شهادات من السعودية",
-      cartTrustLine: "الدفع عند الاستلام داخل السعودية",
+      reviewsEyebrow: PDP_REVIEWS_EYEBROW,
+      cartTrustLine: PDP_CART_COD,
       checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
-      checkoutFooterDelivery: "توصيل سريع",
+      checkoutFooterDelivery: PDP_DELIVERY_HOME,
       phonePlaceholder: "رقم الهاتف (مع رمز الدولة، 7–15 رقماً)",
       phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
       regionSelectPlaceholder: "المنطقة / المحافظة",
@@ -731,22 +621,22 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
 
   if (slug === "qarskin") {
     return {
-      product: baseProduct("qarskin", offersQar(), PRODUCT_TITLE_QA),
+      product: baseProduct("qarskin", offersQar(), "سيروم SKINKSA — ٣٠ مل"),
       currency: "QAR",
       currencyLabelAr: "ر.ق",
       numberLocale: "en-QA",
       pdpShortTitle: "سيروم SKINKSA",
-      pdpSubtitle: "نفس التركيبة المرخّصة — توصيل داخل قطر مع الدفع عند الاستلام.",
+      pdpSubtitle: "نفس التركيبة المرخّصة — نوصّل لباب منزلك والدفع عند الاستلام.",
       pdpBullets: [
         "تركيبة خفيفة للاستخدام اليومي.",
         "من المصدر الرسمي لضمان الأصالة.",
-        "توصيل لباب المنزل في أيام عمل.",
+        PDP_DELIVERY_HOME + ".",
         "الاسم ورقم الجوال لإتمام الطلب.",
       ],
       pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
-      pdpScarcityHeadline: "دفعات التوصيل داخل قطر تُدار يومياً — أصلي من مصدر واحد فقط",
+      pdpScarcityHeadline: "دفعات التوصيل تُدار يومياً — أصلي من مصدر واحد فقط",
       pdpScarcityBody:
-        "نخصص كميات للمتجر الرسمي داخل قطر. اختاري باقتج تحت الصور، أكملي الطلب، والدفع عند الاستلام عند الباب.",
+        "نخصص كميات للمتجر الرسمي. اختاري باقتج تحت الصور، أكملي الطلب، والدفع عند الاستلام عند الباب.",
       pdpPrimaryCta: "أكملي الطلب",
       pdpBreadcrumbCurrent: "SKINKSA",
       pdpBoldStatsNote:
@@ -756,40 +646,34 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       upsellCompareAtPrice: 129,
       upsellBundle: {
         headlineAr: "بعد الطلب — عبوة إضافية بسعر أقل",
-        hookLineAr: "نفس السيروم · عبوة إضافية مع التوصيل داخل قطر",
+        hookLineAr: "نفس السيروم · عبوة إضافية — نفس مسار الشحن إلى باب منزلك",
         addonBottleQty: 1,
         bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
       },
-      topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٢–٤ أيام",
-      heroStats: [
-        { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية (رسمي)" },
-        { value: "30", label: "مل في العبوة" },
-        { value: "~شهر", label: "روتين تقريبي" },
-        { value: "SFDA", label: "ترخيص مطابق" },
-        { value: "قطر", label: "توصيل لباب البيت" },
-      ],
+      topPromoStrip: PDP_TOP_PROMO,
+      heroStats: [...HERO_STATS_PRODUCT],
       heroRatingScore: "4.9",
       heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
       vsComparison: PRODUCT_VS_COMPARISON,
-      mobileBadgeRegions: "عميلات من قطر",
+      mobileBadgeRegions: "عميلات من عدة مناطق",
       mobileBadgeQuality: "منتج أصلي",
-      valueStripDelivery: "توصيل داخل قطر · ٢–٤ أيام عمل",
+      valueStripDelivery: PDP_DELIVERY_HOME,
       valueStripRegulatory: "مصدر رسمي SKINKSA",
-      reviewsEyebrow: "شهادات من قطر",
-      cartTrustLine: "الدفع عند الاستلام داخل قطر",
+      reviewsEyebrow: PDP_REVIEWS_EYEBROW,
+      cartTrustLine: PDP_CART_COD,
       checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
-      checkoutFooterDelivery: "توصيل داخل قطر",
+      checkoutFooterDelivery: PDP_DELIVERY_HOME,
       phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
       phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
       regionSelectPlaceholder: "البلدية / المنطقة",
       regionLabelMinMessage: "اختاري المنطقة",
       addressPlaceholder: "المنطقة، الشارع، رقم المبنى — وأي علامة قريبة تساعد المندوب",
       checkoutRegions: REGIONS_QATAR,
-      authenticity: AUTH_QATAR as typeof AUTHENTICITY_SECTION,
-      authorityBand: AUTH_QA_BAND as typeof AUTHORITY_BAND,
+      authenticity: AUTHENTICITY_SECTION,
+      authorityBand: AUTHORITY_BAND,
       mechanismBlock: MECHANISM_BLOCK,
-      objectionBuster: OBJ_QATAR as typeof OBJECTION_BUSTER,
-      painChecklist: PAIN_QA as typeof PAIN_CHECKLIST,
+      objectionBuster: OBJECTION_BUSTER,
+      painChecklist: PAIN_CHECKLIST,
       productBenefits: [...PRODUCT_BENEFITS],
       productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
       productHeadline: PRODUCT_HEADLINE,
@@ -802,15 +686,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
       productTagline: "",
       productReviews: REVIEWS_QATAR,
       scienceProofList: [...SCIENCE_QA_KW],
-      socialStrip: SOCIAL_QATAR,
-      storyFrames: storyQatar(),
+      socialStrip: SOCIAL_KSA,
+      storyFrames: [...STORY_KSA],
       offerBundleImages: OFFER_BUNDLE_IMAGES,
       pdpEmpathyLine:
         "الجو الدافئ والتكييف يجهدون البشرة — وتدورين على شيء خفيف يثبت، مو كومة منتجات مبهمة المصدر.",
       pdpSolutionLine:
-        "نفس السيروم المرخّص يصلج من المصدر الرسمي داخل قطر: واضح، يُتتبّع، والدفع عند الاستلام يقلّل المخاطرة.",
+        "نفس السيروم المرخّص من المصدر الرسمي: مسار واضح، تتبّع عند الحاجة، والدفع عند الاستلام يقلّل المخاطرة.",
       pdpDailyOrdersFigure: "٤٥+",
-      pdpDailyOrdersCaption: "طلب يومي في أيام الذروة داخل قطر — ضمن نشاط يرافق الطلب التراكمي الكبير على السيروم",
+      pdpDailyOrdersCaption: "طلب يومي في أيام الذروة على مستوى المتجر — يرافق الطلب التراكمي الكبير على السيروم",
       pdpDailyOrdersNote:
         "تقدير تشغيلي يتغيّر حسب الموسم؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
       pdpTrustPillars: PDP_TRUST_PILLARS,
@@ -820,20 +704,20 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
   }
 
   return {
-    product: baseProduct("kwtskin", offersKwd(), PRODUCT_TITLE_KW),
+    product: baseProduct("kwtskin", offersKwd(), "سيروم SKINKSA — ٣٠ مل"),
     currency: "KWD",
     currencyLabelAr: "د.ك",
     numberLocale: "en-KW",
     pdpShortTitle: "سيروم SKINKSA",
-    pdpSubtitle: "ببتيد نحاس أزرق — توصيل داخل الكويت والدفع عند الاستلام.",
+    pdpSubtitle: "ببتيد نحاس أزرق — نوصّل لباب منزلك والدفع عند الاستلام.",
     pdpBullets: [
       "تركيبة خفيفة للاستخدام اليومي.",
       "متجر رسمي وتغليف أصلي.",
-      "شحن لباب المنزل خلال أيام عمل.",
+      PDP_DELIVERY_HOME + ".",
       "بيانات بسيطة لإكمال الطلب.",
     ],
     pdpUrgencyLine: "عرض الباقات — حتى اكتمال دفعة الشحن اليوم",
-    pdpScarcityHeadline: "دفعات الكويت تُجهّز يومياً — والأصلي من قناة SKINKSA فقط",
+    pdpScarcityHeadline: "دفعات الشحن تُجهّز يومياً — والأصلي من قناة SKINKSA فقط",
     pdpScarcityBody:
       "كميات لكل دفعة شحن وفق الطلب. اختاري باقتج تحت الصور مباشرة، أكملي النموذج، والدفع عند الاستلام عند بابك.",
     pdpPrimaryCta: "أكملي الطلب",
@@ -845,40 +729,34 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     upsellCompareAtPrice: 12,
     upsellBundle: {
       headlineAr: "بعد الطلب — عبوة إضافية بسعر أقل",
-      hookLineAr: "عبوة إضافية لنفس الروتين — توصيل داخل الكويت",
+      hookLineAr: "عبوة إضافية لنفس الروتين — نفس مسار الشحن إلى باب منزلك",
       addonBottleQty: 1,
       bottleLabelAr: "عبوة سيروم كاملة (٣٠ مل)",
     },
-    topPromoStrip: "أكثر من ٤٢ ألف طلبية تراكمية على السيروم من المصدر الرسمي · دفع عند الاستلام · توصيل ٢–٤ أيام",
-    heroStats: [
-      { value: "٤٢٬٠٠٠+", label: "طلبية تراكمية (رسمي)" },
-      { value: "30", label: "مل في العبوة" },
-      { value: "~شهر", label: "روتين تقريبي" },
-      { value: "SFDA", label: "ترخيص مطابق" },
-      { value: "الكويت", label: "توصيل لباب البيت" },
-    ],
+    topPromoStrip: PDP_TOP_PROMO,
+    heroStats: [...HERO_STATS_PRODUCT],
     heroRatingScore: "4.9",
     heroRatingCaption: "آراء مشتريات · ٤٫٩/٥",
     vsComparison: PRODUCT_VS_COMPARISON,
-    mobileBadgeRegions: "عميلات من الكويت",
+    mobileBadgeRegions: "عميلات من عدة مناطق",
     mobileBadgeQuality: "منتج أصلي",
-    valueStripDelivery: "توصيل داخل الكويت · ٢–٤ أيام عمل",
+    valueStripDelivery: PDP_DELIVERY_HOME,
     valueStripRegulatory: "مصدر رسمي SKINKSA",
-    reviewsEyebrow: "شهادات من الكويت",
-    cartTrustLine: "الدفع عند الاستلام داخل الكويت",
+    reviewsEyebrow: PDP_REVIEWS_EYEBROW,
+    cartTrustLine: PDP_CART_COD,
     checkoutIntro: "اكتبي اسمك ورقم الجوال لإتمام الطلب.",
-    checkoutFooterDelivery: "توصيل داخل الكويت",
+    checkoutFooterDelivery: PDP_DELIVERY_HOME,
     phonePlaceholder: "رقم الهاتف (محلي أو دولي مع رمز الدولة)",
     phoneSchemaMessage: "أدخل رقماً صالحاً مع رمز الدولة (7–15 رقماً)، أو الرقم المحلي كالسابق",
     regionSelectPlaceholder: "المحافظة",
     regionLabelMinMessage: "اختاري المحافظة",
     addressPlaceholder: "المنطقة، القطعة، الشارع — وأي تفاصيل تسهّل التوصيل",
     checkoutRegions: REGIONS_KUWAIT,
-    authenticity: AUTH_KUWAIT as typeof AUTHENTICITY_SECTION,
-    authorityBand: AUTH_KW_BAND as typeof AUTHORITY_BAND,
+    authenticity: AUTHENTICITY_SECTION,
+    authorityBand: AUTHORITY_BAND,
     mechanismBlock: MECHANISM_BLOCK,
-    objectionBuster: OBJ_KUWAIT as typeof OBJECTION_BUSTER,
-    painChecklist: PAIN_KW as typeof PAIN_CHECKLIST,
+    objectionBuster: OBJECTION_BUSTER,
+    painChecklist: PAIN_CHECKLIST,
     productBenefits: [...PRODUCT_BENEFITS],
     productDescriptionGallery: PRODUCT_DESCRIPTION_GALLERY,
     productHeadline: PRODUCT_HEADLINE,
@@ -891,15 +769,15 @@ export function getProductLandingData(slug: ProductMarketSlug): ProductLandingDa
     productTagline: "",
     productReviews: REVIEWS_KUWAIT,
     scienceProofList: [...SCIENCE_QA_KW],
-    socialStrip: SOCIAL_KUWAIT,
-    storyFrames: storyKuwait(),
+    socialStrip: SOCIAL_KSA,
+    storyFrames: [...STORY_KSA],
     offerBundleImages: OFFER_BUNDLE_IMAGES,
     pdpEmpathyLine:
       "التسوّق أونلاين يرهق لما ما تعرفين وش يصلج بشرتك — وكل عبوة «شكلها نفس الشكل» مو معناه نفس المحتوى.",
     pdpSolutionLine:
-      "اطلبي من المتجر الرسمي داخل الكويت: تركيبة مرخّصة ومسار واضح، ودفع عند الاستلام يعطيكِ وقت تتأكدين.",
+      "من المتجر الرسمي: تركيبة مرخّصة ومسار واضح، والدفع عند الاستلام يعطيكِ وقتاً تتأكدين خلاله.",
     pdpDailyOrdersFigure: "٣٥+",
-    pdpDailyOrdersCaption: "طلب يومي في أيام الذروة داخل الكويت — ضمن نشاط يرافق الطلب التراكمي الكبير على السيروم",
+    pdpDailyOrdersCaption: "طلب يومي في أيام الذروة على مستوى المتجر — يرافق الطلب التراكمي الكبير على السيروم",
     pdpDailyOrdersNote:
       "رقم تشغيلي تقريبي للأيام المزدحمة؛ لا يضاهي رقم ال٤٢ ألف+ (تراكمي منذ الإطلاق) ويُفهم كمؤشر يومي منفصل.",
     pdpTrustPillars: PDP_TRUST_PILLARS,

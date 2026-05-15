@@ -11,7 +11,7 @@ export default function SocialProofSection() {
           <span className="inline-block rounded-full border border-[var(--color-brand-primary)]/25 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[var(--color-brand-primary)]">
             آراء عميلاتنا
           </span>
-          <h2 className="mt-5 text-3xl font-black text-[var(--color-brand-ink)] md:text-4xl">قصص نجاح من بنات السعودية</h2>
+          <h2 className="mt-5 text-3xl font-black text-[var(--color-brand-ink)] md:text-4xl">قصص نجاح من عميلاتنا</h2>
           <p className="mt-4 text-lg text-[var(--color-brand-slate)]">تجارب حقيقية تثبت الفعالية… انضمي إليهن الآن</p>
         </div>
 

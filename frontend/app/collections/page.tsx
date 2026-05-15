@@ -22,7 +22,7 @@ export default async function CollectionsPage() {
       <section className="bg-gradient-to-br from-[#312E81] to-indigo-700 py-16 text-center text-white">
         <div className="mx-auto max-w-4xl px-4">
           <h1 className="mb-4 text-4xl font-bold">المجموعة</h1>
-          <p className="text-lg text-white/80">منتجات عناية فاخرة مصممة للمرأة السعودية</p>
+          <p className="text-lg text-white/80">منتجات عناية فاخرة في روتين عملي ونتائج واضحة</p>
         </div>
       </section>
 

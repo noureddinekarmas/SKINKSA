@@ -6,7 +6,7 @@ import { STATIC_PRODUCT } from "@/lib/content/products";
 
 export const metadata: Metadata = {
   title: "عن SKINKSA | عناية فاخرة بالبشرة",
-  description: "تعرفي على قصة SKINKSA وفلسفتنا في العناية بالبشرة السعودية",
+  description: "تعرفي على قصة SKINKSA وفلسفتنا في العناية بالبشرة",
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">عن SKINKSA</h1>
           <p className="text-white/80 text-xl leading-relaxed">
-            علامة تجارية سعودية مولودة من شغف حقيقي بالعناية بالبشرة
+            علامة عناية بالبشرة وُلدت من شغف بالتركيبات الواضحة والنتائج الحقيقية
           </p>
         </div>
       </section>
@@ -28,10 +28,11 @@ export default function AboutPage() {
           <div className="space-y-5">
             <h2 className="text-3xl font-bold text-[#0F172A]">قصتنا</h2>
             <p className="text-[#475569] leading-relaxed">
-              بدأت SKINKSA من سؤال بسيط: لماذا لا توجد منتجات عناية بالبشرة مصممة فعلاً للمرأة السعودية؟ منتجات تراعي مناخنا الحار، وتفهم احتياجات بشرتنا، وتكون في متناول الجميع.
+              بدأت SKINKSA من سؤال بسيط: لماذا يصعب أحياناً إيجاد روتين خفيف يثبت على البشرة دون تعقيد أو وعود مبالغ فيها؟ أردنا تركيبة واضحة، تتبّعاً موثوقاً، وثقة من أول طلب.
             </p>
             <p className="text-[#475569] leading-relaxed">
-              من هذا الشغف وُلدت SKINKSA. علامة تجارية تجمع بين العلم الحديث والفهم العميق لاحتياجات المرأة السعودية. كل منتج نطلقه مصمم بعناية، ومختبر بدقة، لأننا نؤمن أن بشرتك تستحق الأفضل.
+              من هذا الشغف وُلدت SKINKSA. علامة تجمع بين العلم الحديث والبساطة اليومية. كل منتج نطلقه مصمم بعناية،
+              ومختبر بدقة، لأننا نؤمن أن بشرتك تستحق الأفضل.
             </p>
           </div>
           <div className="flex justify-center">

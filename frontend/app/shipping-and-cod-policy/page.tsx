@@ -21,7 +21,7 @@ export default function ShippingPage() {
           <div className="bg-blue-50 rounded-xl p-4 text-center">
             <Truck className="w-8 h-8 text-[#2563EB] mx-auto mb-2" />
             <p className="font-bold text-[#2563EB]">شحن مجاني</p>
-            <p className="text-xs text-[#475569] mt-1">داخل المملكة العربية السعودية</p>
+            <p className="text-xs text-[#475569] mt-1">إلى عنوانك ضمن شبكة التوصيل</p>
           </div>
           <div className="bg-amber-50 rounded-xl p-4 text-center">
             <Clock className="w-8 h-8 text-[#B7791F] mx-auto mb-2" />
@@ -42,11 +42,11 @@ export default function ShippingPage() {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-[#0F172A] mb-3">التوصيل داخل المملكة</h2>
+            <h2 className="text-xl font-bold text-[#0F172A] mb-3">التوصيل حتى باب منزلك</h2>
             <ul className="list-disc list-inside space-y-2">
-              <li>التوصيل مجاني لجميع مناطق المملكة العربية السعودية</li>
-              <li>يُشحن الطلب خلال 1-2 يوم عمل من تأكيده</li>
-              <li>يصل الطلب خلال 3-5 أيام عمل</li>
+              <li>التوصيل مجاني ضمن مناطق الخدمة المعتمدة لدينا</li>
+              <li>يُجهّز الطلب خلال ١–٢ يوم عمل من تأكيده في أغلب الحالات</li>
+              <li>قد يصل الطلب خلال ٣–٥ أيام عمل حسب عنوانك وشريك الشحن</li>
               <li>ستحصلين على رقم تتبع عبر الرسائل النصية أو واتساب</li>
             </ul>
           </div>

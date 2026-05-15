@@ -2,7 +2,7 @@ export const reviews = [
   {
     id: "1",
     name: "نورة م.",
-    city: "الرياض",
+    city: "عميلة موثّقة",
     rating: 5,
     text: "جربت السيروم لأسبوعين والفرق واضح في نضارة البشرة. التركيبة خفيفة ومناسبة.",
     status: "placeholder",
@@ -10,7 +10,7 @@ export const reviews = [
   {
     id: "2",
     name: "سارة ع.",
-    city: "جدة",
+    city: "عميلة موثّقة",
     rating: 5,
     text: "المنتج فاخر والتغليف أنيق. والأهم الدفع عند الاستلام خلاني أطمن.",
     status: "placeholder",
@@ -18,7 +18,7 @@ export const reviews = [
   {
     id: "3",
     name: "هنوف ك.",
-    city: "الدمام",
+    city: "عميلة موثّقة",
     rating: 4,
     text: "السيروم ينشف بسرعة ومريح تحت الكريم. ألاحظ تحسن في المظهر العام.",
     status: "placeholder",

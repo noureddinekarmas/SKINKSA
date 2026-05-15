@@ -59,7 +59,7 @@ export default function FinalCtaSection() {
             <div className="hidden text-white/35 sm:block">•</div>
             <div className="flex items-center gap-2">
               <Truck className="h-6 w-6 shrink-0 text-sky-300" />
-              <span>توصيل سريع لكل مناطق المملكة</span>
+              <span>توصيل سريع حتى باب منزلك غالباً خلال ١–٢ يوم عمل</span>
             </div>
           </div>
         </div>

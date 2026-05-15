@@ -31,7 +31,7 @@ export function Header() {
     <>
       {/* ── ANNOUNCEMENT BAR ── */}
       <div className="relative z-[60] bg-gradient-to-r from-[#1e3a5f] to-[#1a56db] px-4 py-2 text-center text-[11px] font-medium text-white sm:text-xs">
-        توصيل داخل المملكة · الدفع عند الاستلام · منتج مرخّص SFDA
+        نوصّل لباب منزلك خلال ١–٢ يوم عمل غالباً · الدفع عند الاستلام · منتج مرخّص SFDA
       </div>
 
       <header

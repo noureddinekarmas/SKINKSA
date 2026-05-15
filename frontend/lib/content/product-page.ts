@@ -1,5 +1,5 @@
 /**
- * Product landing: high-conversion DTC narrative (KSA tone).
+ * Product landing: high-conversion DTC narrative (Arabic).
  * Gallery + story frames use assets under /public/images/product/.
  */
 import type { StaticImageData } from "next/image";
@@ -171,7 +171,7 @@ export const SOCIAL_STRIP = {
   stat: "٤٢٬٠٠٠+",
   statLabel: "طلبية تراكمية مؤكّدة على هذا السيروم من المتجر الرسمي منذ إطلاقه",
   ratingLine: "٤٫٩/٥ متوسط تقييم · مشتريات موثّقة",
-  cities: ["الرياض", "جدة", "الدمام", "المدينة", "مكة", "الطائف", "أبها", "الخبر"],
+  cities: ["توصيل لباب المنزل", "تتبّع عند الطلب", "دفع عند الاستلام", "دعم بعد البيع"],
 };
 
 export const PAIN_CHECKLIST = [
@@ -201,7 +201,7 @@ export const MECHANISM_BLOCK = {
   eyebrow: "المشكلة → الحل (بلا مبالغة)",
   title: "ليش السيروم المناسب يغيّر إحساس الوجه… حتى لو ما كان «سيروم سحر»؟",
   paras: [
-    "المشكلة الحقيقية مو «نقص كريم» فقط: البشرة تحتاج روتين يدعم مظهر المرونة والنعومة مع الوقت — خاصة مع أشعة الخليج والتكييف والسهر.",
+    "المشكلة الحقيقية مو «نقص كريم» فقط: البشرة تحتاج روتين يدعم مظهر المرونة والنعومة مع الوقت — خاصة مع أشعة قوية وتكييف وهواء جاف والسهر.",
     "الحل عندنا بسيط ومدروس: ببتيد النحاس الأزرق (GHK-Cu) وفيه أدب علمي في عالم العناية كداعم لمظهر البشرة الأكثر تماسكاً عند الاستمرار، مضاف له هيالورونيك يمسك رطوبة سطحية مريحة بدون إحساس قناع.",
   ],
   calloutTitle: "ليش ما نستخدم لغة «يشيل التجاعيد كأنها ما كانت»؟",
@@ -275,7 +275,7 @@ export const PRODUCT_INGREDIENTS = [
 export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   {
     name: "نورة أ.",
-    city: "الرياض",
+    city: "عميلة موثّقة",
     tag: "مشترية موثّقة · عرض العبوتين",
     rating: 5,
     relativeTime: "منذ ١٢ يوماً",
@@ -283,7 +283,7 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "ريم س.",
-    city: "جدة",
+    city: "عميلة موثّقة",
     tag: "بشرة مختلطة · روتين صباحي",
     rating: 5,
     relativeTime: "منذ شهر",
@@ -291,7 +291,7 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "دانة م.",
-    city: "الخبر",
+    city: "عميلة موثّقة",
     tag: "أول سيروم GHK-Cu",
     rating: 5,
     relativeTime: "منذ ٣ أسابيع",
@@ -299,15 +299,15 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "لينا خ.",
-    city: "أبها",
+    city: "عميلة موثّقة",
     tag: "جو بارد + تكييف",
     rating: 5,
     relativeTime: "منذ أسبوعين",
-    text: "عندنا الجو يقطع البشرة. لقيته يرطب بدون ما يفركش. ضمان ٣٠ يوم خلاني أجرب بارتياح، وصراحة ما توقعت التوصيل يكون بهالسرعة حتى بأبها.",
+    text: "عندنا الجو يقطع البشرة. لقيته يرطب بدون ما يفركش. ضمان ٣٠ يوم خلاني أجرب بارتياح، وصراحة ما توقعت التوصيل يكون بهالسرعة.",
   },
   {
     name: "سارة ع.",
-    city: "الدمام",
+    city: "عميلة موثّقة",
     tag: "دوام طويل + مكياج يومي",
     rating: 5,
     relativeTime: "منذ ٥ أيام",
@@ -315,7 +315,7 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "مها ل.",
-    city: "مكة المكرمة",
+    city: "عميلة موثّقة",
     tag: "طلب ثالث خلال أشهر",
     rating: 5,
     relativeTime: "منذ يومين",
@@ -323,7 +323,7 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "العنود ف.",
-    city: "نجران",
+    city: "عميلة موثّقة",
     tag: "بشرة حساسة · تجربة بسيطة",
     rating: 5,
     relativeTime: "منذ ٤ أسابيع",
@@ -331,7 +331,7 @@ export const PRODUCT_REVIEWS: readonly ProductReview[] = [
   },
   {
     name: "فاطمة ك.",
-    city: "الطائف",
+    city: "عميلة موثّقة",
     tag: "أم ومشغولة",
     rating: 5,
     relativeTime: "منذ ٨ أيام",

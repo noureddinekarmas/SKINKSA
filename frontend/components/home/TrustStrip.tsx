@@ -11,7 +11,7 @@ const trustItems = [
   {
     icon: Truck,
     title: "شحن سريع ومجاني",
-    subtitle: "لكل مناطق السعودية",
+    subtitle: "إلى عنوانك مع تتبّع واضح",
     color: "text-[var(--color-brand-primary)]",
     bg: "bg-[var(--color-brand-light)]",
   },

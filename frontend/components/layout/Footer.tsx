@@ -19,7 +19,7 @@ const mainLinks = [
 
 const trustBadges = [
   { icon: CreditCard, label: "الدفع عند الاستلام" },
-  { icon: Truck, label: "شحن داخل السعودية" },
+  { icon: Truck, label: "شحن سريع حتى باب منزلك" },
   { icon: MessageCircle, label: "دعم عبر الواتساب" },
   { icon: ShieldCheck, label: "جودة موثقة" },
 ];
@@ -46,7 +46,7 @@ export function Footer() {
             <BrandLogoLockup variant="footer" />
           </Link>
           <p className="text-sm text-white/60 leading-relaxed max-w-xs">
-            علامة تجارية سعودية متخصصة في العناية بالبشرة، مبنية على الشفافية والعلم والثقة.
+            علامة عناية بالبشرة مبنية على الشفافية والعلم والثقة — من المصدر الرسمي إلى باب منزلك.
           </p>
         </div>
 

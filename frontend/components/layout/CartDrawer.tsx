@@ -83,13 +83,7 @@ export default function CartDrawer() {
             <div className="border-t border-[#d5e3f0] space-y-4 pt-4">
               <div className="flex items-center gap-2 text-sm text-[#0d9464]">
                 <ShieldCheck className="h-4 w-4 flex-shrink-0" />
-                <span>
-                  {items[0]?.currency === "SAR"
-                    ? "الدفع عند الاستلام داخل السعودية"
-                    : items[0]?.currency === "QAR"
-                      ? "الدفع عند الاستلام داخل قطر"
-                      : "الدفع عند الاستلام داخل الكويت"}
-                </span>
+                <span>الدفع عند الاستلام عند التسليم</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">

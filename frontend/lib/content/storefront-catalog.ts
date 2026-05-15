@@ -31,11 +31,19 @@ const MARKET_META: Record<
 > = {
   blueskin: {
     regionCode: "KSA",
-    countryEn: "Saudi Arabia",
-    countryAr: "المملكة العربية السعودية",
+    countryEn: "Primary storefront (SAR)",
+    countryAr: "المتجر الأساسي (ر.س)",
   },
-  qarskin: { regionCode: "QA", countryEn: "Qatar", countryAr: "قطر" },
-  kwtskin: { regionCode: "KW", countryEn: "Kuwait", countryAr: "الكويت" },
+  qarskin: {
+    regionCode: "QA",
+    countryEn: "Storefront (QAR)",
+    countryAr: "واجهة ر.ق",
+  },
+  kwtskin: {
+    regionCode: "KW",
+    countryEn: "Storefront (KWD)",
+    countryAr: "واجهة د.ك",
+  },
 };
 
 export function getStorefrontCatalogRows(): StorefrontCatalogRow[] {

@@ -59,7 +59,7 @@ export default function HeroSection() {
                 <Star key={i} className="h-4 w-4 fill-[var(--color-brand-accent)] text-[var(--color-brand-accent)]" />
               ))}
             </div>
-            <span className="text-sm font-semibold text-white/85">+1000 عميلة سعيدة من أنحاء المملكة</span>
+            <span className="text-sm font-semibold text-white/85">+1000 عميلة سعيدة حولك</span>
           </div>
 
           <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[var(--color-brand-accent)]">
@@ -74,8 +74,8 @@ export default function HeroSection() {
           </h1>
 
           <p className="max-w-xl text-base leading-relaxed text-white/80 md:text-lg">
-            ودعي البهتان وعلامات الإرهاق. تركيبة علمية فاخرة مرخصة من هيئة الغذاء والدواء (SFDA)، مصممة خصيصاً لتمنح
-            المرأة السعودية النضارة والإشراق الذي تستحقه.
+            ودعي البهتان وعلامات الإرهاق. تركيبة علمية فاخرة مرخصة من هيئة الغذاء والدواء (SFDA)، مصممة لتمنح
+            بشرتك نضارة وإشراقاً يومياً.
           </p>
 
           <div className="flex flex-col items-start gap-4 pt-2 sm:flex-row">
